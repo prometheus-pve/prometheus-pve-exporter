@@ -29,10 +29,16 @@ class PveExporterHandler(BaseHTTPRequestHandler):
 
   def do_GET(self):
     url = urlparse.urlparse(self.path)
-    if url.path == '/pve':
-      with open(self._config_path) as f:
-        config = yaml.safe_load(f)
 
+    with open(self._config_path) as f:
+      config = yaml.safe_load(f)
+
+    # Initialize metrics.
+    for module in config.keys():
+      self._errors.labels(module)
+      self._duration.labels(module)
+
+    if url.path == '/pve':
       params = urlparse.parse_qs(url.query)
       module = params.get("module", ["default"])[0]
       if module not in config:
