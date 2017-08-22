@@ -20,7 +20,7 @@ pve_exporter [config_file] [port]
 `config_file` contains authentication parameters.
 `config_file` defaults to `pve.yml`. `port` defaults to 9221.
 
-Visit http://localhost:9221/metrics?address=1.2.3.4 where 1.2.3.4 is the IP of
+Visit http://localhost:9221/metrics?target=1.2.3.4 where 1.2.3.4 is the IP of
 the Proxmox VE node to get metrics from. You can also specify a `module`
 parameter, to choose which module to use from the config file.
 
