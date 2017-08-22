@@ -1,6 +1,6 @@
 import traceback
 import yaml
-from prometheus_client import CONTENT_TYPE_LATEST
+from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 from .collector import collect_pve
 
 try:
@@ -48,6 +48,18 @@ class PveExporterHandler(BaseHTTPRequestHandler):
         self.send_response(500)
         self.end_headers()
         self.wfile.write(traceback.format_exc().encode('utf-8'))
+    elif url.path == '/metrics':
+      try:
+        output = generate_latest()
+        self.send_response(200)
+        self.send_header('Content-Type', CONTENT_TYPE_LATEST)
+        self.end_headers()
+        self.wfile.write(output)
+      except:
+        self.send_response(500)
+        self.end_headers()
+        self.wfile.write(traceback.format_exc().encode('utf-8'))
+
     elif url.path == '/':
       self.send_response(200)
       self.end_headers()
