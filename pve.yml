@@ -1,0 +1,4 @@
+default:
+  user: prometheus@pve
+  password: sEcr3T!
+  verify_ssl: false

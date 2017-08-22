@@ -1,0 +1,202 @@
+import itertools
+from proxmoxer import ProxmoxAPI
+
+from prometheus_client import CollectorRegistry, generate_latest
+from prometheus_client.core import GaugeMetricFamily
+
+class VersionCollector(object):
+  """
+  Collects Proxmox VE build information. E.g.:
+
+    # HELP pve_version_info Proxmox VE version info
+    # TYPE pve_version_info gauge
+    pve_version_info{release="15",repoid="7599e35a",version="4.4"} 1.0
+
+  """
+
+  def __init__(self, pve):
+    self._pve = pve
+
+  def collect(self):
+    version = self._pve.version.get()
+
+    del version['keyboard']
+
+    labels, label_values = zip(*version.items())
+    metric = GaugeMetricFamily(
+        'pve_version_info',
+        'Proxmox VE version info',
+        labels=labels
+    )
+    metric.add_metric(label_values, 1)
+
+    yield metric
+
+class ClusterStatusCollector(object):
+  """
+  Collects Proxmox VE cluster node information. E.g.:
+
+    # HELP pve_status_up Node/VM/CT-Status is online/running
+    # TYPE pve_status_up gauge
+    pve_status_up{id="node/proxmox-host"} 1.0
+
+    # HELP pve_node_info Node info
+    # TYPE pve_node_info gauge
+    pve_node_info{id="node/proxmox-host",ip="10.20.30.40",level="c",local="1",name="proxmox-host",nodeid="0"} 1.0
+  """
+
+  def __init__(self, pve):
+    self._pve = pve
+
+  def collect(self):
+    nodes = self._pve.cluster.status.get()
+
+    if len(nodes):
+      # Remove superflous keys.
+      for node in nodes:
+        del node['type']
+
+      # Yield online status.
+      status_metrics = GaugeMetricFamily(
+          'pve_status_up',
+          'Node/VM/CT-Status is online/running',
+          labels=['id'])
+
+      for node in nodes:
+        label_values = [node['id']]
+        status_metrics.add_metric(label_values, node.pop('online'))
+
+      yield status_metrics
+
+      # Yield remaining data.
+      labels = nodes[0].keys()
+      info_metrics = GaugeMetricFamily(
+            'pve_node_info',
+            'Node info',
+            labels=labels)
+
+      for node in nodes:
+        label_values = [str(node[key]) for key in labels]
+        info_metrics.add_metric(label_values, 1)
+
+      yield info_metrics
+
+
+class ClusterResourcesCollector(object):
+  """
+  Collects Proxmox VE cluster resources information, i.e. memory, storage, cpu
+  usage for cluster nodes and guests.
+  """
+
+  def __init__(self, pve):
+    self._pve = pve
+
+  def collect(self):
+    metrics = {
+        'maxdisk': GaugeMetricFamily(
+          'pve_disk_size_bytes',
+          'Size of storage device',
+          labels=['id']),
+        'disk': GaugeMetricFamily(
+          'pve_disk_usage_bytes',
+          'Disk usage in bytes',
+          labels=['id']),
+        'maxmem': GaugeMetricFamily(
+          'pve_memory_size_bytes',
+          'Size of memory',
+          labels=['id']),
+        'mem': GaugeMetricFamily(
+          'pve_memory_usage_bytes',
+          'Memory usage in bytes',
+          labels=['id']),
+        'netout': GaugeMetricFamily(
+          'pve_network_transmit_bytes',
+          'Number of bytes transmitted over the network',
+          labels=['id']),
+        'netin': GaugeMetricFamily(
+          'pve_network_receive_bytes',
+          'Number of bytes received over the network',
+          labels=['id']),
+        'diskwrite': GaugeMetricFamily(
+          'pve_disk_write_bytes',
+          'Number of bytes written to storage',
+          labels=['id']),
+        'diskread': GaugeMetricFamily(
+          'pve_disk_read_bytes',
+          'Number of bytes read from storage',
+          labels=['id']),
+        'cpu': GaugeMetricFamily(
+          'pve_cpu_usage_ratio',
+          'CPU usage (value between 0.0 and pve_cpu_usage_limit)',
+          labels=['id']),
+        'maxcpu': GaugeMetricFamily(
+          'pve_cpu_usage_limit',
+          'Maximum allowed CPU usage',
+          labels=['id']),
+        'uptime': GaugeMetricFamily(
+          'pve_uptime_seconds',
+          'Number of seconds since the last boot',
+          labels=['id']),
+        }
+
+    status_metrics = {
+        'running': GaugeMetricFamily(
+          'pve_status_up',
+          'Node/VM/CT-Status is online/running',
+          labels=['id'])
+        }
+
+    info_metrics = {
+        'guest': GaugeMetricFamily(
+          'pve_guest_info',
+          'VM/CT info',
+          labels=['id', 'node', 'name', 'type']),
+        'storage': GaugeMetricFamily(
+          'pve_storage_info',
+          'Storage info',
+          labels=['id', 'node', 'storage']),
+        }
+
+    info_lookup = {
+        'lxc': {
+          'labels': ['id', 'node', 'name', 'type'],
+          'gauge': info_metrics['guest'],
+          },
+        'qemu': {
+          'labels': ['id', 'node', 'name', 'type'],
+          'gauge': info_metrics['guest'],
+          },
+        'storage': {
+          'labels': ['id', 'node', 'storage'],
+          'gauge': info_metrics['storage'],
+          },
+        }
+
+    for resource in self._pve.cluster.resources.get():
+      restype = resource['type']
+
+      if restype in info_lookup:
+        label_values = [resource[key] for key in info_lookup[restype]['labels']]
+        info_lookup[restype]['gauge'].add_metric(label_values, 1)
+
+      label_values = [resource['id']]
+      if 'status' in resource:
+        for key, gauge in status_metrics.items():
+          gauge.add_metric(label_values, key == resource['status'])
+
+      for key, metric_value in resource.items():
+        if key in metrics:
+          metrics[key].add_metric(label_values, metric_value)
+
+    return itertools.chain(metrics.values(), status_metrics.values(), info_metrics.values())
+
+def collect_pve(config, host):
+  """Scrape a host and return prometheus text format for it"""
+
+  pve = ProxmoxAPI(host, **config)
+
+  registry = CollectorRegistry()
+  registry.register(ClusterResourcesCollector(pve))
+  registry.register(ClusterStatusCollector(pve))
+  registry.register(VersionCollector(pve))
+  return generate_latest(registry)
