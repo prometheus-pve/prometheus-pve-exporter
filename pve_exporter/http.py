@@ -21,8 +21,8 @@ class ThreadingHTTPServer(ThreadingMixIn, HTTPServer):
   pass
 
 class PveExporterHandler(BaseHTTPRequestHandler):
-  def __init__(self, config_path, duration, errors, *args, **kwargs):
-    self._config_path = config_path
+  def __init__(self, config, duration, errors, *args, **kwargs):
+    self._config = config
     self._duration = duration
     self._errors = errors
     BaseHTTPRequestHandler.__init__(self, *args, **kwargs)
@@ -30,18 +30,10 @@ class PveExporterHandler(BaseHTTPRequestHandler):
   def do_GET(self):
     url = urlparse.urlparse(self.path)
 
-    with open(self._config_path) as f:
-      config = yaml.safe_load(f)
-
-    # Initialize metrics.
-    for module in config.keys():
-      self._errors.labels(module)
-      self._duration.labels(module)
-
     if url.path == '/pve':
       params = urlparse.parse_qs(url.query)
       module = params.get("module", ["default"])[0]
-      if module not in config:
+      if module not in self._config:
         self.send_response(400)
         self.end_headers()
         self.wfile.write(b"Module '{0}' not found in config".format(module))
@@ -49,7 +41,7 @@ class PveExporterHandler(BaseHTTPRequestHandler):
       try:
         start = time.time()
         target = params.get('target', ['localhost'])[0]
-        output = collect_pve(config[module], target)
+        output = collect_pve(self._config[module], target)
         self.send_response(200)
         self.send_header('Content-Type', CONTENT_TYPE_LATEST)
         self.end_headers()
@@ -99,6 +91,15 @@ def start_http_server(config_path, port):
     ['module'],
   )
 
-  handler = lambda *args, **kwargs: PveExporterHandler(config_path, duration, errors, *args, **kwargs)
+  # Load configuration.
+  with open(config_path) as f:
+    config = yaml.safe_load(f)
+
+  # Initialize metrics.
+  for module in config.keys():
+    errors.labels(module)
+    duration.labels(module)
+
+  handler = lambda *args, **kwargs: PveExporterHandler(config, duration, errors, *args, **kwargs)
   server = ThreadingHTTPServer(('', port), handler)
   server.serve_forever()
