@@ -6,6 +6,8 @@ for use by the Prometheus monitoring system.
 ## Installation
 
 ```Shell
+git clone https://github.com/znerol/prometheus-pve-exporter
+cd prometheus-pve-exporter
 pip install .
 ```
 
