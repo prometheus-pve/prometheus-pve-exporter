@@ -4,6 +4,36 @@ from proxmoxer import ProxmoxAPI
 from prometheus_client import CollectorRegistry, generate_latest
 from prometheus_client.core import GaugeMetricFamily
 
+class StatusCollector(object):
+  """
+  Collects Proxmox VE Node/VM/CT-Status
+
+    # HELP pve_up Node/VM/CT-Status is online/running
+    # TYPE pve_up gauge
+    pve_up{id="node/proxmox-host"} 1.0
+    pve_up{id="lxc/101"} 1.0
+    pve_up{id="qemu/102"} 1.0
+  """
+
+  def __init__(self, pve):
+    self._pve = pve
+
+  def collect(self):
+    status_metrics = GaugeMetricFamily(
+      'pve_up',
+      'Node/VM/CT-Status is online/running',
+      labels=['id'])
+
+    for node in self._pve.cluster.status.get():
+      label_values = [node['id']]
+      status_metrics.add_metric(label_values, node['online'])
+
+    for resource in self._pve.cluster.resources.get(type='vm'):
+      label_values = [resource['id']]
+      status_metrics.add_metric(label_values, resource['status'] == 'running')
+
+    yield status_metrics
+
 class VersionCollector(object):
   """
   Collects Proxmox VE build information. E.g.:
@@ -32,13 +62,9 @@ class VersionCollector(object):
 
     yield metric
 
-class ClusterStatusCollector(object):
+class ClusterNodeCollector(object):
   """
   Collects Proxmox VE cluster node information. E.g.:
-
-    # HELP pve_status_up Node/VM/CT-Status is online/running
-    # TYPE pve_status_up gauge
-    pve_status_up{id="node/proxmox-host"} 1.0
 
     # HELP pve_node_info Node info
     # TYPE pve_node_info gauge
@@ -55,18 +81,7 @@ class ClusterStatusCollector(object):
       # Remove superflous keys.
       for node in nodes:
         del node['type']
-
-      # Yield online status.
-      status_metrics = GaugeMetricFamily(
-          'pve_status_up',
-          'Node/VM/CT-Status is online/running',
-          labels=['id'])
-
-      for node in nodes:
-        label_values = [node['id']]
-        status_metrics.add_metric(label_values, node.pop('online'))
-
-      yield status_metrics
+        del node['online']
 
       # Yield remaining data.
       labels = nodes[0].keys()
@@ -139,13 +154,6 @@ class ClusterResourcesCollector(object):
           labels=['id']),
         }
 
-    status_metrics = {
-        'running': GaugeMetricFamily(
-          'pve_status_up',
-          'Node/VM/CT-Status is online/running',
-          labels=['id'])
-        }
-
     info_metrics = {
         'guest': GaugeMetricFamily(
           'pve_guest_info',
@@ -180,15 +188,11 @@ class ClusterResourcesCollector(object):
         info_lookup[restype]['gauge'].add_metric(label_values, 1)
 
       label_values = [resource['id']]
-      if 'status' in resource:
-        for key, gauge in status_metrics.items():
-          gauge.add_metric(label_values, key == resource['status'])
-
       for key, metric_value in resource.items():
         if key in metrics:
           metrics[key].add_metric(label_values, metric_value)
 
-    return itertools.chain(metrics.values(), status_metrics.values(), info_metrics.values())
+    return itertools.chain(metrics.values(), info_metrics.values())
 
 def collect_pve(config, host):
   """Scrape a host and return prometheus text format for it"""
@@ -196,7 +200,8 @@ def collect_pve(config, host):
   pve = ProxmoxAPI(host, **config)
 
   registry = CollectorRegistry()
+  registry.register(StatusCollector(pve))
   registry.register(ClusterResourcesCollector(pve))
-  registry.register(ClusterStatusCollector(pve))
+  registry.register(ClusterNodeCollector(pve))
   registry.register(VersionCollector(pve))
   return generate_latest(registry)
