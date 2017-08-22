@@ -38,7 +38,7 @@ class PveExporterHandler(BaseHTTPRequestHandler):
         self.wfile.write(b"Module '{0}' not found in config".format(module))
         return
       try:
-        target = params.get('address', ['localhost'])[0]
+        target = params.get('target', ['localhost'])[0]
         output = collect_pve(config[module], target)
         self.send_response(200)
         self.send_header('Content-Type', CONTENT_TYPE_LATEST)
@@ -55,7 +55,7 @@ class PveExporterHandler(BaseHTTPRequestHandler):
       <head><title>Proxmox VE Exporter</title></head>
       <body>
       <h1>Proxmox VE Exporter</h1>
-      <p>Visit <code>/metrics?address=1.2.3.4</code> to use.</p>
+      <p>Visit <code>/metrics?target=1.2.3.4</code> to use.</p>
       </body>
       </html>""")
     else:
