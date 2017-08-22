@@ -26,7 +26,7 @@ class PveExporterHandler(BaseHTTPRequestHandler):
 
   def do_GET(self):
     url = urlparse.urlparse(self.path)
-    if url.path == '/metrics':
+    if url.path == '/pve':
       with open(self._config_path) as f:
         config = yaml.safe_load(f)
 
@@ -55,7 +55,7 @@ class PveExporterHandler(BaseHTTPRequestHandler):
       <head><title>Proxmox VE Exporter</title></head>
       <body>
       <h1>Proxmox VE Exporter</h1>
-      <p>Visit <code>/metrics?target=1.2.3.4</code> to use.</p>
+      <p>Visit <code>/pve?target=1.2.3.4</code> to use.</p>
       </body>
       </html>""")
     else:
