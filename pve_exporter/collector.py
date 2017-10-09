@@ -75,7 +75,7 @@ class ClusterNodeCollector(object):
     self._pve = pve
 
   def collect(self):
-    nodes = self._pve.cluster.status.get()
+    nodes = [node for node in self._pve.cluster.status.get() if node['type'] == 'node']
 
     if len(nodes):
       # Remove superflous keys.
