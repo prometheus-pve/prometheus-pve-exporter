@@ -24,7 +24,8 @@ class StatusCollector(object):
       'Node/VM/CT-Status is online/running',
       labels=['id'])
 
-    for node in self._pve.cluster.status.get():
+    nodes = [entry for entry in self._pve.cluster.status.get() if entry['type'] == 'node']
+    for node in nodes:
       label_values = [node['id']]
       status_metrics.add_metric(label_values, node['online'])
 
@@ -75,7 +76,7 @@ class ClusterNodeCollector(object):
     self._pve = pve
 
   def collect(self):
-    nodes = [node for node in self._pve.cluster.status.get() if node['type'] == 'node']
+    nodes = [entry for entry in self._pve.cluster.status.get() if entry['type'] == 'node']
 
     if len(nodes):
       # Remove superflous keys.
