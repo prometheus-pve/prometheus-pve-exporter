@@ -11,6 +11,7 @@ class StatusCollector(object):
     # HELP pve_up Node/VM/CT-Status is online/running
     # TYPE pve_up gauge
     pve_up{id="node/proxmox-host"} 1.0
+    pve_up{id="cluster/pvec"} 1.0
     pve_up{id="lxc/101"} 1.0
     pve_up{id="qemu/102"} 1.0
   """
@@ -24,10 +25,15 @@ class StatusCollector(object):
       'Node/VM/CT-Status is online/running',
       labels=['id'])
 
-    nodes = [entry for entry in self._pve.cluster.status.get() if entry['type'] == 'node']
-    for node in nodes:
-      label_values = [node['id']]
-      status_metrics.add_metric(label_values, node['online'])
+    for entry in self._pve.cluster.status.get():
+      if entry['type'] == 'node':
+        label_values = [entry['id']]
+        status_metrics.add_metric(label_values, entry['online'])
+      elif entry['type'] == 'cluster':
+        label_values = ['cluster/{:s}'.format(entry['name'])]
+        status_metrics.add_metric(label_values, entry['quorate'])
+      else:
+        raise ValueError('Got unexpected status entry type {:s}'.format(entry['type']))
 
     for resource in self._pve.cluster.resources.get(type='vm'):
       label_values = [resource['id']]
@@ -97,6 +103,43 @@ class ClusterNodeCollector(object):
 
       yield info_metrics
 
+class ClusterInfoCollector(object):
+  """
+  Collects Proxmox VE cluster information. E.g.:
+
+    # HELP pve_cluster_info Cluster info
+    # TYPE pve_cluster_info gauge
+    pve_cluster_info{id="cluster/pvec",nodes="2",quorate="1",version="2"} 1.0
+  """
+
+  def __init__(self, pve):
+    self._pve = pve
+
+  def collect(self):
+    clusters = [entry for entry in self._pve.cluster.status.get() if entry['type'] == 'cluster']
+
+    if len(clusters):
+      # Remove superflous keys.
+      for cluster in clusters:
+        del cluster['type']
+
+      # Add cluster-prefix to id.
+      for cluster in clusters:
+        cluster['id'] = 'cluster/{:s}'.format(cluster['name'])
+        del cluster['name']
+
+      # Yield remaining data.
+      labels = clusters[0].keys()
+      info_metrics = GaugeMetricFamily(
+            'pve_cluster_info',
+            'Cluster info',
+            labels=labels)
+
+      for cluster in clusters:
+        label_values = [str(cluster[key]) for key in labels]
+        info_metrics.add_metric(label_values, 1)
+
+      yield info_metrics
 
 class ClusterResourcesCollector(object):
   """
@@ -204,5 +247,6 @@ def collect_pve(config, host):
   registry.register(StatusCollector(pve))
   registry.register(ClusterResourcesCollector(pve))
   registry.register(ClusterNodeCollector(pve))
+  registry.register(ClusterInfoCollector(pve))
   registry.register(VersionCollector(pve))
   return generate_latest(registry)
