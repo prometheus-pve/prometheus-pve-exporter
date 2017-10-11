@@ -97,7 +97,9 @@ def start_http_server(config_path, port):
 
   # Initialize metrics.
   for module in config.keys():
+    # pylint: disable=no-member
     errors.labels(module)
+    # pylint: disable=no-member
     duration.labels(module)
 
   handler = lambda *args, **kwargs: PveExporterHandler(config, duration, errors, *args, **kwargs)
