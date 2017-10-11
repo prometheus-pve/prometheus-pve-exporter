@@ -10,5 +10,5 @@ install:
   - pip install -r test-requirements.txt
   - pip install -e .
 script:
-  - pylint --errors-only pve_exporter
+  - pylint pve_exporter
   - pyflakes pve_exporter
