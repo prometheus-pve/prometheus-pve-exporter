@@ -55,13 +55,14 @@ class VersionCollector(object):
     pve_version_info{release="15",repoid="7599e35a",version="4.4"} 1.0
     """
 
+    LABEL_WHITELIST = ['release', 'repoid', 'version']
+
     def __init__(self, pve):
         self._pve = pve
 
     def collect(self): # pylint: disable=missing-docstring
-        version = self._pve.version.get()
-
-        del version['keyboard']
+        version_items = self._pve.version.get().items()
+        version = {key: value for key, value in version_items if key in self.LABEL_WHITELIST}
 
         labels, label_values = zip(*version.items())
         metric = GaugeMetricFamily(
