@@ -3,6 +3,7 @@ Proxmox VE exporter for the Prometheus monitoring system.
 """
 
 import sys
+from argparse import ArgumentParser
 from pve_exporter.http import start_http_server
 
 def main(args=None):
@@ -10,21 +11,12 @@ def main(args=None):
     Main entry point.
     """
 
-    if args is None:
-        args = sys.argv
+    parser = ArgumentParser()
+    parser.add_argument('config', nargs='?', default='pve.yml',
+                        help='Path to configuration file (pve.yml)')
+    parser.add_argument('port', nargs='?', type=int, default='9221',
+                        help='Port on which the exporter is listening (9221)')
 
-    if len(args) not in [1, 2, 3]:
-        print("Usage: pve_exporter [config_file] [port]")
-        sys.exit(1)
+    params = parser.parse_args(args if args is None else sys.argv[1:])
 
-    if len(args) >= 2:
-        config = args[1]
-    else:
-        config = "pve.yml"
-
-    if len(args) >= 3:
-        port = int(args[2])
-    else:
-        port = 9221
-
-    start_http_server(config, port)
+    start_http_server(params.config, params.port)
