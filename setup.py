@@ -12,7 +12,8 @@ setup(
     keywords = "prometheus exporter network monitoring proxmox",
     url = "https://github.com/znerol/prometheus-pve-exporter",
     scripts = ["scripts/pve_exporter"],
-    packages=['pve_exporter'],
+    package_dir={"": "src"},
+    packages=find_packages('src'),
     test_suite="tests",
     install_requires=["prometheus_client>=0.0.11", "pyyaml", "proxmoxer", "requests"],
     classifiers=[

@@ -11,4 +11,4 @@ install:
   - pip install -e .
 script:
   - pylint pve_exporter
-  - pyflakes pve_exporter
+  - pyflakes src/pve_exporter
