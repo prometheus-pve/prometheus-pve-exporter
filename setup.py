@@ -1,4 +1,5 @@
 import os
+from setuptools import find_packages
 from setuptools import setup
 
 setup(
@@ -11,9 +12,13 @@ setup(
     license = "Apache Software License 2.0",
     keywords = "prometheus exporter network monitoring proxmox",
     url = "https://github.com/znerol/prometheus-pve-exporter",
-    scripts = ["scripts/pve_exporter"],
     package_dir={"": "src"},
     packages=find_packages('src'),
+    entry_points={
+        'console_scripts': [
+            'pve_exporter=pve_exporter.cli:main',
+        ],
+    },
     test_suite="tests",
     install_requires=["prometheus_client>=0.0.11", "pyyaml", "proxmoxer", "requests"],
     classifiers=[
