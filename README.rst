@@ -11,9 +11,7 @@ Installation
 
 .. code:: shell
 
-    git clone https://github.com/znerol/prometheus-pve-exporter
-    cd prometheus-pve-exporter
-    pip install .
+    pip install prometheus-pve-exporter
 
 Usage
 -----
