@@ -1,6 +1,8 @@
 # Prometheus Proxmox VE Exporter
 
 [![Build Status](https://travis-ci.org/znerol/prometheus-pve-exporter.svg?branch=master)](https://travis-ci.org/znerol/prometheus-pve-exporter)
+[![Package Version](https://img.shields.io/pypi/v/prometheus-pve-exporter.svg)](https://pypi.python.org/znerol/prometheus-pve-exporter)
+[![Package Download](https://img.shields.io/pypi/dm/prometheus-pve-exporter.svg)](https://pypi.python.org/znerol/prometheus-pve-exporter)
 
 This is an exporter that exposes information gathered from Proxmox VE node for
 use by the Prometheus monitoring system.
@@ -16,16 +18,25 @@ pip install .
 ## Usage
 
 ```
-pve_exporter [config_file] [port]
+usage: pve_exporter [-h] [config] [port]
+
+positional arguments:
+  config      Path to configuration file (pve.yml)
+  port        Port on which the exporter is listening (9221)
+
+optional arguments:
+  -h, --help  show this help message and exit
 ```
 
-`config_file` contains authentication parameters.
-`config_file` defaults to `pve.yml`. `port` defaults to 9221.
+Visit http://localhost:9221/pve?target=1.2.3.4 where 1.2.3.4 is the IP of the
+Proxmox VE node to get metrics from. Specify the `module` request parameter, to
+choose which module to use from the config file.
 
-Visit http://localhost:9221/metrics?target=1.2.3.4 where 1.2.3.4 is the IP of
-the Proxmox VE node to get metrics from. You can also specify a `module`
-parameter, to choose which module to use from the config file.
+The `target` request parameter defaults to `localhost`. Hence if `pve_exporter`
+is deployed directly on the proxmox host, `target` can be omitted.
 
+See the [wiki](https://github.com/znerol/prometheus-pve-exporter/wiki) for more
+examples and docs.
 
 ## Authentication
 
