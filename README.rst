@@ -102,8 +102,6 @@ Example config for PVE exporter running on Prometheus host:
 .. |Build Status| image:: https://travis-ci.org/znerol/prometheus-pve-exporter.svg?branch=master
    :target: https://travis-ci.org/znerol/prometheus-pve-exporter
 .. |Package Version| image:: https://img.shields.io/pypi/v/prometheus-pve-exporter.svg
-   :target: https://pypi.python.org/znerol/prometheus-pve-exporter
-.. |Package Download| image:: https://img.shields.io/pypi/dm/prometheus-pve-exporter.svg
-   :target: https://pypi.python.org/znerol/prometheus-pve-exporter
+   :target: https://pypi.python.org/pypi/prometheus-pve-exporter
 .. _wiki: https://github.com/znerol/prometheus-pve-exporter/wiki
 .. _`proxmoxer.ProxmoxAPI()`: https://pypi.python.org/pypi/proxmoxer
