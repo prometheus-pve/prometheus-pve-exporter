@@ -1,7 +1,7 @@
 Prometheus Proxmox VE Exporter
 ==============================
 
-|Build Status| |Package Version| |Package Download|
+|Build Status| |Package Version|
 
 This is an exporter that exposes information gathered from Proxmox VE
 node for use by the Prometheus monitoring system.
