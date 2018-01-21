@@ -21,7 +21,13 @@ setup(
         ],
     },
     test_suite="tests",
-    install_requires=["prometheus_client>=0.0.11", "pyyaml", "proxmoxer", "requests"],
+    install_requires=[
+        "prometheus_client>=0.0.11",
+        "proxmoxer",
+        "pyyaml",
+        "requests",
+        'Werkzeug',
+    ],
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Information Technology",

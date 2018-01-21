@@ -16,7 +16,9 @@ def main(args=None):
                         help='Path to configuration file (pve.yml)')
     parser.add_argument('port', nargs='?', type=int, default='9221',
                         help='Port on which the exporter is listening (9221)')
+    parser.add_argument('address', nargs='?', default='',
+                        help='Address to which the exporter will bind')
 
     params = parser.parse_args(args if args is None else sys.argv[1:])
 
-    start_http_server(params.config, params.port)
+    start_http_server(params.config, params.port, params.address)
