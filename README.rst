@@ -17,15 +17,18 @@ Usage
 -----
 
 ::
-
     usage: pve_exporter [-h] [config] [port]
 
     positional arguments:
       config      Path to configuration file (pve.yml)
       port        Port on which the exporter is listening (9221)
+      address     Address to which the exporter will bind
 
     optional arguments:
       -h, --help  show this help message and exit
+
+Use `::` for the `address` argument in order to bind to both IPv6 and IPv4
+sockets on dual stacked machines.
 
 Visit http://localhost:9221/pve?target=1.2.3.4 where 1.2.3.4 is the IP
 of the Proxmox VE node to get metrics from. Specify the ``module``
