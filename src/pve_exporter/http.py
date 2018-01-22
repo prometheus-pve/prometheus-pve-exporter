@@ -126,4 +126,4 @@ def start_http_server(config_path, port, address=''):
         duration.labels(module)
 
     app = PveExporterApplication(config, duration, errors)
-    run_simple(address, port, app)
+    run_simple(address, port, app, threaded=True)
