@@ -30,6 +30,10 @@ class PveExporterApplication(object):
             Rule('/pve', endpoint='pve'),
         ])
 
+        self._args = {
+            'pve': ['module', 'target']
+        }
+
         self._views = {
             'index': self.on_index,
             'metrics': self.on_metrics,
@@ -81,21 +85,26 @@ class PveExporterApplication(object):
 
         return response
 
-    def view(self, endpoint, values):
+    def view(self, endpoint, values, args):
         """
         Werkzeug views mapping method.
         """
 
+        params = dict(values)
+        if endpoint in self._args:
+            params.update({key: args[key] for key in self._args[endpoint] if key in args})
+
         try:
-            return self._views[endpoint](**values)
+            return self._views[endpoint](**params)
         except Exception as error: # pylint: disable=broad-except
-            self._errors.labels(values.get('module', 'default')).inc()
+            self._errors.labels(args.get('module', 'default')).inc()
             raise InternalServerError(error)
 
     @Request.application
     def __call__(self, request):
         urls = self._url_map.bind_to_environ(request.environ)
-        return urls.dispatch(self.view, catch_http_exceptions=True)
+        view_func = lambda endpoint, values: self.view(endpoint, values, request.args)
+        return urls.dispatch(view_func, catch_http_exceptions=True)
 
 
 def start_http_server(config_path, port, address=''):
