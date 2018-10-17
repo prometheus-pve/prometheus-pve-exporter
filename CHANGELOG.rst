@@ -9,7 +9,7 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 `Unreleased`_
 -------------
 
-`1.1.2`_ - 2018-02-28
+`1.1.2`_ - 2018-10-17
 ---------------------
 
 Changed
