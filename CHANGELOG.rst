@@ -9,6 +9,14 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 `Unreleased`_
 -------------
 
+`1.1.2`_ - 2018-02-28
+---------------------
+
+Changed
+~~~~~~~
+
+-  Fixed issues with VM names when PVE is down. (#14, #15)
+
 `1.1.1`_ - 2018-02-28
 ---------------------
 
