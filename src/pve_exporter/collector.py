@@ -234,7 +234,7 @@ class ClusterResourcesCollector(object):
             restype = resource['type']
 
             if restype in info_lookup:
-                label_values = [resource[key] for key in info_lookup[restype]['labels']]
+                label_values = [resource.get(key, '') for key in info_lookup[restype]['labels']]
                 info_lookup[restype]['gauge'].add_metric(label_values, 1)
 
             label_values = [resource['id']]
