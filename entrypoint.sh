@@ -3,7 +3,7 @@
 SSL="${PVE_VERIFYSSL:-false}"
 
 if [ ! -f /config/pve.yml ]; then
-        if [ -z ${PVE_USER+x} ] && [ -z ${PVE_PASSWORD+x} ]; then
+        if [ -z "${PVE_USER+x}" ] && [ -z "${PVE_PASSWORD+x}" ]; then
                 echo "Provide PVE_USER and PVE_PASSWORD variables !"
                 exit 1
         else
