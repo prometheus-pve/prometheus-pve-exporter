@@ -1,16 +1,16 @@
 FROM python:3.7.1-alpine3.8 as builder
 
-COPY / ./
+COPY ./ /tmp/
 
-WORKDIR /tmp
+WORKDIR /tmp/
 
-RUN cd ./src/ && python setup.py build
+RUN python setup.py build
 
 
 
 FROM python:3.7.1-alpine3.8
 
-COPY --from=builder /tmp/src/build/lib/pve_exporter /usr/local/bin/pve_exporter
+COPY --from=builder /tmp/build/lib/pve_exporter /usr/local/bin/pve_exporter
 
 COPY entrypoint.sh /
 
