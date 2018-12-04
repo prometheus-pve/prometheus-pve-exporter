@@ -10,7 +10,7 @@ RUN cd ./src/ && python setup.py build
 
 FROM python:3.7.1-alpine3.8
 
-COPY --from=builder /tmp/prometheus-pve-exporter/build/lib/pve_exporter /usr/local/bin/pve_exporter
+COPY --from=builder /tmp/src/build/lib/pve_exporter /usr/local/bin/pve_exporter
 
 COPY entrypoint.sh /
 
