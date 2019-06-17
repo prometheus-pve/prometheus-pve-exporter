@@ -101,6 +101,10 @@ Example config for PVE exporter running on Prometheus host:
             target_label: instance
           - target_label: __address__
             replacement: 127.0.0.1:9221  # PVE exporter.
+Grafana Dashboards
+------------------
+
+* `Proxmox via Prometheus by Pietro Saccardi`_
 
 
 .. |Build Status| image:: https://travis-ci.org/znerol/prometheus-pve-exporter.svg?branch=master
@@ -109,3 +113,4 @@ Example config for PVE exporter running on Prometheus host:
    :target: https://pypi.python.org/pypi/prometheus-pve-exporter
 .. _wiki: https://github.com/znerol/prometheus-pve-exporter/wiki
 .. _`proxmoxer.ProxmoxAPI()`: https://pypi.python.org/pypi/proxmoxer
+.. _`Proxmox via Prometheus by Pietro Saccardi`: https://grafana.com/dashboards/10347
