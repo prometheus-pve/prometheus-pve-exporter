@@ -244,6 +244,49 @@ class ClusterResourcesCollector(object):
 
         return itertools.chain(metrics.values(), info_metrics.values())
 
+class NodeVmConfigCollector(object):
+    """
+    Collects Proxmox VE VM information directly from config, i.e. boot, name, onboot, etc.
+    For manual test: "pvesh get /nodes/<node>/<type>/<vmid>/config"
+
+    # HELP pve_vm_config_onboot Proxmox vm config onboot value
+    # TYPE pve_vm_config_onboot gauge
+    pve_vm_config_onboot{id="qemu/113",node="XXXX",type="qemu"} 1.0
+    """
+
+    def __init__(self, pve):
+        self._pve = pve
+
+    def collect(self):
+        metrics = {
+            'onboot': GaugeMetricFamily(
+                'pve_vm_config_onboot',
+                'Proxmox vm config onboot value',
+                labels=['id','node', 'type']),
+            'memory': GaugeMetricFamily(
+                'pve_vm_config_memory',
+                'Proxmox vm config memory value',
+                labels=['id','node', 'type']),
+        }
+
+        for node in self._pve.nodes.get():
+            # Qemu
+            vmtype = 'qemu'
+            for vm in self._pve.nodes(node['node']).qemu.get():
+                for key, metric_value in self._pve.nodes(node['node']).qemu(vm['vmid']).config.get().items():
+                    label_values = ["%s/%s" % (vmtype, vm['vmid']), node['node'], vmtype]
+                    if key in metrics:
+                        metrics[key].add_metric(label_values, metric_value)
+            # LXC
+            vmtype = 'lxc'
+            for vm in self._pve.nodes(node['node']).lxc.get():
+                for key, metric_value in self._pve.nodes(node['node']).lxc(vm['vmid']).config.get().items():
+                    label_values = ["%s/%s" % (vmtype, vm['vmid']), node['node'], vmtype]
+                    if key in metrics:
+                        metrics[key].add_metric(label_values, metric_value)
+
+        return metrics.values()
+
 def collect_pve(config, host):
     """Scrape a host and return prometheus text format for it"""
 
@@ -254,5 +297,6 @@ def collect_pve(config, host):
     registry.register(ClusterResourcesCollector(pve))
     registry.register(ClusterNodeCollector(pve))
     registry.register(ClusterInfoCollector(pve))
+    registry.register(NodeVmConfigCollector(pve))
     registry.register(VersionCollector(pve))
     return generate_latest(registry)
