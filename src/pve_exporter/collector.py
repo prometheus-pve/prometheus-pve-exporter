@@ -246,7 +246,7 @@ class ClusterResourcesCollector(object):
 
 class ClusterNodeConfigCollector(object):
     """
-    Collects Proxmox VE VM information directly from config, i.e. boot, name, onboot, etc. 
+    Collects Proxmox VE VM information directly from config, i.e. boot, name, onboot, etc.
     For manual test: "pvesh get /nodes/<node>/<type>/<vmid>/config"
 
     # HELP pve_vm_config_onboot Proxmox vm config onboot value
@@ -257,7 +257,7 @@ class ClusterNodeConfigCollector(object):
     def __init__(self, pve):
         self._pve = pve
 
-    def collect(self):
+    def collect(self): # pylint: disable=missing-docstring
         metrics = {
             'onboot': GaugeMetricFamily(
                 'pve_vm_config_onboot',
