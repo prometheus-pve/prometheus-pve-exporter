@@ -249,8 +249,8 @@ class ClusterNodeConfigCollector(object):
     Collects Proxmox VE VM information directly from config, i.e. boot, name, onboot, etc.
     For manual test: "pvesh get /nodes/<node>/<type>/<vmid>/config"
 
-    # HELP pve_vm_config_onboot Proxmox vm config onboot value
-    # TYPE pve_vm_config_onboot gauge
+    # HELP pve_onboot_status Proxmox vm config onboot value
+    # TYPE pve_onboot_status gauge
     pve_onboot_status{id="qemu/113",node="XXXX",type="qemu"} 1.0
     """
 
