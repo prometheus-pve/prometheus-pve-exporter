@@ -101,6 +101,7 @@ Example config for PVE exporter running on Prometheus host:
             target_label: instance
           - target_label: __address__
             replacement: 127.0.0.1:9221  # PVE exporter.
+
 Grafana Dashboards
 ------------------
 
