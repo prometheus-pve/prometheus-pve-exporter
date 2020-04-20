@@ -244,6 +244,47 @@ class ClusterResourcesCollector(object):
 
         return itertools.chain(metrics.values(), info_metrics.values())
 
+class ClusterNodeConfigCollector(object):
+    """
+    Collects Proxmox VE VM information directly from config, i.e. boot, name, onboot, etc.
+    For manual test: "pvesh get /nodes/<node>/<type>/<vmid>/config"
+
+    # HELP pve_onboot_status Proxmox vm config onboot value
+    # TYPE pve_onboot_status gauge
+    pve_onboot_status{id="qemu/113",node="XXXX",type="qemu"} 1.0
+    """
+
+    def __init__(self, pve):
+        self._pve = pve
+
+    def collect(self): # pylint: disable=missing-docstring
+        metrics = {
+            'onboot': GaugeMetricFamily(
+                'pve_onboot_status',
+                'Proxmox vm config onboot value',
+                labels=['id', 'node', 'type']),
+        }
+
+        for node in self._pve.nodes.get():
+            # Qemu
+            vmtype = 'qemu'
+            for vmdata in self._pve.nodes(node['node']).qemu.get():
+                config = self._pve.nodes(node['node']).qemu(vmdata['vmid']).config.get().items()
+                for key, metric_value in config:
+                    label_values = ["%s/%s" % (vmtype, vmdata['vmid']), node['node'], vmtype]
+                    if key in metrics:
+                        metrics[key].add_metric(label_values, metric_value)
+            # LXC
+            vmtype = 'lxc'
+            for vmdata in self._pve.nodes(node['node']).lxc.get():
+                config = self._pve.nodes(node['node']).lxc(vmdata['vmid']).config.get().items()
+                for key, metric_value in config:
+                    label_values = ["%s/%s" % (vmtype, vmdata['vmid']), node['node'], vmtype]
+                    if key in metrics:
+                        metrics[key].add_metric(label_values, metric_value)
+
+        return metrics.values()
+
 def collect_pve(config, host):
     """Scrape a host and return prometheus text format for it"""
 
@@ -254,5 +295,6 @@ def collect_pve(config, host):
     registry.register(ClusterResourcesCollector(pve))
     registry.register(ClusterNodeCollector(pve))
     registry.register(ClusterInfoCollector(pve))
+    registry.register(ClusterNodeConfigCollector(pve))
     registry.register(VersionCollector(pve))
     return generate_latest(registry)
