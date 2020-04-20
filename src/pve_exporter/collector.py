@@ -260,12 +260,8 @@ class ClusterNodeConfigCollector(object):
     def collect(self): # pylint: disable=missing-docstring
         metrics = {
             'onboot': GaugeMetricFamily(
-                'pve_vm_config_onboot',
+                'pve_onboot_status',
                 'Proxmox vm config onboot value',
-                labels=['id', 'node', 'type']),
-            'memory': GaugeMetricFamily(
-                'pve_vm_config_memory',
-                'Proxmox vm config memory value',
                 labels=['id', 'node', 'type']),
         }
 
