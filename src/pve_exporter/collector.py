@@ -251,7 +251,7 @@ class ClusterNodeConfigCollector(object):
 
     # HELP pve_vm_config_onboot Proxmox vm config onboot value
     # TYPE pve_vm_config_onboot gauge
-    pve_vm_config_onboot{id="qemu/113",node="XXXX",type="qemu"} 1.0
+    pve_onboot_status{id="qemu/113",node="XXXX",type="qemu"} 1.0
     """
 
     def __init__(self, pve):
