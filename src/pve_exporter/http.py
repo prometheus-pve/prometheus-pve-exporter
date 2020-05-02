@@ -1,11 +1,9 @@
 """
-import traceback
 HTTP API for Proxmox VE prometheus collector.
 """
 
 import logging
 import time
-import yaml
 
 from prometheus_client import CONTENT_TYPE_LATEST, Summary, Counter, generate_latest
 from werkzeug.routing import Map, Rule
@@ -113,7 +111,7 @@ class PveExporterApplication(object):
         return urls.dispatch(view_func, catch_http_exceptions=True)
 
 
-def start_http_server(config_path, port, address=''):
+def start_http_server(config, port, address=''):
     """
     Start a HTTP API server for Proxmox VE prometheus collector.
     """
@@ -128,10 +126,6 @@ def start_http_server(config_path, port, address=''):
         'Errors in requests to PVE exporter',
         ['module'],
     )
-
-    # Load configuration.
-    with open(config_path) as handle:
-        config = yaml.safe_load(handle)
 
     # Initialize metrics.
     for module in config.keys():
