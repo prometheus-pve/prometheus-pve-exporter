@@ -3,14 +3,17 @@ import traceback
 HTTP API for Proxmox VE prometheus collector.
 """
 
+import logging
 import time
 import yaml
+
 from prometheus_client import CONTENT_TYPE_LATEST, Summary, Counter, generate_latest
 from werkzeug.routing import Map, Rule
 from werkzeug.serving import run_simple
 from werkzeug.wrappers import Request, Response
 from werkzeug.exceptions import InternalServerError
 from .collector import collect_pve
+
 
 class PveExporterApplication(object):
     """
@@ -39,6 +42,8 @@ class PveExporterApplication(object):
             'metrics': self.on_metrics,
             'pve': self.on_pve,
         }
+
+        self._log = logging.getLogger(__name__)
 
     def on_pve(self, module='default', target='localhost'):
         """
@@ -96,7 +101,8 @@ class PveExporterApplication(object):
 
         try:
             return self._views[endpoint](**params)
-        except Exception as error: # pylint: disable=broad-except
+        except Exception as error:  # pylint: disable=broad-except
+            self._log.exception("Exception thrown while rendering view")
             self._errors.labels(args.get('module', 'default')).inc()
             raise InternalServerError(error)
 
