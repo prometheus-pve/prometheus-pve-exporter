@@ -18,7 +18,7 @@ Usage
 
 ::
 
-    usage: pve_exporter [-h] [config] [port]
+    usage: pve_exporter [-h] [config] [port] [address]
 
     positional arguments:
       config      Path to configuration file (pve.yml)

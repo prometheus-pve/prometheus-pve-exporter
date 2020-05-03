@@ -9,6 +9,15 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 `Unreleased`_
 -------------
 
+`1.2.1`_ - 2020-05-03
+---------------------
+
+Changed
+~~~~~~~
+
+-  Refuse to start with invalid configuration (#29)
+-  Log exceptions thrown during view rendering (#28)
+
 `1.2.0`_ - 2020-04-20
 ---------------------
 
@@ -45,7 +54,8 @@ Added
 
 .. _Keep a Changelog: http://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: http://semver.org/spec/v2.0.0.html
-.. _Unreleased: https://github.com/znerol/prometheus-pve-exporter/compare/v1.2.0...HEAD
+.. _Unreleased: https://github.com/znerol/prometheus-pve-exporter/compare/v1.2.1...HEAD
+.. _1.2.1: https://github.com/znerol/prometheus-pve-exporter/compare/v1.2.0...v1.2.1
 .. _1.2.0: https://github.com/znerol/prometheus-pve-exporter/compare/v1.1.2...v1.2.0
 .. _1.1.2: https://github.com/znerol/prometheus-pve-exporter/compare/v1.1.1...v1.1.2
 .. _1.1.1: https://github.com/znerol/prometheus-pve-exporter/compare/v1.1.0...v1.1.1
