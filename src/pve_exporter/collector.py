@@ -266,22 +266,23 @@ class ClusterNodeConfigCollector(object):
         }
 
         for node in self._pve.nodes.get():
-            # Qemu
-            vmtype = 'qemu'
-            for vmdata in self._pve.nodes(node['node']).qemu.get():
-                config = self._pve.nodes(node['node']).qemu(vmdata['vmid']).config.get().items()
-                for key, metric_value in config:
-                    label_values = ["%s/%s" % (vmtype, vmdata['vmid']), node['node'], vmtype]
-                    if key in metrics:
-                        metrics[key].add_metric(label_values, metric_value)
-            # LXC
-            vmtype = 'lxc'
-            for vmdata in self._pve.nodes(node['node']).lxc.get():
-                config = self._pve.nodes(node['node']).lxc(vmdata['vmid']).config.get().items()
-                for key, metric_value in config:
-                    label_values = ["%s/%s" % (vmtype, vmdata['vmid']), node['node'], vmtype]
-                    if key in metrics:
-                        metrics[key].add_metric(label_values, metric_value)
+            if node["status"] == "online":
+                # Qemu
+                vmtype = 'qemu'
+                for vmdata in self._pve.nodes(node['node']).qemu.get():
+                    config = self._pve.nodes(node['node']).qemu(vmdata['vmid']).config.get().items()
+                    for key, metric_value in config:
+                        label_values = ["%s/%s" % (vmtype, vmdata['vmid']), node['node'], vmtype]
+                        if key in metrics:
+                            metrics[key].add_metric(label_values, metric_value)
+                # LXC
+                vmtype = 'lxc'
+                for vmdata in self._pve.nodes(node['node']).lxc.get():
+                    config = self._pve.nodes(node['node']).lxc(vmdata['vmid']).config.get().items()
+                    for key, metric_value in config:
+                        label_values = ["%s/%s" % (vmtype, vmdata['vmid']), node['node'], vmtype]
+                        if key in metrics:
+                            metrics[key].add_metric(label_values, metric_value)
 
         return metrics.values()
 
