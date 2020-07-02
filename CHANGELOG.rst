@@ -9,6 +9,17 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 `Unreleased`_
 -------------
 
+Added
+~~~~~
+
+`1.3.0`_ - 2020-07-02
+---------------------
+
+- Autopublish to pypi (#39)
+- Add dockerfile and autopublish to dockerhub (#38)
+- Move repo to prometheus-pve github org (#36, #37)
+
+
 `1.2.2`_ - 2020-05-18
 ---------------------
 
@@ -62,7 +73,8 @@ Added
 
 .. _Keep a Changelog: http://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: http://semver.org/spec/v2.0.0.html
-.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v1.2.2...HEAD
+.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v1.3.0...HEAD
+.. _1.3.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v1.2.2...v1.3.0
 .. _1.2.2: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v1.2.1...v1.2.2
 .. _1.2.1: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v1.2.0...v1.2.1
 .. _1.2.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v1.1.2...v1.2.0
