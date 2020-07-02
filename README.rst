@@ -108,8 +108,8 @@ Grafana Dashboards
 * `Proxmox via Prometheus by Pietro Saccardi`_
 
 
-.. |Build Status| image:: https://travis-ci.org/znerol/prometheus-pve-exporter.svg?branch=master
-   :target: https://travis-ci.org/znerol/prometheus-pve-exporter
+.. |Build Status| image:: https://travis-ci.org/prometheus-pve/prometheus-pve-exporter.svg?branch=master
+   :target: https://travis-ci.org/prometheus-pve/prometheus-pve-exporter
 .. |Package Version| image:: https://img.shields.io/pypi/v/prometheus-pve-exporter.svg
    :target: https://pypi.python.org/pypi/prometheus-pve-exporter
 .. _wiki: https://github.com/prometheus-pve/prometheus-pve-exporter/wiki
