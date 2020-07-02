@@ -63,6 +63,8 @@ jobs:
       script:
         - python3 setup.py sdist bdist_wheel --universal
       deploy:
+        on:
+          all_branches: true
         provider: pypi
         username: "__token__"
         password:
