@@ -62,10 +62,10 @@ Added
 
 .. _Keep a Changelog: http://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: http://semver.org/spec/v2.0.0.html
-.. _Unreleased: https://github.com/znerol/prometheus-pve-exporter/compare/v1.2.2...HEAD
-.. _1.2.2: https://github.com/znerol/prometheus-pve-exporter/compare/v1.2.1...v1.2.2
-.. _1.2.1: https://github.com/znerol/prometheus-pve-exporter/compare/v1.2.0...v1.2.1
-.. _1.2.0: https://github.com/znerol/prometheus-pve-exporter/compare/v1.1.2...v1.2.0
-.. _1.1.2: https://github.com/znerol/prometheus-pve-exporter/compare/v1.1.1...v1.1.2
-.. _1.1.1: https://github.com/znerol/prometheus-pve-exporter/compare/v1.1.0...v1.1.1
-.. _1.1.0: https://github.com/znerol/prometheus-pve-exporter/compare/v1.0.0...v1.1.0
+.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v1.2.2...HEAD
+.. _1.2.2: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v1.2.1...v1.2.2
+.. _1.2.1: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v1.2.0...v1.2.1
+.. _1.2.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v1.1.2...v1.2.0
+.. _1.1.2: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v1.1.1...v1.1.2
+.. _1.1.1: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v1.1.0...v1.1.1
+.. _1.1.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v1.0.0...v1.1.0

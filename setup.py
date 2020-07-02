@@ -12,7 +12,7 @@ setup(
     long_description = codecs.open('README.rst', encoding='utf-8').read(),
     license = "Apache Software License 2.0",
     keywords = "prometheus exporter network monitoring proxmox",
-    url = "https://github.com/znerol/prometheus-pve-exporter",
+    url = "https://github.com/prometheus-pve/prometheus-pve-exporter",
     package_dir={"": "src"},
     packages=find_packages('src'),
     entry_points={
