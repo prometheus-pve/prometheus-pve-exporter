@@ -9,9 +9,34 @@ node for use by the Prometheus monitoring system.
 Installation
 ------------
 
+Using pip:
+==========
+
 .. code:: shell
 
     pip install prometheus-pve-exporter
+
+Using docker:
+=============
+
+.. code:: shell
+
+   docker pull prompve/prometheus-pve-exporter
+
+Example: Display usage message:
+
+.. code:: shell
+
+   docker run -it --rm prompve/prometheus-pve-exporter --help
+
+
+Example: Run the image with a mounted configuration file and published port:
+
+.. code:: shell
+
+   docker run --name prometheus-pve-exporter -d -p 127.0.0.1:9221:9221 -v /path/to/pve.yml:/etc/pve.yml prompve/prometheus-pve-exporter
+
+Prometheus PVE Exporter will now be reachable at http://localhost:9090/.
 
 Usage
 -----

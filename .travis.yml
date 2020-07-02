@@ -1,11 +1,25 @@
 ---
+os: linux
+services: docker
 language: python
 python:
-  - 2.7
   - 3.6
+  - 2.7
 cache:
   directories:
     - $HOME/.cache/pip
+env:
+  global:
+    - IMAGE_NAME: prompve/prometheus-pve-exporter
+    - IMAGE_BUILD_ID: "travis-build-${TRAVIS_BUILD_ID}"
+    - DOCKER_USERNAME: prompveci
+    # travis encrypt DOCKER_PASSWORD=abcdefg[...]
+    - secure: "UL0vSTw+8nKj1+a+5k2urlBdQCfrDYbWDWrEcIUN42c8m44OSKgUO2LLDlnJMVIrEdgOuY9pxaNjhkRRDSP8+RFDCwX2N355610qONcBAcUhZZbVXCU9aR29Lhnm1LZq13LDgs+05P9vQ9Aye2MSTKjsEPj1Rrx97GUNFUBfKbqhiV5e/++MLYHtcjsPSLjgBAfA80Tme/FwGbvBzL64OLUl1rmXnaUlAQ60FCag078RS8LlsMNZFEU11f1+DWxl9VdYdH83AzKN/t/xY2+qJu0eUksOvxFM19jMIrC9+KWzvSio3GpbPlA1R/eqpE8iWHx3Zo0tyeVllraYsxX4Wyn7XUqYVzw/5DmXA6gHYtgayrjDk6oA2qpsMmg9w+Q4fhQz7AJjLgNd/vXHwUBByzdgPfjT98zzUUwi2784o6e/+B7bZ3EeLSgrL0VuootmI4LTvlPjwFlWBKij9cQGSzSMiGomr7RcmZGPU9gFyA/EYkglxFV0sSMJgEOBi4Lostc8rEXThKF4eDcDQo7GdI4QvQ+0tQLzsbDAg17pm14+1b9WwqrwTCW1wCgR0T8VwH7wFvaiGnLbFuIWDT5KK4nSq9YOwYB+eLnO85N58ideqrM3o6FKnHqwscVzN4uIUMtCUgGgzS/gP+N7DMjN/OM2lkPIg4/fY45+5bEYhKI="
+stages:
+  - name: test
+  - name: docker image
+  - name: dockerhub release
+    if: tag IS present
 install:
   - pip install -U pip wheel
   - pip install -r test-requirements.txt
@@ -13,3 +27,32 @@ install:
 script:
   - pylint pve_exporter
   - pyflakes src/pve_exporter
+jobs:
+  include:
+    - stage: docker image
+      install: skip
+      before_script:
+        - echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
+      script:
+        - >
+            docker build
+            --tag "${IMAGE_NAME}:${IMAGE_BUILD_ID}"
+            --build-arg build_log_label="Travis CI Build #${TRAVIS_BUILD_NUMBER}"
+            --build-arg build_log_url="${TRAVIS_BUILD_WEB_URL}"
+            .
+        - docker push "${IMAGE_NAME}:${IMAGE_BUILD_ID}"
+    - stage: dockerhub release
+      install: skip
+      before_script:
+        - echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
+      script:
+        - export VERSION_PATCH="${TRAVIS_TAG#v}"
+        - export VERSION_MINOR="${VERSION_PATCH%.*}"
+        - export VERSION_MAJOR="${VERSION_MINOR%.*}"
+        - docker pull "${IMAGE_NAME}:${IMAGE_BUILD_ID}"
+        - docker tag "${IMAGE_NAME}:${IMAGE_BUILD_ID}" "${IMAGE_NAME}:${VERSION_PATCH}"
+        - docker tag "${IMAGE_NAME}:${IMAGE_BUILD_ID}" "${IMAGE_NAME}:${VERSION_MINOR}"
+        - docker tag "${IMAGE_NAME}:${IMAGE_BUILD_ID}" "${IMAGE_NAME}:${VERSION_MAJOR}"
+        - docker push "${IMAGE_NAME}:${VERSION_PATCH}"
+        - docker push "${IMAGE_NAME}:${VERSION_MINOR}"
+        - docker push "${IMAGE_NAME}:${VERSION_MAJOR}"
