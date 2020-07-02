@@ -112,6 +112,6 @@ Grafana Dashboards
    :target: https://travis-ci.org/znerol/prometheus-pve-exporter
 .. |Package Version| image:: https://img.shields.io/pypi/v/prometheus-pve-exporter.svg
    :target: https://pypi.python.org/pypi/prometheus-pve-exporter
-.. _wiki: https://github.com/znerol/prometheus-pve-exporter/wiki
+.. _wiki: https://github.com/prometheus-pve/prometheus-pve-exporter/wiki
 .. _`proxmoxer.ProxmoxAPI()`: https://pypi.python.org/pypi/proxmoxer
 .. _`Proxmox via Prometheus by Pietro Saccardi`: https://grafana.com/dashboards/10347
