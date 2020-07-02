@@ -18,7 +18,7 @@ env:
 stages:
   - name: test
   - name: docker image
-  - name: dockerhub release
+  - name: publish
     if: tag IS present
 install:
   - pip install -U pip wheel
@@ -41,7 +41,7 @@ jobs:
             --build-arg build_log_url="${TRAVIS_BUILD_WEB_URL}"
             .
         - docker push "${IMAGE_NAME}:${IMAGE_BUILD_ID}"
-    - stage: dockerhub release
+    - stage: publish
       install: skip
       before_script:
         - echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
@@ -56,3 +56,12 @@ jobs:
         - docker push "${IMAGE_NAME}:${VERSION_PATCH}"
         - docker push "${IMAGE_NAME}:${VERSION_MINOR}"
         - docker push "${IMAGE_NAME}:${VERSION_MAJOR}"
+    - stage: publish
+      install: skip
+      script:
+        - python3 setup.py sdist bdist_wheel --universal
+      deploy:
+        provider: pypi
+        username: "__token__"
+        password:
+          secure: "iNCl+SFxXJEwDbg374UXLtIVJiXS6e8guAMP2sclIAZlJtzQ+LiydzCV2M4sS5BIyuNr82FsTOn+LGOds/qQiigWfsliM20mV3bgmOG6me6AyCUPJ/uF+lh6QwclrphuFwxyTJtxj4ttP+1vYJOGTaQTP0ElXoPXV48Ibhiz7R84SqTLnSWz3y8ZcRaqe/HYQ/8kNj/+ttwsBulDS4k+LD74PVuAjpw2VfFyRQuuHcRHDDgu81OYZsyfiGG24+VnOcARHs/04dMLHg/TJ54sJIjKp1VWHK7L20kZZTiuiTSIXaLEco3HtXVbeBLSDXjHEjj/PNxRqqcVtzjcnRcgZ6hq3g6hddttF9m3rnn4dmA0FCRgb/uqXqy6Ie2T4XPya7zY447s0b4f6E97DdKuc1xvuf3ESznwAdhjZ7wsUnDnS9MXaQf5SBwKQvWsBlsg/80aotC6FdLbP45HdrEskFza/IEdt2IpD1I5DSXVu2AOFbGig6BPkG1AXnlaNLE9SmNWTgHchUm+q1xD7txFEqee5j2in+AFDsQlB0qVXbbO5BDEUEucaLQ4hZMn7A3sVzaxEH9AMfIO3I3GF1nAaS1/B1eEzYelfxPiv/wzLJBPzJuXyyjgnkisv2W7sdyQsG2ZongvuDV3HHPlzKNU3+p4+h7NEMTCoyvnCpZIk6w="
