@@ -53,9 +53,11 @@ jobs:
         - docker tag "${IMAGE_NAME}:${IMAGE_BUILD_ID}" "${IMAGE_NAME}:${VERSION_PATCH}"
         - docker tag "${IMAGE_NAME}:${IMAGE_BUILD_ID}" "${IMAGE_NAME}:${VERSION_MINOR}"
         - docker tag "${IMAGE_NAME}:${IMAGE_BUILD_ID}" "${IMAGE_NAME}:${VERSION_MAJOR}"
+        - docker tag "${IMAGE_NAME}:${IMAGE_BUILD_ID}" "${IMAGE_NAME}:latest"
         - docker push "${IMAGE_NAME}:${VERSION_PATCH}"
         - docker push "${IMAGE_NAME}:${VERSION_MINOR}"
         - docker push "${IMAGE_NAME}:${VERSION_MAJOR}"
+        - docker push "${IMAGE_NAME}:latest"
     - stage: publish
       install: skip
       script:
