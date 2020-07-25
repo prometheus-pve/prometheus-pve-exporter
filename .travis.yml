@@ -4,7 +4,9 @@ services: docker
 language: python
 python:
   - 3.6
-  - 2.7
+  - 3.7
+  - 3.8
+  - 3.9
 cache:
   directories:
     - $HOME/.cache/pip
@@ -65,7 +67,7 @@ jobs:
         on:
           all_branches: true
         provider: pypi
-        distributions: sdist bdist_wheel --universal
+        distributions: sdist bdist_wheel
         username: "__token__"
         password:
           secure: G8okbVzDXXZ6EJb5pMV/e6qsCJBK1i4sFONnfhOO3wD4cQrmpoUYnDWUCrg7yt44E6dE7rS1U0+YndUrxURjGO+hHXxnTNQ5Rb7S59h43oDMKI7ige/eSdVsDZiVs91mNgYCsWOpoOuVX2CdiJyp2rVSW8Hofu4r2JVFMFB4D6DXgGKh5yI4Sa9NIDRQEwAAbY6c/G0qmEJudtuoWmlAAa58VrQcjTmejd3n51EWiwYvMID2TFYa1xbaKaemi6iF2998UCqBmNn+mem1zHqFpKNIgyVHbOCxsit9ODZBJ7u090VM9mAUcU5Rmg95cJaPjJCfojmkE2kcKGdykB+s2bYp/G+6lb/iVLzQw3jZYXvz7nJvxUMLQacxGHQukT82jhJXkWMYuqVe2koRDcgIAn2GGpWQ2CYh7oJb2p1u/8D1lp+2uXDbixk6UPhd75+KySucJPhjIb5LUdGKHbSvFLp2cClRpWQwnjn4NtmIiPB/Tzb1K0c1tlPKvFowK1cMsEFWaJ1k27BcJOwy91UOsi669ZKkf+iK8pn/shoQn6IuUflGHzsOjjHz+vwLNqxlOIzyo7UJJInU1CAb/8dMY9F7KxZvvB5qFEyr26XKtqzGnbCRXPBdMgQ4u7KUetr+hshmvYIwf9FXJppMPYD+/RZpUfXQgBIlBuV79Hrl3P4=

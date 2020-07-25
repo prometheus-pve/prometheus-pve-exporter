@@ -9,6 +9,8 @@ node for use by the Prometheus monitoring system.
 Installation
 ------------
 
+Note: Python 2 is not supported anymore as of version 2.0.0.
+
 Using pip:
 ==========
 

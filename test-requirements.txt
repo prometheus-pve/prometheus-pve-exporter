@@ -1,2 +1,2 @@
-pylint<2.0
+pylint
 pyflakes

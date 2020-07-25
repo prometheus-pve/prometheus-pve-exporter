@@ -9,6 +9,11 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 `Unreleased`_
 -------------
 
+Removed
+~~~~~~~
+
+- Dropped support for Python 2
+
 `1.3.2`_ - 2020-07-02
 ---------------------
 
