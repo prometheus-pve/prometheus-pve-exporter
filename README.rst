@@ -71,7 +71,7 @@ See the wiki_  for more examples and docs.
 Authentication
 --------------
 
-Example ``pve.yml``
+Example ``pve.yml`` for password authentication:
 
 .. code:: yaml
 
@@ -79,6 +79,15 @@ Example ``pve.yml``
         user: prometheus@pve
         password: sEcr3T!
         verify_ssl: false
+
+Example ``pve.yml`` for `token authentication`_:
+
+.. code:: yaml
+
+   default:
+       user: prometheus@pve
+       token_name: "..."
+       token_value: "..."
 
 The configuration is passed directly into `proxmoxer.ProxmoxAPI()`_.
 
@@ -140,5 +149,6 @@ Grafana Dashboards
 .. |Package Version| image:: https://img.shields.io/pypi/v/prometheus-pve-exporter.svg
    :target: https://pypi.python.org/pypi/prometheus-pve-exporter
 .. _wiki: https://github.com/prometheus-pve/prometheus-pve-exporter/wiki
+.. _`token authentication`: https://pve.proxmox.com/wiki/User_Management#pveum_tokens
 .. _`proxmoxer.ProxmoxAPI()`: https://pypi.python.org/pypi/proxmoxer
 .. _`Proxmox via Prometheus by Pietro Saccardi`: https://grafana.com/dashboards/10347
