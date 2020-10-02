@@ -92,7 +92,7 @@ The configuration is passed directly into `proxmoxer.ProxmoxAPI()`_.
 
 Note: When operating PVE with self-signed certificates, then it is necessary to
 either import the certificate into the local trust store (see this `SE answer`_
-for Debian/Ubuntu) or add `verify_ssl: false` to the config dict as a sibling
+for Debian/Ubuntu) or add ``verify_ssl: false`` to the config dict as a sibling
 to the credentials. Note that PVE `supports Let's Encrypt`_ out ouf the box. In
 many cases setting up trusted certificates is the better option than operating
 with self-signed certs.
