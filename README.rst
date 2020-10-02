@@ -78,7 +78,6 @@ Example ``pve.yml`` for password authentication:
     default:
         user: prometheus@pve
         password: sEcr3T!
-        verify_ssl: false
 
 Example ``pve.yml`` for `token authentication`_:
 
@@ -90,6 +89,13 @@ Example ``pve.yml`` for `token authentication`_:
        token_value: "..."
 
 The configuration is passed directly into `proxmoxer.ProxmoxAPI()`_.
+
+Note: When operating PVE with self-signed certificates, then it is necessary to
+either import the certificate into the local trust store (see this `SE answer`_
+for Debian/Ubuntu) or add `verify_ssl: false` to the config dict as a sibling
+to the credentials. Note that PVE `supports Let's Encrypt`_ out ouf the box. In
+many cases setting up trusted certificates is the better option than operating
+with self-signed certs.
 
 Proxmox VE Configuration
 ------------------------
@@ -151,4 +157,6 @@ Grafana Dashboards
 .. _wiki: https://github.com/prometheus-pve/prometheus-pve-exporter/wiki
 .. _`token authentication`: https://pve.proxmox.com/wiki/User_Management#pveum_tokens
 .. _`proxmoxer.ProxmoxAPI()`: https://pypi.python.org/pypi/proxmoxer
+.. _`SE answer`: https://askubuntu.com/a/1007236
+.. _`supports Let's Encrypt`: https://pve.proxmox.com/pve-docs/pve-admin-guide.html#sysadmin_certificate_management
 .. _`Proxmox via Prometheus by Pietro Saccardi`: https://grafana.com/dashboards/10347
