@@ -202,6 +202,10 @@ class ClusterResourcesCollector(object):
                 'pve_uptime_seconds',
                 'Number of seconds since the last boot',
                 labels=['id']),
+            'shared': GaugeMetricFamily(
+                'pve_storage_shared',
+                'Whether or not the storage is shared among cluster nodes',
+                labels=['id']),
         }
 
         info_metrics = {
