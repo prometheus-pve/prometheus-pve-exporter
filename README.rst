@@ -9,14 +9,14 @@ node for use by the Prometheus monitoring system.
 Installation
 ------------
 
-Note: Python 2 is not supported anymore as of version 2.0.0.
+Note: Python 2 is not supported anymore as of version 2.0.0. Instead use Python 3.6 or better.
 
 Using pip:
 ==========
 
 .. code:: shell
 
-    pip install prometheus-pve-exporter
+    python3 -m pip install prometheus-pve-exporter
 
 Using docker:
 =============
