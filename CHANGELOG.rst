@@ -9,9 +9,18 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 `Unreleased`_
 -------------
 
+`2.0.0`_ - 2020-10-19
+---------------------
+
+Added
+~~~~~
+
+- Add `pve_storage_shared` metric (#44)
+
 Removed
 ~~~~~~~
 
+- Remove `ip` and `local` labels from `pve_node_info` gauge (#41)
 - Dropped support for Python 2
 
 `1.3.2`_ - 2020-07-02
@@ -94,8 +103,9 @@ Added
 
 .. _Keep a Changelog: http://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: http://semver.org/spec/v2.0.0.html
-.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v1.3.2...HEAD
-.. _1.3.1: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v1.3.1...v1.3.2
+.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v2.0.0...HEAD
+.. _2.0.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v1.3.2...v2.0.0
+.. _1.3.2: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v1.3.1...v1.3.2
 .. _1.3.1: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v1.3.0...v1.3.1
 .. _1.3.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v1.2.2...v1.3.0
 .. _1.2.2: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v1.2.1...v1.2.2
