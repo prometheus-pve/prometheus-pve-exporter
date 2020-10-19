@@ -80,8 +80,8 @@ class ClusterNodeCollector(object):
 
     # HELP pve_node_info Node info
     # TYPE pve_node_info gauge
-    pve_node_info{id="node/proxmox-host", ip="10.20.30.40", level="c",
-        local="1", name="proxmox-host", nodeid="0"} 1.0
+    pve_node_info{id="node/proxmox-host", level="c", name="proxmox-host",
+        nodeid="0"} 1.0
     """
 
     def __init__(self, pve):
@@ -89,15 +89,9 @@ class ClusterNodeCollector(object):
 
     def collect(self): # pylint: disable=missing-docstring
         nodes = [entry for entry in self._pve.cluster.status.get() if entry['type'] == 'node']
+        labels = ['id', 'level', 'name', 'nodeid']
 
         if nodes:
-            # Remove superflous keys.
-            for node in nodes:
-                del node['type']
-                del node['online']
-
-            # Yield remaining data.
-            labels = nodes[0].keys()
             info_metrics = GaugeMetricFamily(
                 'pve_node_info',
                 'Node info',
