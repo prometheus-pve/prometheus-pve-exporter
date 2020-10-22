@@ -13,7 +13,7 @@ from werkzeug.exceptions import InternalServerError
 from .collector import collect_pve
 
 
-class PveExporterApplication(object):
+class PveExporterApplication:
     """
     Proxmox VE prometheus collector HTTP handler.
     """
@@ -102,7 +102,7 @@ class PveExporterApplication(object):
         except Exception as error:  # pylint: disable=broad-except
             self._log.exception("Exception thrown while rendering view")
             self._errors.labels(args.get('module', 'default')).inc()
-            raise InternalServerError(error)
+            raise InternalServerError from error
 
     @Request.application
     def __call__(self, request):

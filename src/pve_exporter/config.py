@@ -66,7 +66,7 @@ class ConfigMapping(Mapping):
     valid = True
 
     def __init__(self, mapping):
-        super(ConfigMapping, self).__init__()
+        super().__init__()
         self._mapping = mapping
 
     def __str__(self):
@@ -84,7 +84,7 @@ class ConfigMapping(Mapping):
         return len(self._mapping)
 
 
-class ConfigInvalid(object):
+class ConfigInvalid:
     """
     Invalid config object.
     """

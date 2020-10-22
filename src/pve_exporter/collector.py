@@ -9,7 +9,7 @@ from proxmoxer import ProxmoxAPI
 from prometheus_client import CollectorRegistry, generate_latest
 from prometheus_client.core import GaugeMetricFamily
 
-class StatusCollector(object):
+class StatusCollector:
     """
     Collects Proxmox VE Node/VM/CT-Status
 
@@ -46,7 +46,7 @@ class StatusCollector(object):
 
         yield status_metrics
 
-class VersionCollector(object):
+class VersionCollector:
     """
     Collects Proxmox VE build information. E.g.:
 
@@ -74,7 +74,7 @@ class VersionCollector(object):
 
         yield metric
 
-class ClusterNodeCollector(object):
+class ClusterNodeCollector:
     """
     Collects Proxmox VE cluster node information. E.g.:
 
@@ -103,7 +103,7 @@ class ClusterNodeCollector(object):
 
             yield info_metrics
 
-class ClusterInfoCollector(object):
+class ClusterInfoCollector:
     """
     Collects Proxmox VE cluster information. E.g.:
 
@@ -141,7 +141,7 @@ class ClusterInfoCollector(object):
 
             yield info_metrics
 
-class ClusterResourcesCollector(object):
+class ClusterResourcesCollector:
     """
     Collects Proxmox VE cluster resources information, i.e. memory, storage, cpu
     usage for cluster nodes and guests.
@@ -242,7 +242,7 @@ class ClusterResourcesCollector(object):
 
         return itertools.chain(metrics.values(), info_metrics.values())
 
-class ClusterNodeConfigCollector(object):
+class ClusterNodeConfigCollector:
     """
     Collects Proxmox VE VM information directly from config, i.e. boot, name, onboot, etc.
     For manual test: "pvesh get /nodes/<node>/<type>/<vmid>/config"
