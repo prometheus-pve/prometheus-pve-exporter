@@ -9,6 +9,16 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 `Unreleased`_
 -------------
 
+`2.0.1`_ - 2020-10-21
+---------------------
+
+Changed
+~~~~~~~
+
+- Update docker image to alpine 3.12.1 (#50)
+- Complete Python 3 transition (#49)
+- Fix packaging (#48)
+
 `2.0.0`_ - 2020-10-19
 ---------------------
 
@@ -103,7 +113,8 @@ Added
 
 .. _Keep a Changelog: http://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: http://semver.org/spec/v2.0.0.html
-.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v2.0.0...HEAD
+.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v2.0.1...HEAD
+.. _2.0.1: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v2.0.0...v2.0.1
 .. _2.0.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v1.3.2...v2.0.0
 .. _1.3.2: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v1.3.1...v1.3.2
 .. _1.3.1: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v1.3.0...v1.3.1
