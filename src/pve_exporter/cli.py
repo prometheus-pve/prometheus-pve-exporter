@@ -2,7 +2,6 @@
 Proxmox VE exporter for the Prometheus monitoring system.
 """
 
-import sys
 from argparse import ArgumentParser
 
 import yaml
@@ -10,7 +9,7 @@ from pve_exporter.http import start_http_server
 from pve_exporter.config import config_from_yaml
 
 
-def main(args=None):
+def main():
     """
     Main entry point.
     """
@@ -23,7 +22,7 @@ def main(args=None):
     parser.add_argument('address', nargs='?', default='',
                         help='Address to which the exporter will bind')
 
-    params = parser.parse_args(args if args is None else sys.argv[1:])
+    params = parser.parse_args()
 
     # Load configuration.
     with open(params.config) as handle:
