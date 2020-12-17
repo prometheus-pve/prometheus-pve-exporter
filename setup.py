@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name="prometheus-pve-exporter",
-    version="2.0.1",
+    version="2.0.3",
     author="Lorenz Schori",
     author_email="lo@znerol.ch",
     description=("Proxmox VE exporter for the Prometheus monitoring system."),
