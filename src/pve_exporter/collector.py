@@ -5,6 +5,7 @@ Prometheus collecters for Proxmox VE cluster.
 
 import itertools
 from proxmoxer import ProxmoxAPI
+from proxmoxer.core import ResourceException
 
 from prometheus_client import CollectorRegistry, generate_latest
 from prometheus_client.core import GaugeMetricFamily
@@ -267,20 +268,28 @@ class ClusterNodeConfigCollector:
             if node["status"] == "online":
                 # Qemu
                 vmtype = 'qemu'
-                for vmdata in self._pve.nodes(node['node']).qemu.get():
-                    config = self._pve.nodes(node['node']).qemu(vmdata['vmid']).config.get().items()
-                    for key, metric_value in config:
-                        label_values = ["%s/%s" % (vmtype, vmdata['vmid']), node['node'], vmtype]
-                        if key in metrics:
-                            metrics[key].add_metric(label_values, metric_value)
-                # LXC
-                vmtype = 'lxc'
-                for vmdata in self._pve.nodes(node['node']).lxc.get():
-                    config = self._pve.nodes(node['node']).lxc(vmdata['vmid']).config.get().items()
-                    for key, metric_value in config:
-                        label_values = ["%s/%s" % (vmtype, vmdata['vmid']), node['node'], vmtype]
-                        if key in metrics:
-                            metrics[key].add_metric(label_values, metric_value)
+                try:
+                    for vmdata in self._pve.nodes(node['node']).qemu.get():
+                        config = self._pve.nodes(node['node']).qemu(vmdata['vmid']).config.get().items()
+                        for key, metric_value in config:
+                            label_values = ["%s/%s" % (vmtype, vmdata['vmid']), node['node'], vmtype]
+                            if key in metrics:
+                                metrics[key].add_metric(label_values, metric_value)
+                except ResourceException:
+                    pass
+
+                    # LXC
+                    vmtype = 'lxc'
+
+                try:
+                    for vmdata in self._pve.nodes(node['node']).lxc.get():
+                        config = self._pve.nodes(node['node']).lxc(vmdata['vmid']).config.get().items()
+                        for key, metric_value in config:
+                            label_values = ["%s/%s" % (vmtype, vmdata['vmid']), node['node'], vmtype]
+                            if key in metrics:
+                                metrics[key].add_metric(label_values, metric_value)
+                except ResourceException:
+                    pass
 
         return metrics.values()
 
