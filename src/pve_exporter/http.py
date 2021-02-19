@@ -26,22 +26,6 @@ class PveExporterApplication:
         self._errors = errors
         self._collectors = collectors
 
-        self._url_map = Map([
-            Rule('/', endpoint='index'),
-            Rule('/metrics', endpoint='metrics'),
-            Rule('/pve', endpoint='pve'),
-        ])
-
-        self._args = {
-            'pve': ['module', 'target']
-        }
-
-        self._views = {
-            'index': self.on_index,
-            'metrics': self.on_metrics,
-            'pve': self.on_pve,
-        }
-
         self._log = logging.getLogger(__name__)
 
     def on_pve(self, module='default', target='localhost'):
@@ -94,12 +78,22 @@ class PveExporterApplication:
         Werkzeug views mapping method.
         """
 
+        allowed_args = {
+            'pve': ['module', 'target']
+        }
+
+        view_registry = {
+            'index': self.on_index,
+            'metrics': self.on_metrics,
+            'pve': self.on_pve,
+        }
+
         params = dict(values)
-        if endpoint in self._args:
-            params.update({key: args[key] for key in self._args[endpoint] if key in args})
+        if endpoint in allowed_args:
+            params.update({key: args[key] for key in allowed_args[endpoint] if key in args})
 
         try:
-            return self._views[endpoint](**params)
+            return view_registry[endpoint](**params)
         except Exception as error:  # pylint: disable=broad-except
             self._log.exception("Exception thrown while rendering view")
             self._errors.labels(args.get('module', 'default')).inc()
@@ -107,7 +101,13 @@ class PveExporterApplication:
 
     @Request.application
     def __call__(self, request):
-        urls = self._url_map.bind_to_environ(request.environ)
+        url_map = Map([
+            Rule('/', endpoint='index'),
+            Rule('/metrics', endpoint='metrics'),
+            Rule('/pve', endpoint='pve'),
+        ])
+
+        urls = url_map.bind_to_environ(request.environ)
         view_func = lambda endpoint, values: self.view(endpoint, values, request.args)
         return urls.dispatch(view_func, catch_http_exceptions=True)
 

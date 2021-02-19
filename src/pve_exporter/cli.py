@@ -14,6 +14,7 @@ try:
 except ImportError:
     from argparse import Action
     # https://github.com/python/cpython/blob/master/Lib/argparse.py#L856
+    # pylint: disable=all
     class BooleanOptionalAction(Action):
         def __init__(self,
                      option_strings,
