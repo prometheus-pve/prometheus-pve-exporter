@@ -9,6 +9,19 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 `Unreleased`_
 -------------
 
+`2.1.0`_ - 2021-02-19
+---------------------
+
+Added
+~~~~~
+
+- Add command line flags to enable/disable individual collectors (#62)
+
+Changed
+~~~~~~~
+
+- Update docker base image
+
 `2.0.3`_ - 2020-12-17
 ---------------------
 
@@ -130,7 +143,8 @@ Added
 
 .. _Keep a Changelog: http://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: http://semver.org/spec/v2.0.0.html
-.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v2.0.3...HEAD
+.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v2.1.0...HEAD
+.. _2.1.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v2.0.3...v2.1.0
 .. _2.0.3: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v2.0.2...v2.0.3
 .. _2.0.2: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v2.0.1...v2.0.2
 .. _2.0.1: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v2.0.0...v2.0.1
