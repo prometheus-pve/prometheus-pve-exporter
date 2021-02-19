@@ -20,26 +20,11 @@ class PveExporterApplication:
 
     # pylint: disable=no-self-use
 
-    def __init__(self, config, duration, errors):
+    def __init__(self, config, duration, errors, collectors):
         self._config = config
         self._duration = duration
         self._errors = errors
-
-        self._url_map = Map([
-            Rule('/', endpoint='index'),
-            Rule('/metrics', endpoint='metrics'),
-            Rule('/pve', endpoint='pve'),
-        ])
-
-        self._args = {
-            'pve': ['module', 'target']
-        }
-
-        self._views = {
-            'index': self.on_index,
-            'metrics': self.on_metrics,
-            'pve': self.on_pve,
-        }
+        self._collectors = collectors
 
         self._log = logging.getLogger(__name__)
 
@@ -50,7 +35,7 @@ class PveExporterApplication:
 
         if module in self._config:
             start = time.time()
-            output = collect_pve(self._config[module], target)
+            output = collect_pve(self._config[module], target, self._collectors)
             response = Response(output)
             response.headers['content-type'] = CONTENT_TYPE_LATEST
             self._duration.labels(module).observe(time.time() - start)
@@ -93,12 +78,22 @@ class PveExporterApplication:
         Werkzeug views mapping method.
         """
 
+        allowed_args = {
+            'pve': ['module', 'target']
+        }
+
+        view_registry = {
+            'index': self.on_index,
+            'metrics': self.on_metrics,
+            'pve': self.on_pve,
+        }
+
         params = dict(values)
-        if endpoint in self._args:
-            params.update({key: args[key] for key in self._args[endpoint] if key in args})
+        if endpoint in allowed_args:
+            params.update({key: args[key] for key in allowed_args[endpoint] if key in args})
 
         try:
-            return self._views[endpoint](**params)
+            return view_registry[endpoint](**params)
         except Exception as error:  # pylint: disable=broad-except
             self._log.exception("Exception thrown while rendering view")
             self._errors.labels(args.get('module', 'default')).inc()
@@ -106,12 +101,18 @@ class PveExporterApplication:
 
     @Request.application
     def __call__(self, request):
-        urls = self._url_map.bind_to_environ(request.environ)
+        url_map = Map([
+            Rule('/', endpoint='index'),
+            Rule('/metrics', endpoint='metrics'),
+            Rule('/pve', endpoint='pve'),
+        ])
+
+        urls = url_map.bind_to_environ(request.environ)
         view_func = lambda endpoint, values: self.view(endpoint, values, request.args)
         return urls.dispatch(view_func, catch_http_exceptions=True)
 
 
-def start_http_server(config, port, address=''):
+def start_http_server(config, port, address, collectors):
     """
     Start a HTTP API server for Proxmox VE prometheus collector.
     """
@@ -134,5 +135,5 @@ def start_http_server(config, port, address=''):
         # pylint: disable=no-member
         duration.labels(module)
 
-    app = PveExporterApplication(config, duration, errors)
+    app = PveExporterApplication(config, duration, errors, collectors)
     run_simple(address, port, app, threaded=True)

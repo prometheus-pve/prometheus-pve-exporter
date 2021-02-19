@@ -45,15 +45,31 @@ Usage
 
 ::
 
-    usage: pve_exporter [-h] [config] [port] [address]
+    usage: pve_exporter [-h] [--collector.status] [--collector.version]
+                        [--collector.node] [--collector.cluster]
+                        [--collector.resources] [--collector.config]
+                        [config] [port] [address]
 
     positional arguments:
-      config      Path to configuration file (pve.yml)
-      port        Port on which the exporter is listening (9221)
-      address     Address to which the exporter will bind
+      config                Path to configuration file (pve.yml)
+      port                  Port on which the exporter is listening (9221)
+      address               Address to which the exporter will bind
 
     optional arguments:
-      -h, --help  show this help message and exit
+      -h, --help            show this help message and exit
+      --collector.status, --no-collector.status
+                            Exposes Node/VM/CT-Status (default: True)
+      --collector.version, --no-collector.version
+                            Exposes PVE version info (default: True)
+      --collector.node, --no-collector.node
+                            Exposes PVE node info (default: True)
+      --collector.cluster, --no-collector.cluster
+                            Exposes PVE cluster info (default: True)
+      --collector.resources, --no-collector.resources
+                            Exposes PVE resources info (default: True)
+      --collector.config, --no-collector.config
+                            Exposes PVE onboot status (default: True)
+
 
 Use `::` for the `address` argument in order to bind to both IPv6 and IPv4
 sockets on dual stacked machines.
@@ -65,6 +81,13 @@ request parameter, to choose which module to use from the config file.
 The ``target`` request parameter defaults to ``localhost``. Hence if
 ``pve_exporter`` is deployed directly on the proxmox host, ``target``
 can be omitted.
+
+Use the `--collector.X` / `--no-collector.X` flags to enable disable selected
+collectors.
+
+Note that that the config collector results in one API call per guest VM/CT.
+It is therefore recommended to disable this collector using the
+`--no-collector.config` flag on big deployments.
 
 See the wiki_  for more examples and docs.
 
