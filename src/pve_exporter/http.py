@@ -20,10 +20,11 @@ class PveExporterApplication:
 
     # pylint: disable=no-self-use
 
-    def __init__(self, config, duration, errors):
+    def __init__(self, config, duration, errors, collectors):
         self._config = config
         self._duration = duration
         self._errors = errors
+        self._collectors = collectors
 
         self._url_map = Map([
             Rule('/', endpoint='index'),
@@ -50,7 +51,7 @@ class PveExporterApplication:
 
         if module in self._config:
             start = time.time()
-            output = collect_pve(self._config[module], target)
+            output = collect_pve(self._config[module], target, self._collectors)
             response = Response(output)
             response.headers['content-type'] = CONTENT_TYPE_LATEST
             self._duration.labels(module).observe(time.time() - start)
@@ -111,7 +112,7 @@ class PveExporterApplication:
         return urls.dispatch(view_func, catch_http_exceptions=True)
 
 
-def start_http_server(config, port, address=''):
+def start_http_server(config, port, address, collectors):
     """
     Start a HTTP API server for Proxmox VE prometheus collector.
     """
@@ -134,5 +135,5 @@ def start_http_server(config, port, address=''):
         # pylint: disable=no-member
         duration.labels(module)
 
-    app = PveExporterApplication(config, duration, errors)
+    app = PveExporterApplication(config, duration, errors, collectors)
     run_simple(address, port, app, threaded=True)

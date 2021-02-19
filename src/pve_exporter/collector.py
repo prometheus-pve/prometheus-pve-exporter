@@ -4,10 +4,20 @@ Prometheus collecters for Proxmox VE cluster.
 # pylint: disable=too-few-public-methods
 
 import itertools
+import collections
 from proxmoxer import ProxmoxAPI
 
 from prometheus_client import CollectorRegistry, generate_latest
 from prometheus_client.core import GaugeMetricFamily
+
+CollectorsOptions = collections.namedtuple('CollectorsOptions', [
+    'status',
+    'version',
+    'node',
+    'cluster',
+    'resources',
+    'config',
+])
 
 class StatusCollector:
     """
@@ -284,16 +294,23 @@ class ClusterNodeConfigCollector:
 
         return metrics.values()
 
-def collect_pve(config, host):
+def collect_pve(config, host, options: CollectorsOptions):
     """Scrape a host and return prometheus text format for it"""
 
     pve = ProxmoxAPI(host, **config)
 
     registry = CollectorRegistry()
-    registry.register(StatusCollector(pve))
-    registry.register(ClusterResourcesCollector(pve))
-    registry.register(ClusterNodeCollector(pve))
-    registry.register(ClusterInfoCollector(pve))
-    registry.register(ClusterNodeConfigCollector(pve))
-    registry.register(VersionCollector(pve))
+    if options.status:
+        registry.register(StatusCollector(pve))
+    if options.resources:
+        registry.register(ClusterResourcesCollector(pve))
+    if options.node:
+        registry.register(ClusterNodeCollector(pve))
+    if options.cluster:
+        registry.register(ClusterInfoCollector(pve))
+    if options.config:
+        registry.register(ClusterNodeConfigCollector(pve))
+    if options.version:
+        registry.register(VersionCollector(pve))
+
     return generate_latest(registry)
