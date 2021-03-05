@@ -3,9 +3,11 @@ Prometheus collecters for Proxmox VE cluster.
 """
 # pylint: disable=too-few-public-methods
 
-import itertools
 import collections
+import itertools
+import logging
 from proxmoxer import ProxmoxAPI
+from proxmoxer.core import ResourceException
 
 from prometheus_client import CollectorRegistry, generate_latest
 from prometheus_client.core import GaugeMetricFamily
@@ -264,6 +266,7 @@ class ClusterNodeConfigCollector:
 
     def __init__(self, pve):
         self._pve = pve
+        self._log = logging.getLogger(__name__)
 
     def collect(self): # pylint: disable=missing-docstring
         metrics = {
@@ -274,7 +277,13 @@ class ClusterNodeConfigCollector:
         }
 
         for node in self._pve.nodes.get():
-            if node["status"] == "online":
+            # The nodes/{node} api call will result in requests being forwarded
+            # from the api node to the target node. Those calls can fail if the
+            # target node is offline or otherwise unable to respond to the
+            # request. In that case it is better to just skip scraping the
+            # config for guests on that particular node and continue with the
+            # next one in order to avoid failing the whole scrape.
+            try:
                 # Qemu
                 vmtype = 'qemu'
                 for vmdata in self._pve.nodes(node['node']).qemu.get():
@@ -291,6 +300,13 @@ class ClusterNodeConfigCollector:
                         label_values = ["%s/%s" % (vmtype, vmdata['vmid']), node['node'], vmtype]
                         if key in metrics:
                             metrics[key].add_metric(label_values, metric_value)
+
+            except ResourceException:
+                self._log.exception(
+                    "Exception thrown while scraping quemu/lxc config from %s",
+                    node['node']
+                )
+                continue
 
         return metrics.values()
 
