@@ -9,6 +9,14 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 `Unreleased`_
 -------------
 
+`2.1.1`_ - 2021-03-05
+---------------------
+
+Changed
+~~~~~~~
+
+- Do not fail scrape if some node is unresponsive (#63)
+
 `2.1.0`_ - 2021-02-19
 ---------------------
 
@@ -143,7 +151,8 @@ Added
 
 .. _Keep a Changelog: http://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: http://semver.org/spec/v2.0.0.html
-.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v2.1.0...HEAD
+.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v2.1.1...HEAD
+.. _2.1.1: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v2.1.0...v2.1.1
 .. _2.1.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v2.0.3...v2.1.0
 .. _2.0.3: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v2.0.2...v2.0.3
 .. _2.0.2: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v2.0.1...v2.0.2
