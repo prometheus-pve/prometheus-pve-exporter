@@ -1,0 +1,11 @@
+version: "3.5"
+
+services:
+  proxmox:
+    container_name: proxmox
+    image: prompve/prometheus-pve-exporter
+    volumes:
+      - ./proxmox/pve.yml:/etc/pve.yml
+    ports:
+      - 9221:9221
+    restart: always
