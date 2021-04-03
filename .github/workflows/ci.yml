@@ -24,13 +24,13 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Install pylint / pyflakes
-        run: sudo apt-get install --yes pylint3 pyflakes3
+        run: sudo apt-get install --yes pylint pyflakes3
 
       - name: Install pve_exporter
         run: sudo pip install -e .
 
       - name: Run pylint
-        run: pylint3 pve_exporter
+        run: pylint pve_exporter
 
       - name: Run pyflakes
         run: pyflakes3 src/pve_exporter
