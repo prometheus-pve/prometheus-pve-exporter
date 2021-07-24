@@ -101,8 +101,8 @@ Example ``pve.yml`` for password authentication:
     default:
         user: prometheus@pve
         password: sEcr3T!
-        # Optional: skip ssl verifification
-        verify_ssl: false
+        # Optional: set to false to skip SSL/TLS verifification
+        verify_ssl: true
 
 Example ``pve.yml`` for `token authentication`_:
 
