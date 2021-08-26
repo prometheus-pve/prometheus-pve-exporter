@@ -109,7 +109,7 @@ def main():
           user: {}
           password: {}
           verify_ssl: {}
-        """.format(os.environ['PVE_USER'], os.environ['PVE_PASSWORD'], os.environ['PVE_VERYFY_SSL'])))
+        """.format(os.environ['PVE_USER'], os.environ['PVE_PASSWORD'], os.environ['PVE_VERIFY_SSL'])))
 
     if config.valid:
         start_http_server(config, params.port, params.address, collectors)
