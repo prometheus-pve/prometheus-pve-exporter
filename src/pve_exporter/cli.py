@@ -4,6 +4,7 @@ Proxmox VE exporter for the Prometheus monitoring system.
 
 from argparse import ArgumentParser
 
+import os
 import yaml
 from pve_exporter.http import start_http_server
 from pve_exporter.config import config_from_yaml
@@ -99,8 +100,16 @@ def main():
     )
 
     # Load configuration.
-    with open(params.config) as handle:
-        config = config_from_yaml(yaml.safe_load(handle))
+    try:
+        with open(params.config) as handle:
+            config = config_from_yaml(yaml.safe_load(handle))
+    except:
+        config = config_from_yaml(yaml.safe_load("""
+        default:
+          user: {}
+          password: {}
+          verify_ssl: {}
+        """.format(os.environ['PVE_USER'], os.environ['PVE_PASSWORD'], os.environ['PVE_VERYFY_SSL'])))
 
     if config.valid:
         start_http_server(config, params.port, params.address, collectors)
