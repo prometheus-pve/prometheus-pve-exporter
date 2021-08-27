@@ -9,6 +9,20 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 `Unreleased`_
 -------------
 
+`2.2.0`_ - 2021-08-27
+---------------------
+
+Added
+~~~~~
+
+- Optionally pass configuration via environment variables (#78)
+- Add verfify_ssl example to readme (#76)
+
+Changed
+~~~~~~~
+
+- Update docker image to alpine 3.13.5 (#71)
+
 `2.1.2`_ - 2021-04-04
 ---------------------
 
@@ -162,7 +176,8 @@ Added
 
 .. _Keep a Changelog: http://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: http://semver.org/spec/v2.0.0.html
-.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v2.1.2...HEAD
+.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v2.2.0...HEAD
+.. _2.2.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v2.1.2...v2.2.0
 .. _2.1.2: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v2.1.1...v2.1.2
 .. _2.1.1: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v2.1.0...v2.1.1
 .. _2.1.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v2.0.3...v2.1.0
