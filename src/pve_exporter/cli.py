@@ -8,6 +8,7 @@ import os
 import yaml
 from pve_exporter.http import start_http_server
 from pve_exporter.config import config_from_yaml
+from pve_exporter.config import config_from_env
 from pve_exporter.collector import CollectorsOptions
 
 try:
@@ -100,16 +101,11 @@ def main():
     )
 
     # Load configuration.
-    try:
+    if ('PVE_USER' in os.environ and 'PVE_PASSWORD' in os.environ) or ('PVE_TOKEN_NAME' in os.environ and 'PVE_TOKEN_VALUE'):
+        config = config_from_env(os.environ)
+    else:
         with open(params.config) as handle:
             config = config_from_yaml(yaml.safe_load(handle))
-    except:
-        config = config_from_yaml(yaml.safe_load("""
-        default:
-          user: {}
-          password: {}
-          verify_ssl: {}
-        """.format(os.environ['PVE_USER'], os.environ['PVE_PASSWORD'], os.environ['PVE_VERIFY_SSL'])))
 
     if config.valid:
         start_http_server(config, params.port, params.address, collectors)
