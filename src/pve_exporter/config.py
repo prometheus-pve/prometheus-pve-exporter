@@ -41,6 +41,34 @@ def config_from_yaml(yaml):
     return ConfigMapping(modules)
 
 
+def config_from_env(env):
+    """
+    Given os.environ dictionary return a config object.
+    """
+    envmap = {
+        'PVE_USER': 'user',
+        'PVE_PASSWORD': 'password',
+        'PVE_TOKEN_NAME': 'token_name',
+        'PVE_TOKEN_VALUE': 'token_value',
+    }
+
+    confvals = {confkey: env[envkey] for envkey, confkey in envmap.items() if envkey in env}
+
+    if 'PVE_VERIFY_SSL' in env:
+        confvals['verify_ssl'] = env['PVE_VERIFY_SSL'].lower() not in ['false', '0']
+
+    if not confvals:
+        return ConfigInvalid(
+            "Empty dictionary. No pve API parameters specified."
+        )
+
+    module = env.get('PVE_MODULE', 'default')
+    modules = {}
+    modules[module] = ConfigMapping(confvals)
+
+    return ConfigMapping(modules)
+
+
 def config_module_from_yaml(yaml):
     """
     Given a dictionary parsed from a yaml file return a module config object.

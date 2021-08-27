@@ -4,9 +4,11 @@ Proxmox VE exporter for the Prometheus monitoring system.
 
 from argparse import ArgumentParser
 
+import os
 import yaml
 from pve_exporter.http import start_http_server
 from pve_exporter.config import config_from_yaml
+from pve_exporter.config import config_from_env
 from pve_exporter.collector import CollectorsOptions
 
 try:
@@ -99,8 +101,11 @@ def main():
     )
 
     # Load configuration.
-    with open(params.config) as handle:
-        config = config_from_yaml(yaml.safe_load(handle))
+    if ('PVE_USER' in os.environ and 'PVE_PASSWORD' in os.environ) or ('PVE_TOKEN_NAME' in os.environ and 'PVE_TOKEN_VALUE'):
+        config = config_from_env(os.environ)
+    else:
+        with open(params.config) as handle:
+            config = config_from_yaml(yaml.safe_load(handle))
 
     if config.valid:
         start_http_server(config, params.port, params.address, collectors)
