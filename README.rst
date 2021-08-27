@@ -94,6 +94,8 @@ See the wiki_  for more examples and docs.
 Authentication
 --------------
 
+**Using pve.yml config file**
+
 Example ``pve.yml`` for password authentication:
 
 .. code:: yaml
@@ -113,9 +115,34 @@ Example ``pve.yml`` for `token authentication`_:
        token_name: "..."
        token_value: "..."
 
+**Using environment variables:**
+
+If the ``PVE_USER`` environment variable exists, then configuration is taken from
+the environment instead of from the ``pve.yml`` config file. The following
+environment variables are respected:
+
+* ``PVE_USER``: user name
+
+Required for password authentication:
+
+* ``PVE_PASSWORD``: user password
+
+Required for `token authentication`_:
+
+* ``PVE_TOKEN_NAME``: token name
+* ``PVE_TOKEN_VALUE``: token value
+
+Optional:
+
+* ``PVE_VERIFY_SSL``: Either ``true`` or ``false``, whether or not to verify PVE tls
+  certificate. Defaults to ``true``.
+* ``PVE_MODULE``: Name of the configuration module. Defaults to ``default``.
+
 The configuration is passed directly into `proxmoxer.ProxmoxAPI()`_.
 
-Note: When operating PVE with self-signed certificates, then it is necessary to
+**Note on verify_ssl and certificate trust store:**
+
+When operating PVE with self-signed certificates, then it is necessary to
 either import the certificate into the local trust store (see this `SE answer`_
 for Debian/Ubuntu) or add ``verify_ssl: false`` to the config dict as a sibling
 to the credentials. Note that PVE `supports Let's Encrypt`_ out ouf the box. In
