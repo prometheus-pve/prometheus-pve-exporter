@@ -1,4 +1,4 @@
-ARG alpine_version=3.13.5
+ARG alpine_version=3.13.6
 
 FROM alpine:${alpine_version} as base
 RUN apk update && apk upgrade
