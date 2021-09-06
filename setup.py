@@ -18,7 +18,6 @@ setup(
             'pve_exporter=pve_exporter.cli:main',
         ],
     },
-    test_suite="tests",
     python_requires=">=3.4",
     install_requires=[
         "prometheus_client>=0.0.11",
