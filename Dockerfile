@@ -27,10 +27,10 @@ RUN pip3 wheel --no-deps /src proxmoxer==${proxmoxer_version}
 FROM base as runtime
 
 COPY --from=builder /opt /opt
+COPY pve.yml /etc/pve.yml
 
 RUN pip3 install --no-cache-dir --no-index /opt/*py3-none-any.whl && \
-    rm /opt/*py3-none-any.whl && \
-    touch /etc/pve.yml
+    rm /opt/*py3-none-any.whl 
 
 USER nobody
 
