@@ -2,11 +2,14 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ master ]
-    # Publish semver tags as releases.
-    tags: [ 'v*.*.*' ]
+    branches: 
+      - main
+      - develop
+
   pull_request:
-    branches: [ master ]
+    branches: 
+      - main
+      - develop
 
 env:
   # Use docker.io for Docker Hub if empty
