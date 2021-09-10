@@ -23,7 +23,7 @@ Using docker:
 
 .. code:: shell
 
-   docker pull prompve/prometheus-pve-exporter
+   docker pull ghcr.io/prometheus-pve/prometheus-pve-exporter
 
 Example: Display usage message:
 
