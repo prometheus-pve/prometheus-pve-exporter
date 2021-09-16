@@ -9,6 +9,14 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 `Unreleased`_
 -------------
 
+`2.2.2`_ - 2021-09-16
+---------------------
+
+Changed
+~~~~~~~
+
+- Push image to dockerhub (#89)
+
 `2.2.1`_ - 2021-09-16
 ---------------------
 
@@ -187,7 +195,8 @@ Added
 
 .. _Keep a Changelog: http://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: http://semver.org/spec/v2.0.0.html
-.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v2.2.1...HEAD
+.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v2.2.2...HEAD
+.. _2.2.2: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v2.2.1...v2.2.2
 .. _2.2.1: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v2.2.0...v2.2.1
 .. _2.2.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v2.1.2...v2.2.0
 .. _2.1.2: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v2.1.1...v2.1.2
