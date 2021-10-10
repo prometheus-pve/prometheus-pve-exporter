@@ -17,7 +17,7 @@ RUN apk add --no-cache \
 
 FROM base as builder
 
-ARG proxmoxer_version=1.1.1
+ARG proxmoxer_version=1.2.0
 ENV proxmoxer_version=${proxmoxer_version}
 
 ADD . /src
