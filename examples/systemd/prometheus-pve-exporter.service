@@ -1,0 +1,15 @@
+[Unit]
+Description=PVE Exporter
+After=network-online.target
+
+# This assumes you are running pve_exporter under the user "prometheus"
+
+[Service]
+User=prometheus
+Restart=on-failure
+#Type=forking
+#KillMode=mixed
+ExecStart=/usr/local/bin/pve_exporter '/etc/prometheus/pve_exporter.yml'
+
+[Install]
+WantedBy=multi-user.target
