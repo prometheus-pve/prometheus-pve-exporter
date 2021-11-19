@@ -9,6 +9,15 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 `Unreleased`_
 -------------
 
+`2.2.3`_ - 2021-11-19
+---------------------
+
+Changed
+~~~~~~~
+
+- Update Dockerfile base image to Alpine 3.13.6 => 3.14.3
+
+
 `2.2.2`_ - 2021-09-16
 ---------------------
 
