@@ -155,6 +155,9 @@ Proxmox VE Configuration
 For security reasons it is essential to add a user with read-only access
 (PVEAuditor role) for the purpose of metrics collection.
 
+Refer to the  `Proxmox Documentation`_ for the several ways of creating a user. 
+Once created, assign the user the `/` path permission.
+
 Prometheus Configuration
 ------------------------
 
@@ -210,4 +213,5 @@ Grafana Dashboards
 .. _`proxmoxer.ProxmoxAPI()`: https://pypi.python.org/pypi/proxmoxer
 .. _`SE answer`: https://askubuntu.com/a/1007236
 .. _`supports Let's Encrypt`: https://pve.proxmox.com/pve-docs/pve-admin-guide.html#sysadmin_certificate_management
+.. _`Proxmox Documentation`: https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_permission_management
 .. _`Proxmox via Prometheus by Pietro Saccardi`: https://grafana.com/dashboards/10347
