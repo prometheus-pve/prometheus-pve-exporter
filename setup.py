@@ -21,7 +21,7 @@ setup(
     python_requires=">=3.4",
     install_requires=[
         "prometheus_client>=0.0.11",
-        "proxmoxer",
+        "proxmoxer>=1.3.0",
         "pyyaml",
         "requests",
         'Werkzeug',

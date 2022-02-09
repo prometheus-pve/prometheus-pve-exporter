@@ -37,6 +37,17 @@ def config_from_yaml(yaml):
     return ConfigMapping(modules)
 
 
+def config_local():
+    """
+    Default config for running directly on a PVE node.
+    """
+    return ConfigMapping({
+        'default': ConfigMapping({
+            'backend': 'local',
+        }),
+    })
+
+
 def config_from_env(env):
     """
     Given os.environ dictionary return a config object.
