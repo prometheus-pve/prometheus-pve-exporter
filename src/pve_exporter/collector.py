@@ -6,6 +6,7 @@ Prometheus collecters for Proxmox VE cluster.
 import collections
 import itertools
 import logging
+import re
 from proxmoxer import ProxmoxAPI
 from proxmoxer.core import ResourceException
 
@@ -19,6 +20,7 @@ CollectorsOptions = collections.namedtuple('CollectorsOptions', [
     'cluster',
     'resources',
     'config',
+    'iolimit',
 ])
 
 class StatusCollector:
@@ -254,6 +256,70 @@ class ClusterResourcesCollector:
 
         return itertools.chain(metrics.values(), info_metrics.values())
 
+class IoLimitCollector:
+    """
+    Collects io limits
+    """
+    limit_device = (
+        'ide',
+        'sata',
+        'scsi',
+        'virtio'
+    )
+
+    limit_param = (
+        'iops',
+        'iops_max',
+        'iops_max_length',
+        'iops_rd',
+        'iops_rd_max',
+        'iops_rd_max_length',
+        'iops_wr',
+        'iops_wr_max',
+        'iops_wr_max_length',
+        'mbps',
+        'mbps_max',
+        'mbps_rd',
+        'mbps_rd_max',
+        'mbps_wr',
+        'mbps_wr_max'
+    )
+
+    def __init__(self, pve):
+        self._pve = pve
+
+    def collect(self):
+        metrics = []
+
+        for node in self._pve.nodes.get():
+            try:
+                # Qemu
+                vmtype = 'qemu'
+                for vmdata in self._pve.nodes(node['node']).qemu.get():
+                    config = self._pve.nodes(node['node']).qemu(vmdata['vmid']).config.get().items()
+                    for key, metric_value in config:
+                        for _limit_device in IoLimitCollector.limit_device:
+                            if re.match(_limit_device, key):
+                                for _limit_param in IoLimitCollector.limit_param:
+                                    _re_string = _limit_param + "="
+                                    _re_match = r"(?<=" + re.escape(_re_string) + r").\d*"
+                                    rez = re.search(_re_match, metric_value)
+                                    if rez is not None:
+                                        metrics.append(GaugeMetricFamily(
+                                                       'pve_' + _limit_param,
+                                                       'Proxmox vm config ' + _limit_param,
+                                                        labels=['id', 'node', 'type', 'device', 'device_name']))
+                                        label_values = ["%s/%s" % (vmtype, vmdata['vmid']), node['node'], vmtype, _limit_device, key]
+                                        metrics[-1].add_metric(label_values, rez.group())
+
+            except ResourceException:
+                self._log.exception(
+                    "Exception thrown while scraping quemu/lxc config from %s",
+                    node['node']
+                )
+                continue
+        return metrics
+    
 class ClusterNodeConfigCollector:
     """
     Collects Proxmox VE VM information directly from config, i.e. boot, name, onboot, etc.
@@ -307,7 +373,6 @@ class ClusterNodeConfigCollector:
                     node['node']
                 )
                 continue
-
         return metrics.values()
 
 def collect_pve(config, host, options: CollectorsOptions):
@@ -328,5 +393,7 @@ def collect_pve(config, host, options: CollectorsOptions):
         registry.register(ClusterNodeConfigCollector(pve))
     if options.version:
         registry.register(VersionCollector(pve))
+    if options.iolimit:
+        registry.register(IoLimitCollector(pve))
 
     return generate_latest(registry)

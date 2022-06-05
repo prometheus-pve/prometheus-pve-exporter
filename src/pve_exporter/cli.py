@@ -82,9 +82,9 @@ def main():
     parser.add_argument('--collector.config', dest='collector_config',
                         action=BooleanOptionalAction, default=True,
                         help='Exposes PVE onboot status')
-    parser.add_argument('--collector.virtiolimit', dest='collector_config',
+    parser.add_argument('--collector.iolimit', dest='collector_iolimit',
                         action=BooleanOptionalAction, default=True,
-                        help='Exposes PVE virtiolimit')
+                        help='Exposes PVE io limit')
     parser.add_argument('config', nargs='?', default='pve.yml',
                         help='Path to configuration file (pve.yml)')
     parser.add_argument('port', nargs='?', type=int, default='9221',
@@ -100,7 +100,8 @@ def main():
         node=params.collector_node,
         cluster=params.collector_cluster,
         resources=params.collector_resources,
-        config=params.collector_config
+        config=params.collector_config,
+        iolimit=params.collector_iolimit
     )
 
     # Load configuration.
