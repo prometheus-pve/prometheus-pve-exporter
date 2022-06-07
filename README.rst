@@ -69,6 +69,8 @@ Usage
                             Exposes PVE resources info (default: True)
       --collector.config, --no-collector.config
                             Exposes PVE onboot status (default: True)
+      --collector.iolimit, --no-collector.iolimit
+                            Exposes PVE io limit (default: True)
 
 
 Use `::` for the `address` argument in order to bind to both IPv6 and IPv4
