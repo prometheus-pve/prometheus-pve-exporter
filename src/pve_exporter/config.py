@@ -40,6 +40,21 @@ def config_from_yaml(yaml):
 
     return ConfigMapping(modules)
 
+def value_from_file_or_env(env, name):
+    """
+    Given os.environ dictionary, and the name of a key
+    returns the value inside the name with the _FILE suffix (if it exists),
+    otherwise returns the value of the named env key.
+    If the key does not exists, returns None.
+    """
+    envfile_key = f"{name}_FILE"
+    if envfile_key in env:
+        with open(env[envfile_key], 'r') as envfile:
+            # read will return the string followed by a newline, which we don't want
+            # so we split and take the first line without the \n
+            return envfile.read().splitlines()[0]
+    else:
+        return env.get(name)
 
 def config_from_env(env):
     """
@@ -52,7 +67,11 @@ def config_from_env(env):
         'PVE_TOKEN_VALUE': 'token_value',
     }
 
-    confvals = {confkey: env[envkey] for envkey, confkey in envmap.items() if envkey in env}
+    confvals = {}
+    for envkey, confkey in envmap.items():
+        value = value_from_file_or_env(env, envkey)
+        if value is not None:
+            confvals[confkey] = value
 
     if 'PVE_VERIFY_SSL' in env:
         confvals['verify_ssl'] = env['PVE_VERIFY_SSL'].lower() not in ['false', '0']
