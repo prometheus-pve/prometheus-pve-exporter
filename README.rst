@@ -198,7 +198,7 @@ Example ``pve.yml`` for `token authentication`_:
 
 **Using environment variables:**
 
-If the ``PVE_USER`` environment variable exists, then configuration is taken from
+If the ``PVE_USER`` or ``PVE_USER_FILE`` environment variable exists, then configuration is taken from
 the environment instead of from the ``pve.yml`` config file. The following
 environment variables are respected:
 
@@ -212,6 +212,10 @@ Required for `token authentication`_:
 
 * ``PVE_TOKEN_NAME``: token name
 * ``PVE_TOKEN_VALUE``: token value
+
+To use the contents of a file to set one of the above variables, suffice the environment variable name with ``_FILE``. This is useful for passing the values via docker_ or podman_'s secret feature.
+
+For example, to set the ``PVE_USER`` from a file, you can bind mount the file (or have docker/podman do it for you) and set the ``PVE_USER_FILE`` environment variable to the mount location, which could be something like ``/run/secrets/pve-username``.
 
 Optional:
 
@@ -296,3 +300,6 @@ Grafana Dashboards
 .. _`supports Let's Encrypt`: https://pve.proxmox.com/pve-docs/pve-admin-guide.html#sysadmin_certificate_management
 .. _`Proxmox Documentation`: https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_permission_management
 .. _`Proxmox via Prometheus by Pietro Saccardi`: https://grafana.com/dashboards/10347
+
+.. _docker: https://docs.docker.com/engine/swarm/secrets/
+.. _podman: https://www.redhat.com/sysadmin/new-podman-secrets-command

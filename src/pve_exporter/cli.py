@@ -101,7 +101,7 @@ def main():
     )
 
     # Load configuration.
-    if 'PVE_USER' in os.environ:
+    if 'PVE_USER' or 'PVE_USER_FILE' in os.environ:
         config = config_from_env(os.environ)
     else:
         with open(params.config) as handle:
