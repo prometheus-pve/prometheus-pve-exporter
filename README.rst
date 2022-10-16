@@ -17,6 +17,7 @@ Using pip:
 .. code:: shell
 
     python3 -m pip install prometheus-pve-exporter
+    pve-exporter --help
 
 Using docker:
 =============
@@ -91,6 +92,86 @@ It is therefore recommended to disable this collector using the
 
 See the wiki_  for more examples and docs.
 
+Exported Metrics
+----------------
+
+Here's an example of the metrics exported.
+
+::
+
+    # HELP pve_up Node/VM/CT-Status is online/running
+    # TYPE pve_up gauge
+    pve_up{id="node/proxmox"} 1.0
+    pve_up{id="qemu/100"} 1.0
+    # HELP pve_disk_size_bytes Size of storage device
+    # TYPE pve_disk_size_bytes gauge
+    pve_disk_size_bytes{id="qemu/100"} 6.8719476736e+010
+    pve_disk_size_bytes{id="node/proxmox"} 3.1044079616e+010
+    pve_disk_size_bytes{id="storage/proxmox/local"} 3.1044079616e+010
+    pve_disk_size_bytes{id="storage/proxmox/local-lvm"} 6.9243764736e+010
+    pve_disk_size_bytes{id="storage/proxmox/vms"} 1.934882766848e+012
+    # HELP pve_disk_usage_bytes Disk usage in bytes
+    # TYPE pve_disk_usage_bytes gauge
+    pve_disk_usage_bytes{id="qemu/100"} 0.0
+    pve_disk_usage_bytes{id="node/proxmox"} 1.7571426304e+010
+    pve_disk_usage_bytes{id="storage/proxmox/local"} 1.7571426304e+010
+    pve_disk_usage_bytes{id="storage/proxmox/local-lvm"} 6.619703908e+09
+    pve_disk_usage_bytes{id="storage/proxmox/vms"} 8.32870981632e+011
+    # HELP pve_memory_size_bytes Size of memory
+    # TYPE pve_memory_size_bytes gauge
+    pve_memory_size_bytes{id="qemu/100"} 1.7179869184e+010
+    pve_memory_size_bytes{id="node/proxmox"} 6.739961856e+010
+    # HELP pve_memory_usage_bytes Memory usage in bytes
+    # TYPE pve_memory_usage_bytes gauge
+    pve_memory_usage_bytes{id="qemu/100"} 1.6573280275e+010
+    pve_memory_usage_bytes{id="node/proxmox"} 5.3907812352e+010
+    # HELP pve_network_transmit_bytes Number of bytes transmitted over the network
+    # TYPE pve_network_transmit_bytes gauge
+    pve_network_transmit_bytes{id="qemu/100"} 7.75070828e+09
+    # HELP pve_network_receive_bytes Number of bytes received over the network
+    # TYPE pve_network_receive_bytes gauge
+    pve_network_receive_bytes{id="qemu/100"} 1.529756162e+09
+    # HELP pve_disk_write_bytes Number of bytes written to storage
+    # TYPE pve_disk_write_bytes gauge
+    pve_disk_write_bytes{id="qemu/100"} 1.50048127488e+011
+    # HELP pve_disk_read_bytes Number of bytes read from storage
+    # TYPE pve_disk_read_bytes gauge
+    pve_disk_read_bytes{id="qemu/100"} 7.473739264e+09
+    # HELP pve_cpu_usage_ratio CPU usage (value between 0.0 and pve_cpu_usage_limit)
+    # TYPE pve_cpu_usage_ratio gauge
+    pve_cpu_usage_ratio{id="qemu/100"} 0.105009724408557
+    pve_cpu_usage_ratio{id="node/proxmox"} 0.984243806697115
+    # HELP pve_cpu_usage_limit Maximum allowed CPU usage
+    # TYPE pve_cpu_usage_limit gauge
+    pve_cpu_usage_limit{id="qemu/100"} 1.0
+    pve_cpu_usage_limit{id="node/proxmox"} 4.0
+    # HELP pve_uptime_seconds Number of seconds since the last boot
+    # TYPE pve_uptime_seconds gauge
+    pve_uptime_seconds{id="qemu/100"} 315039.0
+    pve_uptime_seconds{id="node/proxmox"} 315069.0
+    # HELP pve_storage_shared Whether or not the storage is shared among cluster nodes
+    # TYPE pve_storage_shared gauge
+    pve_storage_shared{id="storage/proxmox/local"} 0.0
+    pve_storage_shared{id="storage/proxmox/local-lvm"} 0.0
+    pve_storage_shared{id="storage/proxmox/vms"} 0.0
+    # HELP pve_guest_info VM/CT info
+    # TYPE pve_guest_info gauge
+    pve_guest_info{id="qemu/100",name="samplevm1",node="proxmox",type="qemu"} 1.0
+    # HELP pve_storage_info Storage info
+    # TYPE pve_storage_info gauge
+    pve_storage_info{id="storage/proxmox/local",node="proxmox",storage="local"} 1.0
+    pve_storage_info{id="storage/proxmox/local-lvm",node="proxmox",storage="local-lvm"} 1.0
+    pve_storage_info{id="storage/proxmox/vms",node="proxmox",storage="vms"} 1.0
+    # HELP pve_node_info Node info
+    # TYPE pve_node_info gauge
+    pve_node_info{id="node/proxmox",level="",name="proxmox",nodeid="0"} 1.0
+    # HELP pve_onboot_status Proxmox vm config onboot value
+    # TYPE pve_onboot_status gauge
+    pve_onboot_status{id="qemu/201",node="proxmox",type="qemu"} 1.0
+    # HELP pve_version_info Proxmox VE version info
+    # TYPE pve_version_info gauge
+    pve_version_info{release="7.1",repoid="6fe299a0",version="7.1-5"} 1.0
+
 Authentication
 --------------
 
@@ -112,7 +193,7 @@ Example ``pve.yml`` for `token authentication`_:
 
    default:
        user: prometheus@pve
-       token_name: "..."
+       token_name: "your-token-id"
        token_value: "..."
 
 **Using environment variables:**
@@ -154,6 +235,9 @@ Proxmox VE Configuration
 
 For security reasons it is essential to add a user with read-only access
 (PVEAuditor role) for the purpose of metrics collection.
+
+Refer to the  `Proxmox Documentation`_ for the several ways of creating a user. 
+Once created, assign the user the `/` path permission.
 
 Prometheus Configuration
 ------------------------
@@ -210,4 +294,5 @@ Grafana Dashboards
 .. _`proxmoxer.ProxmoxAPI()`: https://pypi.python.org/pypi/proxmoxer
 .. _`SE answer`: https://askubuntu.com/a/1007236
 .. _`supports Let's Encrypt`: https://pve.proxmox.com/pve-docs/pve-admin-guide.html#sysadmin_certificate_management
+.. _`Proxmox Documentation`: https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_permission_management
 .. _`Proxmox via Prometheus by Pietro Saccardi`: https://grafana.com/dashboards/10347
