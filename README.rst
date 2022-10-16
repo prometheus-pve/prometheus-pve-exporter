@@ -198,9 +198,9 @@ Example ``pve.yml`` for `token authentication`_:
 
 **Using environment variables:**
 
-If the ``PVE_USER`` or ``PVE_USER_FILE`` environment variable exists, then configuration is taken from
-the environment instead of from the ``pve.yml`` config file. The following
-environment variables are respected:
+If the ``PVE_USER`` or ``PVE_USER_FILE`` environment variable exists, then
+configuration is taken from the environment instead of from the ``pve.yml``
+config file. The following environment variables are respected:
 
 * ``PVE_USER``: user name
 
@@ -213,9 +213,15 @@ Required for `token authentication`_:
 * ``PVE_TOKEN_NAME``: token name
 * ``PVE_TOKEN_VALUE``: token value
 
-To use the contents of a file to set one of the above variables, suffice the environment variable name with ``_FILE``. This is useful for passing the values via docker_ or podman_'s secret feature.
+As an alternative to passing sensitive information via environment variables,
+``_FILE`` may be appended to any of the previously listed environment variables,
+causing the application to load the values for those variables from files. In
+particular, this can be used to load passwords from `Docker swarm`_- or
+`Podman secrets`_ stored in ``/run/secrets/<secret_name>`` files.
 
-For example, to set the ``PVE_USER`` from a file, you can bind mount the file (or have docker/podman do it for you) and set the ``PVE_USER_FILE`` environment variable to the mount location, which could be something like ``/run/secrets/pve-username``.
+For example, to set the password from a file, bind mount the file and set the
+``PVE_PASSWORD_FILE`` environment variable to the mount location. E.g.,
+something like ``/run/secrets/pve-password``.
 
 Optional:
 
@@ -240,7 +246,7 @@ Proxmox VE Configuration
 For security reasons it is essential to add a user with read-only access
 (PVEAuditor role) for the purpose of metrics collection.
 
-Refer to the  `Proxmox Documentation`_ for the several ways of creating a user. 
+Refer to the  `Proxmox Documentation`_ for the several ways of creating a user.
 Once created, assign the user the `/` path permission.
 
 Prometheus Configuration
@@ -301,5 +307,5 @@ Grafana Dashboards
 .. _`Proxmox Documentation`: https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_permission_management
 .. _`Proxmox via Prometheus by Pietro Saccardi`: https://grafana.com/dashboards/10347
 
-.. _docker: https://docs.docker.com/engine/swarm/secrets/
-.. _podman: https://www.redhat.com/sysadmin/new-podman-secrets-command
+.. _`Docker swarm`: https://docs.docker.com/engine/swarm/secrets/
+.. _`Podman secrets`: https://www.redhat.com/sysadmin/new-podman-secrets-command

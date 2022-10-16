@@ -42,16 +42,18 @@ def config_from_yaml(yaml):
 
 def value_from_file_or_env(env, name):
     """
-    Given os.environ dictionary, and the name of a key
-    returns the value inside the name with the _FILE suffix (if it exists),
-    otherwise returns the value of the named env key.
-    If the key does not exists, returns None.
+    Given os.environ dictionary retrieve a value either from a file or frem env.
+
+
+
+    , and the name of a key returns the value inside
+    the name with the _FILE suffix (if it exists), otherwise returns the value
+    of the named env key. If the key does not exists, returns None.
     """
     envfile_key = f"{name}_FILE"
     if envfile_key in env:
         with open(env[envfile_key], 'r') as envfile:
-            # read will return the string followed by a newline, which we don't want
-            # so we split and take the first line without the \n
+            # Return the first line without the trailing newline character.
             return envfile.read().splitlines()[0]
     else:
         return env.get(name)
