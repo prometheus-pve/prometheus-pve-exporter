@@ -17,7 +17,7 @@ Using pip:
 .. code:: shell
 
     python3 -m pip install prometheus-pve-exporter
-    pve-exporter --help
+    pve_exporter --help
 
 Using docker:
 =============
