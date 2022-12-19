@@ -295,4 +295,4 @@ Grafana Dashboards
 .. _`SE answer`: https://askubuntu.com/a/1007236
 .. _`supports Let's Encrypt`: https://pve.proxmox.com/pve-docs/pve-admin-guide.html#sysadmin_certificate_management
 .. _`Proxmox Documentation`: https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_permission_management
-.. _`Proxmox via Prometheus by Pietro Saccardi`: https://grafana.com/dashboards/10347
+.. _`Proxmox via Prometheus by Pietro Saccardi`: https://grafana.com/grafana/dashboards/10347-proxmox-via-prometheus/
