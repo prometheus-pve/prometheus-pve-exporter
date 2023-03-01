@@ -88,6 +88,8 @@ def main():
                         help='Port on which the exporter is listening (9221)')
     parser.add_argument('address', nargs='?', default='',
                         help='Address to which the exporter will bind')
+    parser.add_argument('--server.keyfile', help='SSL key for server')
+    parser.add_argument('--server.certfile', help='SSL certificate for server')
 
     params = parser.parse_args()
 
@@ -107,7 +109,14 @@ def main():
         with open(params.config) as handle:
             config = config_from_yaml(yaml.safe_load(handle))
 
+    gunicorn_options = {
+        'bind': f'{params.address}:{params.port}',
+        'threads': 2,
+        'keyfile': params.__dict__['server.keyfile'],
+        'certfile': params.__dict__['server.certfile'],
+    }
+
     if config.valid:
-        start_http_server(config, params.port, params.address, collectors)
+        start_http_server(config, gunicorn_options, collectors)
     else:
         parser.error(str(config))

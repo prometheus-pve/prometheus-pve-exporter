@@ -25,6 +25,7 @@ setup(
         "pyyaml",
         "requests",
         'Werkzeug',
+        'gunicorn',
     ],
     classifiers=[
         "Development Status :: 3 - Alpha",
