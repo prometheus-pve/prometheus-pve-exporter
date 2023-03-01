@@ -6,6 +6,8 @@ Prometheus collecters for Proxmox VE cluster.
 import collections
 import itertools
 import logging
+
+from prometheus_client.registry import Collector
 from proxmoxer import ProxmoxAPI
 from proxmoxer.core import ResourceException
 
@@ -19,6 +21,7 @@ CollectorsOptions = collections.namedtuple('CollectorsOptions', [
     'cluster',
     'resources',
     'config',
+    'volumes',
 ])
 
 class StatusCollector:
@@ -167,7 +170,7 @@ class ClusterResourcesCollector:
             'maxdisk': GaugeMetricFamily(
                 'pve_disk_size_bytes',
                 'Size of storage device',
-                labels=['id']),
+                labels=['id', 'type', 'storage', 'node']),
             'disk': GaugeMetricFamily(
                 'pve_disk_usage_bytes',
                 'Disk usage in bytes',
@@ -175,11 +178,11 @@ class ClusterResourcesCollector:
             'maxmem': GaugeMetricFamily(
                 'pve_memory_size_bytes',
                 'Size of memory',
-                labels=['id']),
+                labels=['id', 'node', 'type']),
             'mem': GaugeMetricFamily(
                 'pve_memory_usage_bytes',
                 'Memory usage in bytes',
-                labels=['id']),
+                labels=['id', 'node', 'type']),
             'netout': GaugeMetricFamily(
                 'pve_network_transmit_bytes',
                 'Number of bytes transmitted over the network',
@@ -247,10 +250,11 @@ class ClusterResourcesCollector:
                 label_values = [resource.get(key, '') for key in info_lookup[restype]['labels']]
                 info_lookup[restype]['gauge'].add_metric(label_values, 1)
 
-            label_values = [resource['id']]
             for key, metric_value in resource.items():
                 if key in metrics:
-                    metrics[key].add_metric(label_values, metric_value)
+                    metric = metrics[key]
+                    label_values = [resource[labelname] for labelname in metric._labelnames if labelname in resource]
+                    metric.add_metric(label_values, metric_value)
 
         return itertools.chain(metrics.values(), info_metrics.values())
 
@@ -310,6 +314,51 @@ class ClusterNodeConfigCollector:
 
         return metrics.values()
 
+
+class VolumesCollector(Collector):
+    """
+    Collects info on volume sizes - the storage disk usage may not reflect the commitments
+    in case of thin allocation.
+    """
+    def __init__(self, pve):
+        self._pve = pve
+
+    def collect(self):  # pylint: disable=missing-docstring
+        disk_size = GaugeMetricFamily(
+            'pve_volume_size_bytes',
+            'Proxmox volume commitments',
+            labels=['id', 'node', 'storage']
+        )
+        seen_shared_storages = set()
+        for node in self._pve.nodes.get():
+            # The nodes/{node} api call will result in requests being forwarded
+            # from the api node to the target node. Those calls can fail if the
+            # target node is offline or otherwise unable to respond to the
+            # request. In that case it is better to just skip scraping the
+            # config for guests on that particular node and continue with the
+            # next one in order to avoid failing the whole scrape.
+            try:
+                storage_api = self._pve.nodes(node['node']).storage
+                for storage in storage_api.get():
+                    if not (storage['type'] != 'dir' and storage['active']):
+                        continue
+                    if storage['shared'] and storage['storage'] in seen_shared_storages:
+                        continue
+                    else:
+                        seen_shared_storages.add(storage['storage'])
+
+                    for disk in storage_api(storage['storage']).content.get():
+                        disk_size.add_metric([f'disk/{node["node"]}/{disk["volid"]}', node['node'],
+                                              storage['storage']], disk['size'])
+            except ResourceException:
+                self._log.exception(
+                    "Exception thrown while scraping quemu/lxc config from %s",
+                    node['node']
+                )
+                continue
+        return [disk_size]
+
+
 def collect_pve(config, host, options: CollectorsOptions):
     """Scrape a host and return prometheus text format for it"""
 
@@ -328,5 +377,7 @@ def collect_pve(config, host, options: CollectorsOptions):
         registry.register(ClusterNodeConfigCollector(pve))
     if options.version:
         registry.register(VersionCollector(pve))
+    if options.volumes:
+        registry.register(VolumesCollector(pve))
 
     return generate_latest(registry)
