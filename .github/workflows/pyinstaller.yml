@@ -1,0 +1,20 @@
+name: PyInstaller
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project sources
+        uses: actions/checkout@v2
+
+      - name: Run release build
+        run: docker run --rm -i -v "$(pwd)":/app python:3.11-buster /app/build_release.sh ${{ github.ref_name }}
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: dist/*.tgz
