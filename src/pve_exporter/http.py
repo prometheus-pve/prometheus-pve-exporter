@@ -113,6 +113,9 @@ class PveExporterApplication:
 
 
 class StandaloneGunicornApplication(gunicorn.app.base.BaseApplication):
+    """
+    Copy-paste from https://docs.gunicorn.org/en/stable/custom.html
+    """
 
     def __init__(self, app, options=None):
         self.options = options or {}

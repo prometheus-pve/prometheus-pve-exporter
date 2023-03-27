@@ -88,8 +88,8 @@ def main():
                         help='Port on which the exporter is listening (9221)')
     parser.add_argument('address', nargs='?', default='',
                         help='Address to which the exporter will bind')
-    parser.add_argument('--server.keyfile', help='SSL key for server')
-    parser.add_argument('--server.certfile', help='SSL certificate for server')
+    parser.add_argument('--server.keyfile', dest='server_keyfile', help='SSL key for server')
+    parser.add_argument('--server.certfile', dest='server_certfile', help='SSL certificate for server')
 
     params = parser.parse_args()
 
@@ -112,8 +112,8 @@ def main():
     gunicorn_options = {
         'bind': f'{params.address}:{params.port}',
         'threads': 2,
-        'keyfile': params.__dict__['server.keyfile'],
-        'certfile': params.__dict__['server.certfile'],
+        'keyfile': params.server_keyfile,
+        'certfile': params.server_certfile,
     }
 
     if config.valid:
