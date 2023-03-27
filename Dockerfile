@@ -5,6 +5,7 @@ RUN apk update && apk upgrade
 
 RUN apk add --no-cache \
     ca-certificates \
+    py3-gunicorn \
     py3-paramiko \
     py3-pip \
     py3-prometheus-client \
