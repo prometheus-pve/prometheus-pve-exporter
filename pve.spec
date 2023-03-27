@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(
-    ['pve.py'],
+    ['src/pve_exporter/__main__.py'],
     pathex=[],
     binaries=[],
     datas=[],
