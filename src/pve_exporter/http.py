@@ -18,6 +18,8 @@ class PveExporterApplication:
     Proxmox VE prometheus collector HTTP handler.
     """
 
+    # pylint: disable=no-self-use
+
     def __init__(self, config, duration, errors, collectors):
         self._config = config
         self._duration = duration
