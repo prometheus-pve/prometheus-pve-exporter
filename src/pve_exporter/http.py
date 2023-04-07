@@ -18,8 +18,6 @@ class PveExporterApplication:
     Proxmox VE prometheus collector HTTP handler.
     """
 
-    # pylint: disable=no-self-use
-
     def __init__(self, config, duration, errors, collectors):
         self._config = config
         self._duration = duration
@@ -40,7 +38,7 @@ class PveExporterApplication:
             response.headers['content-type'] = CONTENT_TYPE_LATEST
             self._duration.labels(module).observe(time.time() - start)
         else:
-            response = Response("Module '{0}' not found in config".format(module))
+            response = Response("Module '{module}' not found in config")
             response.status_code = 400
 
         return response
@@ -108,7 +106,8 @@ class PveExporterApplication:
         ])
 
         urls = url_map.bind_to_environ(request.environ)
-        view_func = lambda endpoint, values: self.view(endpoint, values, request.args)
+        def view_func(endpoint, values):
+            self.view(endpoint, values, request.args)
         return urls.dispatch(view_func, catch_http_exceptions=True)
 
 
