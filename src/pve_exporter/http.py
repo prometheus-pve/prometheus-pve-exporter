@@ -108,8 +108,7 @@ class PveExporterApplication:
         ])
 
         urls = url_map.bind_to_environ(request.environ)
-        def view_func(endpoint, values):
-            self.view(endpoint, values, request.args)
+        view_func = lambda endpoint, values: self.view(endpoint, values, request.args)
         return urls.dispatch(view_func, catch_http_exceptions=True)
 
 
