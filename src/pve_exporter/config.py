@@ -2,11 +2,7 @@
 Config module for Proxmox VE prometheus collector.
 """
 
-try:
-    from collections.abc import Mapping
-except ImportError:
-    from collections import Mapping
-
+from collections.abc import Mapping
 
 def config_from_yaml(yaml):
     """
@@ -24,7 +20,7 @@ def config_from_yaml(yaml):
         yaml.items()
     }
     invalid = [
-        "  - {0}: {1}".format(key, module) for
+        f"  - {key}: {module}" for
         key, module in
         modules.items() if
         not module.valid
@@ -100,7 +96,7 @@ class ConfigMapping(Mapping):
     def __str__(self):
         num = len(self._mapping)
         keys = ", ".join(self._mapping.keys())
-        return "Valid config: with {0} keys: {1}".format(num, keys)
+        return f"Valid config: with {num} keys: {keys}"
 
     def __getitem__(self, key):
         return self._mapping[key]
@@ -125,4 +121,4 @@ class ConfigInvalid:
         self._error = error
 
     def __str__(self):
-        return "Invalid config: {0}".format(self._error)
+        return f"Invalid config: {self._error}"

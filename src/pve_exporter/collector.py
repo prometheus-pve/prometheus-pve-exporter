@@ -47,10 +47,10 @@ class StatusCollector:
                 label_values = [entry['id']]
                 status_metrics.add_metric(label_values, entry['online'])
             elif entry['type'] == 'cluster':
-                label_values = ['cluster/{:s}'.format(entry['name'])]
+                label_values = [f"cluster/{entry['name']}"]
                 status_metrics.add_metric(label_values, entry['quorate'])
             else:
-                raise ValueError('Got unexpected status entry type {:s}'.format(entry['type']))
+                raise ValueError(f"Got unexpected status entry type {entry['type']}")
 
         for resource in self._pve.cluster.resources.get(type='vm'):
             label_values = [resource['id']]
@@ -137,7 +137,7 @@ class ClusterInfoCollector:
 
             # Add cluster-prefix to id.
             for cluster in clusters:
-                cluster['id'] = 'cluster/{:s}'.format(cluster['name'])
+                cluster['id'] = f"cluster/{cluster['name']}"
                 del cluster['name']
 
             # Yield remaining data.
@@ -289,7 +289,7 @@ class ClusterNodeConfigCollector:
                 for vmdata in self._pve.nodes(node['node']).qemu.get():
                     config = self._pve.nodes(node['node']).qemu(vmdata['vmid']).config.get().items()
                     for key, metric_value in config:
-                        label_values = ["%s/%s" % (vmtype, vmdata['vmid']), node['node'], vmtype]
+                        label_values = [f"{vmtype}/{vmdata['vmid']}", node['node'], vmtype]
                         if key in metrics:
                             metrics[key].add_metric(label_values, metric_value)
                 # LXC
@@ -297,7 +297,7 @@ class ClusterNodeConfigCollector:
                 for vmdata in self._pve.nodes(node['node']).lxc.get():
                     config = self._pve.nodes(node['node']).lxc(vmdata['vmid']).config.get().items()
                     for key, metric_value in config:
-                        label_values = ["%s/%s" % (vmtype, vmdata['vmid']), node['node'], vmtype]
+                        label_values = [f"{vmtype}/{vmdata['vmid']}", node['node'], vmtype]
                         if key in metrics:
                             metrics[key].add_metric(label_values, metric_value)
 
