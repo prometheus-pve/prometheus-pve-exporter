@@ -5,9 +5,9 @@ HTTP API for Proxmox VE prometheus collector.
 import logging
 import time
 
+import gunicorn.app.base
 from prometheus_client import CONTENT_TYPE_LATEST, Summary, Counter, generate_latest
 from werkzeug.routing import Map, Rule
-from werkzeug.serving import run_simple
 from werkzeug.wrappers import Request, Response
 from werkzeug.exceptions import InternalServerError
 from .collector import collect_pve
@@ -112,7 +112,27 @@ class PveExporterApplication:
         return urls.dispatch(view_func, catch_http_exceptions=True)
 
 
-def start_http_server(config, port, address, collectors):
+class StandaloneGunicornApplication(gunicorn.app.base.BaseApplication):
+    """
+    Copy-paste from https://docs.gunicorn.org/en/stable/custom.html
+    """
+
+    def __init__(self, app, options=None):
+        self.options = options or {}
+        self.application = app
+        super().__init__()
+
+    def load_config(self):
+        config = {key: value for key, value in self.options.items()
+                  if key in self.cfg.settings and value is not None}
+        for key, value in config.items():
+            self.cfg.set(key.lower(), value)
+
+    def load(self):
+        return self.application
+
+
+def start_http_server(config, gunicorn_options, collectors):
     """
     Start a HTTP API server for Proxmox VE prometheus collector.
     """
@@ -136,4 +156,4 @@ def start_http_server(config, port, address, collectors):
         duration.labels(module)
 
     app = PveExporterApplication(config, duration, errors, collectors)
-    run_simple(address, port, app, threaded=True)
+    StandaloneGunicornApplication(app, gunicorn_options).run()
