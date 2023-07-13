@@ -1,0 +1,11 @@
+services:
+  pve-exporter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./pve.yml:/etc/pve.yml
+    ports:
+      - 9221:9221
+    env_file:
+      - .env

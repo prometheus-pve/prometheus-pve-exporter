@@ -6,6 +6,7 @@ Prometheus collecters for Proxmox VE cluster.
 import collections
 import itertools
 import logging
+from . import utils
 from proxmoxer import ProxmoxAPI
 from proxmoxer.core import ResourceException
 
@@ -40,20 +41,22 @@ class StatusCollector:
         status_metrics = GaugeMetricFamily(
             'pve_up',
             'Node/VM/CT-Status is online/running',
-            labels=['id'])
+            labels=['id', 'name'])
 
         for entry in self._pve.cluster.status.get():
+            name = entry.get('name', '')
             if entry['type'] == 'node':
-                label_values = [entry['id']]
+                label_values = [entry['id'], name]
                 status_metrics.add_metric(label_values, entry['online'])
             elif entry['type'] == 'cluster':
-                label_values = [f"cluster/{entry['name']}"]
+                label_values = [f"cluster/{entry['name']}", name]
                 status_metrics.add_metric(label_values, entry['quorate'])
             else:
                 raise ValueError(f"Got unexpected status entry type {entry['type']}")
 
         for resource in self._pve.cluster.resources.get(type='vm'):
-            label_values = [resource['id']]
+            name = resource.get('name', '')
+            label_values = [resource['id'], name]
             status_metrics.add_metric(label_values, resource['status'] == 'running')
 
         yield status_metrics
@@ -167,51 +170,51 @@ class ClusterResourcesCollector:
             'maxdisk': GaugeMetricFamily(
                 'pve_disk_size_bytes',
                 'Size of storage device',
-                labels=['id']),
+                labels=['id', 'node', 'name', 'type']),
             'disk': GaugeMetricFamily(
                 'pve_disk_usage_bytes',
                 'Disk usage in bytes',
-                labels=['id']),
+                labels=['id', 'node', 'name', 'type']),
             'maxmem': GaugeMetricFamily(
                 'pve_memory_size_bytes',
                 'Size of memory',
-                labels=['id']),
+                labels=['id', 'node', 'name', 'type']),
             'mem': GaugeMetricFamily(
                 'pve_memory_usage_bytes',
                 'Memory usage in bytes',
-                labels=['id']),
+                labels=['id', 'node', 'name', 'type']),
             'netout': GaugeMetricFamily(
                 'pve_network_transmit_bytes',
                 'Number of bytes transmitted over the network',
-                labels=['id']),
+                labels=['id', 'node', 'name', 'type']),
             'netin': GaugeMetricFamily(
                 'pve_network_receive_bytes',
                 'Number of bytes received over the network',
-                labels=['id']),
+                labels=['id', 'node', 'name', 'type']),
             'diskwrite': GaugeMetricFamily(
                 'pve_disk_write_bytes',
                 'Number of bytes written to storage',
-                labels=['id']),
+                labels=['id', 'node', 'name', 'type']),
             'diskread': GaugeMetricFamily(
                 'pve_disk_read_bytes',
                 'Number of bytes read from storage',
-                labels=['id']),
+                labels=['id', 'node', 'name', 'type']),
             'cpu': GaugeMetricFamily(
                 'pve_cpu_usage_ratio',
                 'CPU usage (value between 0.0 and pve_cpu_usage_limit)',
-                labels=['id']),
+                labels=['id', 'node', 'name', 'type']),
             'maxcpu': GaugeMetricFamily(
                 'pve_cpu_usage_limit',
                 'Maximum allowed CPU usage',
-                labels=['id']),
+                labels=['id', 'node', 'name', 'type']),
             'uptime': GaugeMetricFamily(
                 'pve_uptime_seconds',
                 'Number of seconds since the last boot',
-                labels=['id']),
+                labels=['id', 'node', 'name', 'type']),
             'shared': GaugeMetricFamily(
                 'pve_storage_shared',
                 'Whether or not the storage is shared among cluster nodes',
-                labels=['id']),
+                labels=['id', 'node', 'name', 'type']),
         }
 
         info_metrics = {
@@ -247,7 +250,10 @@ class ClusterResourcesCollector:
                 label_values = [resource.get(key, '') for key in info_lookup[restype]['labels']]
                 info_lookup[restype]['gauge'].add_metric(label_values, 1)
 
-            label_values = [resource['id']]
+            node = resource.get('node', '')
+            restype = resource.get('type', '')
+            resname = resource.get('name', '')
+            label_values = [resource['id'], node, resname, restype]
             for key, metric_value in resource.items():
                 if key in metrics:
                     metrics[key].add_metric(label_values, metric_value)
@@ -268,12 +274,43 @@ class ClusterNodeConfigCollector:
         self._pve = pve
         self._log = logging.getLogger(__name__)
 
+    def collect_net_metrics(self, config, metrics):
+        pass
+
     def collect(self): # pylint: disable=missing-docstring
         metrics = {
             'onboot': GaugeMetricFamily(
                 'pve_onboot_status',
                 'Proxmox vm config onboot value',
-                labels=['id', 'node', 'type']),
+                labels=['id', 'node', 'type', 'name']),
+            'cores': GaugeMetricFamily(
+                'pve_cores',
+                'Proxmox vm config cores value',
+                labels=['id', 'node', 'type', 'name']),
+            'sockets': GaugeMetricFamily(
+                'pve_sockets',
+                'Proxmox vm config sockets value',
+                labels=['id', 'node', 'type', 'name']),
+            'memory': GaugeMetricFamily(
+                'pve_memory',
+                'Proxmox vm config memory value',
+                labels=['id', 'node', 'type', 'name']),
+            'netqueue': GaugeMetricFamily(
+                'pve_netqueue_size',
+                'Proxmox vm config netqueue value',
+                labels=['id', 'node', 'type', 'net', 'name']),
+            'vlan': GaugeMetricFamily(
+                'pve_vlan_id',
+                'Proxmox vm config vlan value',
+                labels=['id', 'node', 'type', 'net', 'name']),
+            'netrate': GaugeMetricFamily(
+                'pve_netrate',
+                'Proxmox vm config netrate value',
+                labels=['id', 'node', 'type', 'net', 'name']),
+            'rng': GaugeMetricFamily(
+                'pve_rng',
+                'Proxmox vm config random generator value',
+                labels=['id', 'node', 'type', 'name']),
         }
 
         for node in self._pve.nodes.get():
@@ -288,16 +325,45 @@ class ClusterNodeConfigCollector:
                 vmtype = 'qemu'
                 for vmdata in self._pve.nodes(node['node']).qemu.get():
                     config = self._pve.nodes(node['node']).qemu(vmdata['vmid']).config.get().items()
+                    name = utils.get_key_tuple('name', config)
+                    label_values = [f"{vmtype}/{vmdata['vmid']}", node['node'], vmtype, name]
+
+                    rng = utils.get_key_tuple('rng0', config)
+                    if rng != '':
+                        metrics['rng'].add_metric(label_values, 1)
+                    else:
+                        metrics['rng'].add_metric(label_values, 0)
                     for key, metric_value in config:
-                        label_values = [f"{vmtype}/{vmdata['vmid']}", node['node'], vmtype]
                         if key in metrics:
                             metrics[key].add_metric(label_values, metric_value)
+                        if key.startswith('net'):
+                            label_values = [f"{vmtype}/{vmdata['vmid']}", node['node'], vmtype, key, name]
+                            
+                            # virtio=BA:0B:A4:09:8E:A1,bridge=vmbr0,queues=2,rate=125,tag=600
+                            netinfo = dict(item.split("=") for item in metric_value.split(","))
+
+                            if 'queues' in netinfo:
+                                metrics['netqueue'].add_metric(label_values, int(netinfo['queues']))
+                            else:
+                                metrics['netqueue'].add_metric(label_values, -1)
+
+                            if 'tag' in netinfo:
+                                metrics['vlan'].add_metric(label_values, int(netinfo['tag']))
+                            else:
+                                metrics['vlan'].add_metric(label_values, -1)
+
+                            if 'rate' in netinfo:
+                                metrics['netrate'].add_metric(label_values, int(netinfo['rate']))
+                            else:
+                                metrics['netrate'].add_metric(label_values, -1)
+
                 # LXC
                 vmtype = 'lxc'
                 for vmdata in self._pve.nodes(node['node']).lxc.get():
                     config = self._pve.nodes(node['node']).lxc(vmdata['vmid']).config.get().items()
+                    name = utils.get_key_tuple('name', config)
                     for key, metric_value in config:
-                        label_values = [f"{vmtype}/{vmdata['vmid']}", node['node'], vmtype]
+                        label_values = [f"{vmtype}/{vmdata['vmid']}", node['node'], vmtype, name]
                         if key in metrics:
                             metrics[key].add_metric(label_values, metric_value)
 
