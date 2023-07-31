@@ -75,7 +75,7 @@ def main():
                         help='Exposes PVE node info')
     parser.add_argument('--collector.disk', dest='collector_disk',
                         action=BooleanOptionalAction, default=True,
-                        help='Exposes PVE node info')
+                        help='Exposes PVE disk info')
     parser.add_argument('--collector.cluster', dest='collector_cluster',
                         action=BooleanOptionalAction, default=True,
                         help='Exposes PVE cluster info')
