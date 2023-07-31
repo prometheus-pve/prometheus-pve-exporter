@@ -16,6 +16,7 @@ CollectorsOptions = collections.namedtuple('CollectorsOptions', [
     'status',
     'version',
     'node',
+    'disk',
     'cluster',
     'resources',
     'config',
@@ -112,6 +113,38 @@ class ClusterNodeCollector:
             for node in nodes:
                 label_values = [str(node[key]) for key in labels]
                 info_metrics.add_metric(label_values, 1)
+
+            yield info_metrics
+
+class ClusterDiskCollector:
+    """
+    Collects Proxmox VE cluster disk information. E.g.:
+
+    # HELP pve_disk_info Disk info
+    # TYPE pve_disk_info gauge
+    pve_disk_info{devpath="/dev/nvme0n1",health="PASSED",node="proxmox-host",
+    serial="S34NNL0TA1571AF",size="500107862016",type="nvme"} 1.0
+    """
+
+    def __init__(self, pve):
+        self._pve = pve
+
+    def collect(self): # pylint: disable=missing-docstring
+        nodes = [entry for entry in self._pve.cluster.status.get() if entry['type'] == 'node']
+        labels = ['serial', 'health', 'devpath', 'size', 'type' , 'node']
+
+        if nodes:
+            info_metrics = GaugeMetricFamily(
+                'pve_disk_info',
+                'Disk info',
+                labels=labels)
+
+            for node in nodes:
+                print(node)
+                for disk in self._pve.nodes(node['name']).disks.list.get():
+                    label_values = [ str(disk[key]) for key in labels[:-1] ]
+                    label_values.append(node['name'])
+                    info_metrics.add_metric(label_values, 1)
 
             yield info_metrics
 
@@ -322,6 +355,8 @@ def collect_pve(config, host, options: CollectorsOptions):
         registry.register(ClusterResourcesCollector(pve))
     if options.node:
         registry.register(ClusterNodeCollector(pve))
+    if options.disk:
+        registry.register(ClusterDiskCollector(pve))
     if options.cluster:
         registry.register(ClusterInfoCollector(pve))
     if options.config:

@@ -73,6 +73,9 @@ def main():
     parser.add_argument('--collector.node', dest='collector_node',
                         action=BooleanOptionalAction, default=True,
                         help='Exposes PVE node info')
+    parser.add_argument('--collector.disk', dest='collector_disk',
+                        action=BooleanOptionalAction, default=True,
+                        help='Exposes PVE node info')
     parser.add_argument('--collector.cluster', dest='collector_cluster',
                         action=BooleanOptionalAction, default=True,
                         help='Exposes PVE cluster info')
@@ -97,6 +100,7 @@ def main():
         status=params.collector_status,
         version=params.collector_version,
         node=params.collector_node,
+        disk=params.collector_disk,
         cluster=params.collector_cluster,
         resources=params.collector_resources,
         config=params.collector_config
