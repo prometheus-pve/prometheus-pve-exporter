@@ -18,7 +18,7 @@ setup(
             'pve_exporter=pve_exporter.cli:main',
         ],
     },
-    python_requires=">=3.4",
+    python_requires=">=3.9",
     install_requires=[
         "prometheus_client>=0.0.11",
         "proxmoxer",
