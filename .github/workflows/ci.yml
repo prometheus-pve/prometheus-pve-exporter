@@ -21,10 +21,12 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install pylint / pyflakes
-        run: sudo apt-get install --yes pylint pyflakes3
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes pylint pyflakes3
 
       - name: Install pve_exporter
         run: sudo pip install -e .
