@@ -10,10 +10,12 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Install dependencies
-        run: sudo apt-get install --yes python3-wheel twine
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes python3-wheel twine
 
       - name: Build and publish
         env:
