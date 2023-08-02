@@ -13,7 +13,9 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install dependencies
-        run: sudo apt-get install --yes python3-wheel twine
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes python3-wheel twine
 
       - name: Build and publish
         env:
