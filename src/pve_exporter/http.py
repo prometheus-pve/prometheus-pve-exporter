@@ -28,14 +28,20 @@ class PveExporterApplication:
 
         self._log = logging.getLogger(__name__)
 
-    def on_pve(self, module='default', target='localhost'):
+    def on_pve(self, module='default', target='localhost', cluster='1', node='0'):
         """
         Request handler for /pve route
         """
 
         if module in self._config:
             start = time.time()
-            output = collect_pve(self._config[module], target, self._collectors)
+            output = collect_pve(
+                self._config[module],
+                target,
+                cluster.lower() not in ['false', '0', ''],
+                node.lower() not in ['false', '0', ''],
+                self._collectors
+            )
             response = Response(output)
             response.headers['content-type'] = CONTENT_TYPE_LATEST
             self._duration.labels(module).observe(time.time() - start)
@@ -79,7 +85,7 @@ class PveExporterApplication:
         """
 
         allowed_args = {
-            'pve': ['module', 'target']
+            'pve': ['module', 'target', 'cluster', 'node']
         }
 
         view_registry = {

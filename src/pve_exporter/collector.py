@@ -254,7 +254,7 @@ class ClusterResourcesCollector:
 
         return itertools.chain(metrics.values(), info_metrics.values())
 
-class ClusterNodeConfigCollector:
+class NodeConfigCollector:
     """
     Collects Proxmox VE VM information directly from config, i.e. boot, name, onboot, etc.
     For manual test: "pvesh get /nodes/<node>/<type>/<vmid>/config"
@@ -276,57 +276,49 @@ class ClusterNodeConfigCollector:
                 labels=['id', 'node', 'type']),
         }
 
-        for node in self._pve.nodes.get():
-            # The nodes/{node} api call will result in requests being forwarded
-            # from the api node to the target node. Those calls can fail if the
-            # target node is offline or otherwise unable to respond to the
-            # request. In that case it is better to just skip scraping the
-            # config for guests on that particular node and continue with the
-            # next one in order to avoid failing the whole scrape.
-            try:
-                # Qemu
-                vmtype = 'qemu'
-                for vmdata in self._pve.nodes(node['node']).qemu.get():
-                    config = self._pve.nodes(node['node']).qemu(vmdata['vmid']).config.get().items()
-                    for key, metric_value in config:
-                        label_values = [f"{vmtype}/{vmdata['vmid']}", node['node'], vmtype]
-                        if key in metrics:
-                            metrics[key].add_metric(label_values, metric_value)
-                # LXC
-                vmtype = 'lxc'
-                for vmdata in self._pve.nodes(node['node']).lxc.get():
-                    config = self._pve.nodes(node['node']).lxc(vmdata['vmid']).config.get().items()
-                    for key, metric_value in config:
-                        label_values = [f"{vmtype}/{vmdata['vmid']}", node['node'], vmtype]
-                        if key in metrics:
-                            metrics[key].add_metric(label_values, metric_value)
+        node = None
+        for entry in self._pve.cluster.status.get():
+            if entry['type'] == 'node' and entry['local']:
+                node = entry['name']
+                break
 
-            except ResourceException:
-                self._log.exception(
-                    "Exception thrown while scraping quemu/lxc config from %s",
-                    node['node']
-                )
-                continue
+        # Scrape qemu config
+        vmtype = 'qemu'
+        for vmdata in self._pve.nodes(node).qemu.get():
+            config = self._pve.nodes(node).qemu(vmdata['vmid']).config.get().items()
+            for key, metric_value in config:
+                label_values = [f"{vmtype}/{vmdata['vmid']}", node, vmtype]
+                if key in metrics:
+                    metrics[key].add_metric(label_values, metric_value)
+
+        # Scrape LXC config
+        vmtype = 'lxc'
+        for vmdata in self._pve.nodes(node).lxc.get():
+            config = self._pve.nodes(node).lxc(vmdata['vmid']).config.get().items()
+            for key, metric_value in config:
+                label_values = [f"{vmtype}/{vmdata['vmid']}", node, vmtype]
+                if key in metrics:
+                    metrics[key].add_metric(label_values, metric_value)
 
         return metrics.values()
 
-def collect_pve(config, host, options: CollectorsOptions):
+def collect_pve(config, host, cluster, node, options: CollectorsOptions):
     """Scrape a host and return prometheus text format for it"""
 
     pve = ProxmoxAPI(host, **config)
 
     registry = CollectorRegistry()
-    if options.status:
+    if cluster and options.status:
         registry.register(StatusCollector(pve))
-    if options.resources:
+    if cluster and options.resources:
         registry.register(ClusterResourcesCollector(pve))
-    if options.node:
+    if cluster and options.node:
         registry.register(ClusterNodeCollector(pve))
-    if options.cluster:
+    if cluster and options.cluster:
         registry.register(ClusterInfoCollector(pve))
-    if options.config:
-        registry.register(ClusterNodeConfigCollector(pve))
-    if options.version:
+    if cluster and options.version:
         registry.register(VersionCollector(pve))
+    if node and options.config:
+        registry.register(NodeConfigCollector(pve))
 
     return generate_latest(registry)
