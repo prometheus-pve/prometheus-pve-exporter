@@ -40,8 +40,10 @@ def main():
                         help='Port on which the exporter is listening (9221)')
     parser.add_argument('address', nargs='?', default='',
                         help='Address to which the exporter will bind')
-    parser.add_argument('--server.keyfile', dest='server_keyfile', help='SSL key for server')
-    parser.add_argument('--server.certfile', dest='server_certfile', help='SSL certificate for server')
+    parser.add_argument('--server.keyfile', dest='server_keyfile',
+                        help='SSL key for server')
+    parser.add_argument('--server.certfile', dest='server_certfile',
+                        help='SSL certificate for server')
 
     params = parser.parse_args()
 
@@ -58,7 +60,7 @@ def main():
     if 'PVE_USER' in os.environ:
         config = config_from_env(os.environ)
     else:
-        with open(params.config) as handle:
+        with open(params.config, encoding='utf-8') as handle:
             config = config_from_yaml(yaml.safe_load(handle))
 
     gunicorn_options = {
