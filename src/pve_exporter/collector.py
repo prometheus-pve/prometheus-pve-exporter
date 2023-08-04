@@ -7,7 +7,6 @@ import collections
 import itertools
 import logging
 from proxmoxer import ProxmoxAPI
-from proxmoxer.core import ResourceException
 
 from prometheus_client import CollectorRegistry, generate_latest
 from prometheus_client.core import GaugeMetricFamily
