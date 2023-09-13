@@ -310,6 +310,77 @@ class ClusterNodeConfigCollector:
 
         return metrics.values()
 
+class ClusterReplicationCollector:
+    """
+    Collects Proxmox VE Replication information directly from status, i.e. replication time,last_time
+    For manual test: "pvesh get /nodes/<node>/replication/id/status"
+
+    # HELP pve_replication_duration Proxmox vm replication duration
+    # TYPE pve_replication_duration gauge
+    pve_replication_duration{id="1022-0",node="XXXX",type="local", vmtype="lxc", source="app1", target="app7", guest="1022"} 47.56
+    """
+
+    def __init__(self, pve):
+        self._pve = pve
+        self._log = logging.getLogger(__name__)
+
+    def collect(self): # pylint: disable=missing-docstring
+        metrics = {
+            'duration': GaugeMetricFamily(
+                'pve_replication_duration',
+                'Proxmox vm replication duration',
+                labels=['id', 'type', 'vmtype', 'source', 'target', 'guest']),
+            'last_sync': GaugeMetricFamily(
+                'pve_replication_last_sync',
+                'Proxmox vm replication last_sync',
+                labels=['id', 'type', 'vmtype', 'source', 'target', 'guest']),
+            'last_try': GaugeMetricFamily(
+                'pve_replication_last_try',
+                'Proxmox vm replication last_try',
+                labels=['id', 'type', 'vmtype', 'source', 'target', 'guest']),
+            'next_sync': GaugeMetricFamily(
+                'pve_replication_next_sync',
+                'Proxmox vm replication next_sync',
+                labels=['id', 'type', 'vmtype', 'source', 'target', 'guest']),
+            'next_sync': GaugeMetricFamily(
+                'pve_replication_fail_count',
+                'Proxmox vm replication fail_count',
+                labels=['id', 'type', 'vmtype', 'source', 'target', 'guest']),
+        }
+
+        for node in self._pve.nodes.get():
+            # The nodes/{node} api call will result in requests being forwarded
+            # from the api node to the target node. Those calls can fail if the
+            # target node is offline or otherwise unable to respond to the
+            # request. In that case it is better to just skip scraping the
+            # config for guests on that particular node and continue with the
+            # next one in order to avoid failing the whole scrape.            try:
+                # Qemu
+                vmtype = 'qemu'
+                for vmdata in self._pve.nodes(node['node']).qemu.get():
+                    config = self._pve.nodes(node['node']).qemu(vmdata['vmid']).config.get().items()
+                    for key, metric_value in config:
+                        label_values = [f"{vmtype}/{vmdata['vmid']}", node['node'], vmtype]
+                        if key in metrics:
+                            metrics[key].add_metric(label_values, metric_value)
+                # LXC
+                vmtype = 'lxc'
+                for vmdata in self._pve.nodes(node['node']).lxc.get():
+                    config = self._pve.nodes(node['node']).lxc(vmdata['vmid']).config.get().items()
+                    for key, metric_value in config:
+                        label_values = [f"{vmtype}/{vmdata['vmid']}", node['node'], vmtype]
+                        if key in metrics:
+                            metrics[key].add_metric(label_values, metric_value)
+
+            except ResourceException:
+                self._log.exception(
+                    "Exception thrown while scraping quemu/lxc config from %s",
+                    node['node']
+                )
+                continue
+
+        return itertools.chain(metrics.values(), info_metrics.values())
+
 def collect_pve(config, host, options: CollectorsOptions):
     """Scrape a host and return prometheus text format for it"""
 
@@ -328,5 +399,6 @@ def collect_pve(config, host, options: CollectorsOptions):
         registry.register(ClusterNodeConfigCollector(pve))
     if options.version:
         registry.register(VersionCollector(pve))
-
+    if options.replication:
+        registry.register(ClusterReplicationCollector(pve))
     return generate_latest(registry)
