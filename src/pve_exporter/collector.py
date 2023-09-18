@@ -314,11 +314,11 @@ class ClusterNodeConfigCollector:
 class ClusterReplicationCollector:
     """
     Collects Proxmox VE Replication information directly from status, i.e. replication time,last_time
-    For manual test: "pvesh get /nodes/<node>/replication/id/status"
+    For manual test: "pvesh get /nodes/<node>/replication/<id>/status"
 
     # HELP pve_replication_duration Proxmox vm replication duration
     # TYPE pve_replication_duration gauge
-    pve_replication_duration{id="1022-0",node="XXXX",type="local", vmtype="lxc", source="app1", target="app7", guest="1022"} 47.56
+    pve_replication_duration{id="101-0",type="local", vmtype="lxc", source="server1", target="server2", guest="101"} 47.56
     """
 
     def __init__(self, pve):
@@ -343,7 +343,7 @@ class ClusterReplicationCollector:
                 'pve_replication_next_sync',
                 'Proxmox vm replication next_sync',
                 labels=['id', 'type', 'vmtype', 'source', 'target', 'guest']),
-            'next_sync': GaugeMetricFamily(
+            'fail_count': GaugeMetricFamily(
                 'pve_replication_fail_count',
                 'Proxmox vm replication fail_count',
                 labels=['id', 'type', 'vmtype', 'source', 'target', 'guest']),
@@ -355,7 +355,7 @@ class ClusterReplicationCollector:
             # target node is offline or otherwise unable to respond to the
             # request. In that case it is better to just skip scraping the
             # config for guests on that particular node and continue with the
-            # next one in order to avoid failing the whole scrape.            try:
+            # next one in order to avoid failing the whole scrape.
             try:
                 for vmdata in self._pve("nodes/{0}/replication/".format(node['node'])).get():
                     replica = self._pve("nodes/{0}/replication/{1}/status".format(node['node'],vmdata['id'])).get().items()
