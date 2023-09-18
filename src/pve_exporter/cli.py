@@ -82,6 +82,9 @@ def main():
     parser.add_argument('--collector.config', dest='collector_config',
                         action=BooleanOptionalAction, default=True,
                         help='Exposes PVE onboot status')
+    parser.add_argument('--collector.replication', dest='collector_replication',
+                        action=BooleanOptionalAction, default=True,
+                        help='Exposes PVE replication status')
     parser.add_argument('config', nargs='?', default='pve.yml',
                         help='Path to configuration file (pve.yml)')
     parser.add_argument('port', nargs='?', type=int, default='9221',
@@ -99,7 +102,8 @@ def main():
         node=params.collector_node,
         cluster=params.collector_cluster,
         resources=params.collector_resources,
-        config=params.collector_config
+        config=params.collector_config,
+        replication=params.collector_replication
     )
 
     # Load configuration.

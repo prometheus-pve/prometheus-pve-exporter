@@ -355,20 +355,11 @@ class ClusterReplicationCollector:
             # request. In that case it is better to just skip scraping the
             # config for guests on that particular node and continue with the
             # next one in order to avoid failing the whole scrape.            try:
-                # Qemu
-                vmtype = 'qemu'
-                for vmdata in self._pve.nodes(node['node']).qemu.get():
-                    config = self._pve.nodes(node['node']).qemu(vmdata['vmid']).config.get().items()
-                    for key, metric_value in config:
-                        label_values = [f"{vmtype}/{vmdata['vmid']}", node['node'], vmtype]
-                        if key in metrics:
-                            metrics[key].add_metric(label_values, metric_value)
-                # LXC
-                vmtype = 'lxc'
-                for vmdata in self._pve.nodes(node['node']).lxc.get():
-                    config = self._pve.nodes(node['node']).lxc(vmdata['vmid']).config.get().items()
-                    for key, metric_value in config:
-                        label_values = [f"{vmtype}/{vmdata['vmid']}", node['node'], vmtype]
+            try:
+                for vmdata in self._pve("nodes/{0}/replication/".format(node['node'])).get():
+                    replica = self._pve("nodes/{0}/replication/{1}/status".format(node['node'],vmdata['id'])).get().items()
+                    for key, metric_value in replica:
+                        label_values = [vmdata['id'], vmdata['type'], vmdata['vmtype'], vmdata['source'], vmdata['target'], vmdata['guest']]
                         if key in metrics:
                             metrics[key].add_metric(label_values, metric_value)
 
@@ -379,7 +370,7 @@ class ClusterReplicationCollector:
                 )
                 continue
 
-        return itertools.chain(metrics.values(), info_metrics.values())
+        return metrics.values()
 
 def collect_pve(config, host, options: CollectorsOptions):
     """Scrape a host and return prometheus text format for it"""
