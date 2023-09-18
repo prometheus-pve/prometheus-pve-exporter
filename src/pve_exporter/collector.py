@@ -19,6 +19,7 @@ CollectorsOptions = collections.namedtuple('CollectorsOptions', [
     'cluster',
     'resources',
     'config',
+    'replication',
 ])
 
 class StatusCollector:
