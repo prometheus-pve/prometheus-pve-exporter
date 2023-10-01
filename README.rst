@@ -46,9 +46,14 @@ Usage
 
 ::
 
-    usage: pve_exporter [-h] [--collector.status] [--collector.version]
-                        [--collector.node] [--collector.cluster]
-                        [--collector.resources] [--collector.config]
+    usage: pve_exporter [-h] [--collector.status | --no-collector.status]
+                        [--collector.version | --no-collector.version]
+                        [--collector.node | --no-collector.node]
+                        [--collector.cluster | --no-collector.cluster]
+                        [--collector.resources | --no-collector.resources]
+                        [--collector.config | --no-collector.config]
+                        [--server.keyfile SERVER_KEYFILE]
+                        [--server.certfile SERVER_CERTFILE]
                         [config] [port] [address]
 
     positional arguments:
@@ -56,27 +61,41 @@ Usage
       port                  Port on which the exporter is listening (9221)
       address               Address to which the exporter will bind
 
-    optional arguments:
+    options:
       -h, --help            show this help message and exit
+      --server.keyfile SERVER_KEYFILE
+                            SSL key for server
+      --server.certfile SERVER_CERTFILE
+                            SSL certificate for server
+
+    cluster collectors:
+      cluster collectors are run if the url parameter cluster=1 is set and
+      skipped if the url parameter cluster=0 is set on a scrape url.
+
       --collector.status, --no-collector.status
-                            Exposes Node/VM/CT-Status (default: True)
+                            Exposes Node/VM/CT-Status
       --collector.version, --no-collector.version
-                            Exposes PVE version info (default: True)
+                            Exposes PVE version info
       --collector.node, --no-collector.node
-                            Exposes PVE node info (default: True)
+                            Exposes PVE node info
       --collector.cluster, --no-collector.cluster
-                            Exposes PVE cluster info (default: True)
+                            Exposes PVE cluster info
       --collector.resources, --no-collector.resources
-                            Exposes PVE resources info (default: True)
+                            Exposes PVE resources info
+
+    node collectors:
+      node collectors are run if the url parameter node=1 is set and skipped if
+      the url parameter node=0 is set on a scrape url.
+
       --collector.config, --no-collector.config
-                            Exposes PVE onboot status (default: True)
+                            Exposes PVE onboot status
 
 
-Use `::` for the `address` argument in order to bind to both IPv6 and IPv4
+Use `[::]` for the `address` argument in order to bind to both IPv6 and IPv4
 sockets on dual stacked machines.
 
-Visit http://localhost:9221/pve?target=1.2.3.4 where 1.2.3.4 is the IP
-of the Proxmox VE node to get metrics from. Specify the ``module``
+Visit http://localhost:9221/pve?target=1.2.3.4&cluster=1&node=1 where 1.2.3.4
+is the IP of the Proxmox VE node to get metrics from. Specify the ``module``
 request parameter, to choose which module to use from the config file.
 
 The ``target`` request parameter defaults to ``localhost``. Hence if
@@ -258,6 +277,8 @@ Example config for PVE exporter running on PVE node:
         metrics_path: /pve
         params:
           module: [default]
+          cluster: 1
+          node: 1
 
 Example config for PVE exporter running on Prometheus host:
 
@@ -272,6 +293,8 @@ Example config for PVE exporter running on Prometheus host:
         metrics_path: /pve
         params:
           module: [default]
+          cluster: 1
+          node: 1
         relabel_configs:
           - source_labels: [__address__]
             target_label: __param_target
@@ -279,6 +302,20 @@ Example config for PVE exporter running on Prometheus host:
             target_label: instance
           - target_label: __address__
             replacement: 127.0.0.1:9221  # PVE exporter.
+
+**Note on scraping large clusters:**
+
+It is adviced to setup separate jobs to collect ``cluster`` metrics and
+``node`` metrics in larger deployments. Scraping any node in a cluster with the
+url params set to ``cluster=1&node=0`` results in the same set of metrics. Hence
+cluster metrics can be scraped efficiently from a single node or from a subset
+of cluster nodes (e.g., a different node selected on every scrape via
+round-robin DNS).
+
+Node metrics can only be scraped from a given node. In order to compile a
+complete set of node metrics it is necessary to scrape every node in a cluster
+with url params set to ``cluster=0&node=1``.
+
 
 Grafana Dashboards
 ------------------
