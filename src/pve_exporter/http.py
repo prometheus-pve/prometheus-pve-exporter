@@ -28,7 +28,7 @@ class PveExporterApplication:
 
         self._log = logging.getLogger(__name__)
 
-    def on_pve(self, module='default', target='localhost', cluster='1', node='0'):
+    def on_pve(self, module='default', target='localhost', cluster='1', node='1'):
         """
         Request handler for /pve route
         """
