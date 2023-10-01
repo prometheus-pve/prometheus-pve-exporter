@@ -13,8 +13,7 @@ RUN apk add --no-cache \
     py3-werkzeug \
     py3-wheel \
     py3-yaml \
-    python3 \
-    tini
+    python3
 
 FROM base as builder
 
@@ -36,6 +35,6 @@ USER nobody
 
 EXPOSE 9221
 
-ENTRYPOINT [ "/sbin/tini", "--", "/usr/bin/pve_exporter" ]
+ENTRYPOINT [ "/usr/bin/pve_exporter" ]
 
 CMD [ "/etc/pve.yml" ]
