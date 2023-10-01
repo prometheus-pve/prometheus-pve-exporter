@@ -17,8 +17,10 @@ def main():
     """
 
     parser = ArgumentParser()
-    clusterflags = parser.add_argument_group('cluster collectors',
-                                             description='cluster collectors are run if the url parameter cluster=1 is set and skipped if the url parameter cluster=0 is set on a scrape url.')
+    clusterflags = parser.add_argument_group('cluster collectors', description=(
+        'cluster collectors are run if the url parameter cluster=1 is set and '
+        'skipped if the url parameter cluster=0 is set on a scrape url.'
+    ))
     clusterflags.add_argument('--collector.status', dest='collector_status',
                               action=BooleanOptionalAction, default=True,
                               help='Exposes Node/VM/CT-Status')
@@ -35,8 +37,10 @@ def main():
                               action=BooleanOptionalAction, default=True,
                               help='Exposes PVE resources info')
 
-    nodeflags = parser.add_argument_group('node collectors',
-                                          description='node collectors are run if the url parameter node=1 is set and skipped if the url parameter node=0 is set on a scrape url.')
+    nodeflags = parser.add_argument_group('node collectors', description=(
+        'node collectors are run if the url parameter node=1 is set and '
+        'skipped if the url parameter node=0 is set on a scrape url.'
+    ))
     nodeflags.add_argument('--collector.config', dest='collector_config',
                            action=BooleanOptionalAction, default=True,
                            help='Exposes PVE onboot status')
