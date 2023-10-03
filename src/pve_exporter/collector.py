@@ -284,18 +284,18 @@ class NodeConfigCollector:
 
         # Qemu
         vmtype = 'qemu'
-        for vmdata in self._pve.nodes(node['node']).qemu.get():
-            config = self._pve.nodes(node['node']).qemu(vmdata['vmid']).config.get().items()
+        for vmdata in self._pve.nodes(node).qemu.get():
+            config = self._pve.nodes(node).qemu(vmdata['vmid']).config.get().items()
             for key, metric_value in config:
-                label_values = [f"{vmtype}/{vmdata['vmid']}", node['node'], vmtype]
+                label_values = [f"{vmtype}/{vmdata['vmid']}", node, vmtype]
                 if key in metrics:
                     metrics[key].add_metric(label_values, metric_value)
         # LXC
         vmtype = 'lxc'
-        for vmdata in self._pve.nodes(node['node']).lxc.get():
-            config = self._pve.nodes(node['node']).lxc(vmdata['vmid']).config.get().items()
+        for vmdata in self._pve.nodes(node).lxc.get():
+            config = self._pve.nodes(node).lxc(vmdata['vmid']).config.get().items()
             for key, metric_value in config:
-                label_values = [f"{vmtype}/{vmdata['vmid']}", node['node'], vmtype]
+                label_values = [f"{vmtype}/{vmdata['vmid']}", node, vmtype]
                 if key in metrics:
                     metrics[key].add_metric(label_values, metric_value)
 
@@ -371,7 +371,7 @@ def collect_pve(config, host, cluster, node, options: CollectorsOptions):
         registry.register(VersionCollector(pve))
     if node and options.config:
         registry.register(NodeConfigCollector(pve))
-    if node and options.replication:
+    if options.replication:
         registry.register(ClusterReplicationCollector(pve))
 
     return generate_latest(registry)
