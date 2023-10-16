@@ -10,32 +10,44 @@ from pve_exporter.config import config_from_yaml
 from pve_exporter.config import config_from_env
 from pve_exporter.collector import CollectorsOptions
 
+
 def main():
     """
     Main entry point.
     """
 
     parser = ArgumentParser()
-    parser.add_argument('--collector.status', dest='collector_status',
-                        action=BooleanOptionalAction, default=True,
-                        help='Exposes Node/VM/CT-Status')
-    parser.add_argument('--collector.version', dest='collector_version',
-                        action=BooleanOptionalAction, default=True,
-                        help='Exposes PVE version info')
-    parser.add_argument('--collector.node', dest='collector_node',
-                        action=BooleanOptionalAction, default=True,
-                        help='Exposes PVE node info')
-    parser.add_argument('--collector.cluster', dest='collector_cluster',
-                        action=BooleanOptionalAction, default=True,
-                        help='Exposes PVE cluster info')
-    parser.add_argument('--collector.resources', dest='collector_resources',
-                        action=BooleanOptionalAction, default=True,
-                        help='Exposes PVE resources info')
-    parser.add_argument('--collector.config', dest='collector_config',
-                        action=BooleanOptionalAction, default=True,
-                        help='Exposes PVE onboot status')
+    clusterflags = parser.add_argument_group('cluster collectors', description=(
+        'cluster collectors are run if the url parameter cluster=1 is set and '
+        'skipped if the url parameter cluster=0 is set on a scrape url.'
+    ))
+    clusterflags.add_argument('--collector.status', dest='collector_status',
+                              action=BooleanOptionalAction, default=True,
+                              help='Exposes Node/VM/CT-Status')
+    clusterflags.add_argument('--collector.version', dest='collector_version',
+                              action=BooleanOptionalAction, default=True,
+                              help='Exposes PVE version info')
+    clusterflags.add_argument('--collector.node', dest='collector_node',
+                              action=BooleanOptionalAction, default=True,
+                              help='Exposes PVE node info')
+    clusterflags.add_argument('--collector.cluster', dest='collector_cluster',
+                              action=BooleanOptionalAction, default=True,
+                              help='Exposes PVE cluster info')
+    clusterflags.add_argument('--collector.resources', dest='collector_resources',
+                              action=BooleanOptionalAction, default=True,
+                              help='Exposes PVE resources info')
+
+    nodeflags = parser.add_argument_group('node collectors', description=(
+        'node collectors are run if the url parameter node=1 is set and '
+        'skipped if the url parameter node=0 is set on a scrape url.'
+    ))
+    nodeflags.add_argument('--collector.config', dest='collector_config',
+                           action=BooleanOptionalAction, default=True,
+                           help='Exposes PVE onboot status')
+
     parser.add_argument('config', nargs='?', default='pve.yml',
                         help='Path to configuration file (pve.yml)')
+
     parser.add_argument('port', nargs='?', type=int, default='9221',
                         help='Port on which the exporter is listening (9221)')
     parser.add_argument('address', nargs='?', default='',
