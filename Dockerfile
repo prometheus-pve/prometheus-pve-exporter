@@ -30,9 +30,11 @@ FROM base as runtime
 COPY --from=builder /opt /opt
 
 RUN pip3 install --no-cache-dir --no-index /opt/*py3-none-any.whl && \
-    rm /opt/*py3-none-any.whl
+    rm /opt/*py3-none-any.whl && \
+    addgroup -S -g 101 prometheus && \
+    adduser -D -H -S -G prometheus -u 101 prometheus
 
-USER nobody
+USER prometheus
 
 EXPOSE 9221
 
