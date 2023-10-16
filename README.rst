@@ -37,7 +37,7 @@ Example: Run the image with a mounted configuration file and published port:
 
 .. code:: shell
 
-   docker run --name prometheus-pve-exporter -d -p 127.0.0.1:9221:9221 -v /path/to/pve.yml:/etc/pve.yml prompve/prometheus-pve-exporter
+   docker run --init --name prometheus-pve-exporter -d -p 127.0.0.1:9221:9221 -v /path/to/pve.yml:/etc/pve.yml prompve/prometheus-pve-exporter
 
 Prometheus PVE Exporter will now be reachable at http://localhost:9221/.
 
