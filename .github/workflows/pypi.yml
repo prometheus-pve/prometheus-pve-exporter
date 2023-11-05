@@ -15,7 +15,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install --yes python3-build python3-wheel
+          sudo apt-get install --yes python3-build python3-venv
 
       - name: Build
         run: |
