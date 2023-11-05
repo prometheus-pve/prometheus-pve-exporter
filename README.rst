@@ -52,17 +52,18 @@ Usage
                         [--collector.cluster | --no-collector.cluster]
                         [--collector.resources | --no-collector.resources]
                         [--collector.config | --no-collector.config]
+                        [--config.file CONFIG_FILE]
+                        [--web.listen-address WEB_LISTEN_ADDRESS]
                         [--server.keyfile SERVER_KEYFILE]
                         [--server.certfile SERVER_CERTFILE]
-                        [config] [port] [address]
-
-    positional arguments:
-      config                Path to configuration file (pve.yml)
-      port                  Port on which the exporter is listening (9221)
-      address               Address to which the exporter will bind
 
     options:
       -h, --help            show this help message and exit
+      --config.file CONFIG_FILE
+                            Path to config file (/etc/prometheus/pve.yml)
+      --web.listen-address WEB_LISTEN_ADDRESS
+                            Address on which to expose metrics and web server.
+                            ([::]:9221)
       --server.keyfile SERVER_KEYFILE
                             SSL key for server
       --server.certfile SERVER_CERTFILE
