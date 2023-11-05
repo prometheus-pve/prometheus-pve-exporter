@@ -9,6 +9,18 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 `Unreleased`_
 -------------
 
+`3.0.0`_ - 2023-11-05
+---------------------
+
+Changed (BREAKING)
+~~~~~~~~~~~~~~~~~~
+- Use flags instead of positional arguments for config file and listen address
+  (#190)
+- Scrape /nodes endpoint from current node only (#180)
+- Remove tini from docker image (#179)
+- Bump required python version to 3.9 (bullseye) (#162)
+- Run with a dedicated user in container by default (#182)
+
 
 `3.0.0b1`_ - 2023-10-16
 -----------------------
@@ -265,7 +277,8 @@ Added
 
 .. _Keep a Changelog: http://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: http://semver.org/spec/v2.0.0.html
-.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.0.0b1...HEAD
+.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.0.0...HEAD
+.. _3.0.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.0.0b1...v3.0.0
 .. _3.0.0b1: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v2.3.1...v3.0.0b1
 .. _2.3.1: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v2.3.0...v2.3.1
 .. _2.3.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v2.2.4...v2.3.0
