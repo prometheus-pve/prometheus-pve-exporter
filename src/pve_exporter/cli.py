@@ -4,6 +4,7 @@ Proxmox VE exporter for the Prometheus monitoring system.
 
 from argparse import ArgumentParser, BooleanOptionalAction
 import os
+import pathlib
 import yaml
 from pve_exporter.http import start_http_server
 from pve_exporter.config import config_from_yaml
@@ -45,13 +46,16 @@ def main():
                            action=BooleanOptionalAction, default=True,
                            help='Exposes PVE onboot status')
 
-    parser.add_argument('config', nargs='?', default='pve.yml',
-                        help='Path to configuration file (pve.yml)')
+    parser.add_argument('--config.file', type=pathlib.Path,
+                        dest="config_file", default='/etc/prometheus/pve.yml',
+                        help='Path to config file (/etc/prometheus/pve.yml)')
 
-    parser.add_argument('port', nargs='?', type=int, default='9221',
-                        help='Port on which the exporter is listening (9221)')
-    parser.add_argument('address', nargs='?', default='',
-                        help='Address to which the exporter will bind')
+    parser.add_argument('--web.listen-address',
+                        dest="web_listen_address", default='[::]:9221',
+                        help=(
+                            'Address on which to expose metrics and web server. '
+                            '([::]:9221)'
+                        ))
     parser.add_argument('--server.keyfile', dest='server_keyfile',
                         help='SSL key for server')
     parser.add_argument('--server.certfile', dest='server_certfile',
@@ -72,11 +76,11 @@ def main():
     if 'PVE_USER' in os.environ:
         config = config_from_env(os.environ)
     else:
-        with open(params.config, encoding='utf-8') as handle:
+        with open(params.config_file, encoding='utf-8') as handle:
             config = config_from_yaml(yaml.safe_load(handle))
 
     gunicorn_options = {
-        'bind': f'{params.address}:{params.port}',
+        'bind': f'{params.web_listen_address}',
         'threads': 2,
         'keyfile': params.server_keyfile,
         'certfile': params.server_certfile,
