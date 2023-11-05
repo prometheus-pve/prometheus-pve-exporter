@@ -37,7 +37,7 @@ Example: Run the image with a mounted configuration file and published port:
 
 .. code:: shell
 
-   docker run --init --name prometheus-pve-exporter -d -p 127.0.0.1:9221:9221 -v /path/to/pve.yml:/etc/pve.yml prompve/prometheus-pve-exporter
+   docker run --init --name prometheus-pve-exporter -d -p 127.0.0.1:9221:9221 -v /path/to/pve.yml:/etc/prometheus/pve.yml prompve/prometheus-pve-exporter
 
 Prometheus PVE Exporter will now be reachable at http://localhost:9221/.
 
@@ -92,8 +92,8 @@ Usage
                             Exposes PVE onboot status
 
 
-Use `[::]` for the `address` argument in order to bind to both IPv6 and IPv4
-sockets on dual stacked machines.
+Use `[::]` in the `--web.listen-address` flag in order to bind to both IPv6 and
+IPv4 sockets on dual stacked machines.
 
 Visit http://localhost:9221/pve?target=1.2.3.4&cluster=1&node=1 where 1.2.3.4
 is the IP of the Proxmox VE node to get metrics from. Specify the ``module``

@@ -1,4 +1,4 @@
 default:
   user: prometheus@pve
-  password: sEcr3T!
-  verify_ssl: false
+  token_name: prompve-scraper
+  token_value: XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
