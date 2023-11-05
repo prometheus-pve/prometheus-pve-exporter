@@ -10,7 +10,7 @@ from prometheus_client import CONTENT_TYPE_LATEST, Summary, Counter, generate_la
 from werkzeug.routing import Map, Rule
 from werkzeug.wrappers import Request, Response
 from werkzeug.exceptions import InternalServerError
-from .collector import collect_pve
+from pve_exporter.collector import collect_pve
 
 
 class PveExporterApplication:

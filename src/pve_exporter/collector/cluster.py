@@ -3,22 +3,10 @@ Prometheus collecters for Proxmox VE cluster.
 """
 # pylint: disable=too-few-public-methods
 
-import collections
 import itertools
-import logging
-from proxmoxer import ProxmoxAPI
 
-from prometheus_client import CollectorRegistry, generate_latest
 from prometheus_client.core import GaugeMetricFamily
 
-CollectorsOptions = collections.namedtuple('CollectorsOptions', [
-    'status',
-    'version',
-    'node',
-    'cluster',
-    'resources',
-    'config',
-])
 
 class StatusCollector:
     """
@@ -35,7 +23,7 @@ class StatusCollector:
     def __init__(self, pve):
         self._pve = pve
 
-    def collect(self): # pylint: disable=missing-docstring
+    def collect(self):  # pylint: disable=missing-docstring
         status_metrics = GaugeMetricFamily(
             'pve_up',
             'Node/VM/CT-Status is online/running',
@@ -57,6 +45,7 @@ class StatusCollector:
 
         yield status_metrics
 
+
 class VersionCollector:
     """
     Collects Proxmox VE build information. E.g.:
@@ -71,7 +60,7 @@ class VersionCollector:
     def __init__(self, pve):
         self._pve = pve
 
-    def collect(self): # pylint: disable=missing-docstring
+    def collect(self):  # pylint: disable=missing-docstring
         version_items = self._pve.version.get().items()
         version = {key: value for key, value in version_items if key in self.LABEL_WHITELIST}
 
@@ -84,6 +73,7 @@ class VersionCollector:
         metric.add_metric(label_values, 1)
 
         yield metric
+
 
 class ClusterNodeCollector:
     """
@@ -98,7 +88,7 @@ class ClusterNodeCollector:
     def __init__(self, pve):
         self._pve = pve
 
-    def collect(self): # pylint: disable=missing-docstring
+    def collect(self):  # pylint: disable=missing-docstring
         nodes = [entry for entry in self._pve.cluster.status.get() if entry['type'] == 'node']
         labels = ['id', 'level', 'name', 'nodeid']
 
@@ -114,6 +104,7 @@ class ClusterNodeCollector:
 
             yield info_metrics
 
+
 class ClusterInfoCollector:
     """
     Collects Proxmox VE cluster information. E.g.:
@@ -126,7 +117,7 @@ class ClusterInfoCollector:
     def __init__(self, pve):
         self._pve = pve
 
-    def collect(self): # pylint: disable=missing-docstring
+    def collect(self):  # pylint: disable=missing-docstring
         clusters = [entry for entry in self._pve.cluster.status.get() if entry['type'] == 'cluster']
 
         if clusters:
@@ -152,6 +143,7 @@ class ClusterInfoCollector:
 
             yield info_metrics
 
+
 class ClusterResourcesCollector:
     """
     Collects Proxmox VE cluster resources information, i.e. memory, storage, cpu
@@ -161,7 +153,7 @@ class ClusterResourcesCollector:
     def __init__(self, pve):
         self._pve = pve
 
-    def collect(self): # pylint: disable=missing-docstring
+    def collect(self):  # pylint: disable=missing-docstring
         metrics = {
             'maxdisk': GaugeMetricFamily(
                 'pve_disk_size_bytes',
@@ -252,72 +244,3 @@ class ClusterResourcesCollector:
                     metrics[key].add_metric(label_values, metric_value)
 
         return itertools.chain(metrics.values(), info_metrics.values())
-
-class NodeConfigCollector:
-    """
-    Collects Proxmox VE VM information directly from config, i.e. boot, name, onboot, etc.
-    For manual test: "pvesh get /nodes/<node>/<type>/<vmid>/config"
-
-    # HELP pve_onboot_status Proxmox vm config onboot value
-    # TYPE pve_onboot_status gauge
-    pve_onboot_status{id="qemu/113",node="XXXX",type="qemu"} 1.0
-    """
-
-    def __init__(self, pve):
-        self._pve = pve
-        self._log = logging.getLogger(__name__)
-
-    def collect(self): # pylint: disable=missing-docstring
-        metrics = {
-            'onboot': GaugeMetricFamily(
-                'pve_onboot_status',
-                'Proxmox vm config onboot value',
-                labels=['id', 'node', 'type']),
-        }
-
-        node = None
-        for entry in self._pve.cluster.status.get():
-            if entry['type'] == 'node' and entry['local']:
-                node = entry['name']
-                break
-
-        # Scrape qemu config
-        vmtype = 'qemu'
-        for vmdata in self._pve.nodes(node).qemu.get():
-            config = self._pve.nodes(node).qemu(vmdata['vmid']).config.get().items()
-            for key, metric_value in config:
-                label_values = [f"{vmtype}/{vmdata['vmid']}", node, vmtype]
-                if key in metrics:
-                    metrics[key].add_metric(label_values, metric_value)
-
-        # Scrape LXC config
-        vmtype = 'lxc'
-        for vmdata in self._pve.nodes(node).lxc.get():
-            config = self._pve.nodes(node).lxc(vmdata['vmid']).config.get().items()
-            for key, metric_value in config:
-                label_values = [f"{vmtype}/{vmdata['vmid']}", node, vmtype]
-                if key in metrics:
-                    metrics[key].add_metric(label_values, metric_value)
-
-        return metrics.values()
-
-def collect_pve(config, host, cluster, node, options: CollectorsOptions):
-    """Scrape a host and return prometheus text format for it"""
-
-    pve = ProxmoxAPI(host, **config)
-
-    registry = CollectorRegistry()
-    if cluster and options.status:
-        registry.register(StatusCollector(pve))
-    if cluster and options.resources:
-        registry.register(ClusterResourcesCollector(pve))
-    if cluster and options.node:
-        registry.register(ClusterNodeCollector(pve))
-    if cluster and options.cluster:
-        registry.register(ClusterInfoCollector(pve))
-    if cluster and options.version:
-        registry.register(VersionCollector(pve))
-    if node and options.config:
-        registry.register(NodeConfigCollector(pve))
-
-    return generate_latest(registry)
