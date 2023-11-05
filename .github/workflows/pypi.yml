@@ -15,11 +15,11 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install --yes python3-build python3-venv
+          sudo apt-get install --yes python3-setuptools python3-wheel
 
       - name: Build
         run: |
-          python3 -m build
+          python3 setup.py sdist bdist_wheel
 
       - uses: actions/upload-artifact@v3
         with:
