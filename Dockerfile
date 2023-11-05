@@ -38,5 +38,3 @@ USER prometheus
 EXPOSE 9221
 
 ENTRYPOINT [ "/usr/bin/pve_exporter" ]
-
-CMD [ "/etc/pve.yml" ]
