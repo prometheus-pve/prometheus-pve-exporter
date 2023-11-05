@@ -9,6 +9,15 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 `Unreleased`_
 -------------
 
+`3.0.1`_ - 2023-11-05
+---------------------
+
+Changed
+~~~~~~~
+
+- Revert to deprecated way of building packages (#193)
+
+
 `3.0.0`_ - 2023-11-05
 ---------------------
 
@@ -20,6 +29,20 @@ Changed (BREAKING)
 - Remove tini from docker image (#179)
 - Bump required python version to 3.9 (bullseye) (#162)
 - Run with a dedicated user in container by default (#182)
+
+Changed
+~~~~~~~
+
+- Implement pypi trusted publishing workflow (#187)
+- Use PEP440 pattern when converting repo release tags into docker image tags (#183)
+- Remove references to develop branch (#181)
+- Update docker image to alpine 3.18.4 (#170)
+- Bump required python version to 3.9 (in README) (#169)
+- Remove fallback for BooleanOptionalAction (obsolete in python>=3.9) (#163)
+- Fix github actions (#161)
+- Bump actions/checkout from 2 to 4 (#177)
+- ci: add dependabot (#176)
+- ci: add arm64 image build (#175)
 
 
 `3.0.0b1`_ - 2023-10-16
@@ -277,7 +300,8 @@ Added
 
 .. _Keep a Changelog: http://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: http://semver.org/spec/v2.0.0.html
-.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.0.0...HEAD
+.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.0.1...HEAD
+.. _3.0.1: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.0.1...v3.0.0
 .. _3.0.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.0.0b1...v3.0.0
 .. _3.0.0b1: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v2.3.1...v3.0.0b1
 .. _2.3.1: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v2.3.0...v2.3.1
