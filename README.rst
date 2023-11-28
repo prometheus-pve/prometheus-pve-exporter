@@ -278,8 +278,8 @@ Example config for PVE exporter running on PVE node:
         metrics_path: /pve
         params:
           module: [default]
-          cluster: 1
-          node: 1
+          cluster: ['1']
+          node: ['1']
 
 Example config for PVE exporter running on Prometheus host:
 
@@ -294,8 +294,8 @@ Example config for PVE exporter running on Prometheus host:
         metrics_path: /pve
         params:
           module: [default]
-          cluster: 1
-          node: 1
+          cluster: ['1']
+          node: ['1']
         relabel_configs:
           - source_labels: [__address__]
             target_label: __param_target
