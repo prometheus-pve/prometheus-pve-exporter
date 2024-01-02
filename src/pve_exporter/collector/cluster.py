@@ -203,6 +203,10 @@ class ClusterResourcesCollector:
                 'pve_storage_shared',
                 'Whether or not the storage is shared among cluster nodes',
                 labels=['id']),
+            'template': GaugeMetricFamily(
+                'pve_template',
+                'Whether or not the VM/CT is template',
+                labels=['id']),
         }
 
         info_metrics = {
