@@ -9,6 +9,25 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 `Unreleased`_
 -------------
 
+`3.1.0`_ - 2024-01-03
+---------------------
+
+Added
+~~~~~
+
+- Adding template label to pve_guest_info metric (#208)
+
+Changed
+~~~~~~~
+
+- Simplify container build spec (#210)
+- Fix coding style after template label addition (#209)
+- Bump actions/download-artifact from 3 to 4 (#205)
+- Bump actions/upload-artifact from 3 to 4 (#206)
+- Correct cluster and node params (#202)
+- Extract cluster and node collectors into separate files (#198)
+
+
 `3.0.2`_ - 2023-11-05
 ---------------------
 
@@ -310,7 +329,8 @@ Added
 
 .. _Keep a Changelog: http://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: http://semver.org/spec/v2.0.0.html
-.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.0.2...HEAD
+.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.1.0...HEAD
+.. _3.1.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.1.0...v3.0.2
 .. _3.0.2: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.0.2...v3.0.1
 .. _3.0.1: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.0.1...v3.0.0
 .. _3.0.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.0.0b1...v3.0.0
