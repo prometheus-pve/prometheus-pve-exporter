@@ -203,17 +203,13 @@ class ClusterResourcesCollector:
                 'pve_storage_shared',
                 'Whether or not the storage is shared among cluster nodes',
                 labels=['id']),
-            'template': GaugeMetricFamily(
-                'pve_template',
-                'Whether or not the VM/CT is template',
-                labels=['id']),
         }
 
         info_metrics = {
             'guest': GaugeMetricFamily(
                 'pve_guest_info',
                 'VM/CT info',
-                labels=['id', 'node', 'name', 'type']),
+                labels=['id', 'node', 'name', 'type', 'template']),
             'storage': GaugeMetricFamily(
                 'pve_storage_info',
                 'Storage info',
@@ -222,11 +218,11 @@ class ClusterResourcesCollector:
 
         info_lookup = {
             'lxc': {
-                'labels': ['id', 'node', 'name', 'type'],
+                'labels': ['id', 'node', 'name', 'type', 'template'],
                 'gauge': info_metrics['guest'],
             },
             'qemu': {
-                'labels': ['id', 'node', 'name', 'type'],
+                'labels': ['id', 'node', 'name', 'type', 'template'],
                 'gauge': info_metrics['guest'],
             },
             'storage': {
@@ -239,7 +235,7 @@ class ClusterResourcesCollector:
             restype = resource['type']
 
             if restype in info_lookup:
-                label_values = [resource.get(key, '') for key in info_lookup[restype]['labels']]
+                label_values = [str(resource.get(key, '')) for key in info_lookup[restype]['labels']]
                 info_lookup[restype]['gauge'].add_metric(label_values, 1)
 
             label_values = [resource['id']]
