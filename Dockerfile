@@ -1,6 +1,4 @@
-ARG alpine_version=3.18.4
-
-FROM alpine:${alpine_version} as base
+FROM alpine:3.18.4 as base
 RUN apk update && apk upgrade
 
 RUN apk add --no-cache \
@@ -16,13 +14,9 @@ RUN apk add --no-cache \
     python3
 
 FROM base as builder
-
-ARG proxmoxer_version=2.0.1
-ENV proxmoxer_version=${proxmoxer_version}
-
 ADD . /src
 WORKDIR /opt
-RUN pip3 wheel --no-deps /src proxmoxer==${proxmoxer_version}
+RUN pip3 wheel --no-deps /src proxmoxer==2.0.1
 
 FROM base as runtime
 
