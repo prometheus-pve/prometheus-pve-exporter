@@ -1,0 +1,40 @@
+# Contributor: Patrycja Rosa <alpine@ptrcnull.me>
+# Maintainer: Patrycja Rosa <alpine@ptrcnull.me>
+pkgname=py3-proxmoxer
+pkgver=2.0.1
+pkgrel=1
+pkgdesc="Python wrapper for Proxmox API v2"
+url="https://github.com/proxmoxer/proxmoxer"
+arch="noarch"
+license="MIT"
+depends="python3"
+makedepends="py3-setuptools"
+checkdepends="
+	py3-mock
+	py3-openssh-wrapper
+	py3-paramiko
+	py3-pytest
+	py3-requests-toolbelt
+	py3-responses
+	py3-testfixtures
+	"
+subpackages="$pkgname-pyc"
+source="https://github.com/proxmoxer/proxmoxer/archive/$pkgver/proxmoxer-$pkgver.tar.gz"
+builddir="$srcdir/proxmoxer-$pkgver"
+
+build() {
+	python3 setup.py build
+}
+
+check() {
+	# current https tests require an ancient version of py3-requests
+	pytest
+}
+
+package() {
+	python3 setup.py install --skip-build --root="$pkgdir"
+}
+
+sha512sums="
+74bdf599d85aaf16cf2802a728b83c18d572ea0df46c743e221ba0019c3fb9163f5acc0288cfd0d613d3c1b5691866e77b9e6448591dfc5faacc4226eab8344e  proxmoxer-2.0.1.tar.gz
+"

@@ -1,0 +1,27 @@
+# Contributor: Patrycja Rosa <alpine@ptrcnull.me>
+# Maintainer: Patrycja Rosa <alpine@ptrcnull.me>
+pkgname=py3-openssh-wrapper
+pkgver=0.5_git20130425
+_commit=bbae8f9085ee341ea9f34231c8b716aa0d9b3a49
+pkgrel=2
+pkgdesc="Python wrapper around OpenSSH client"
+url="https://github.com/NetAngels/openssh-wrapper"
+arch="noarch"
+license="BSD"
+depends="python3"
+subpackages="$pkgname-pyc"
+source="https://github.com/NetAngels/openssh-wrapper/archive/$_commit/py3-openssh-wrapper-$pkgver.tar.gz"
+builddir="$srcdir/openssh-wrapper-$_commit"
+options="!check" # requires ssh daemon on localhost
+
+build() {
+	python3 setup.py build
+}
+
+package() {
+	python3 setup.py install --skip-build --root="$pkgdir"
+}
+
+sha512sums="
+7b41f37aa4051e62efda1014543e395e396b9ce5e5b4a291cc4af6b31331b634818ff040bc385834ac26432b5d83cd6ac1767ecfd89c8902fe1d07a0b725a3e5  py3-openssh-wrapper-0.5_git20130425.tar.gz
+"

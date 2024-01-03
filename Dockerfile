@@ -14,16 +14,31 @@ RUN apk add --no-cache \
     python3
 
 FROM base as builder
-ADD . /src
-WORKDIR /opt
-RUN pip3 wheel --no-deps /src proxmoxer==2.0.1
+
+RUN apk add --no-cache \
+    alpine-sdk
+
+RUN abuild-keygen -a -n -q && cp /root/.abuild/*.pub /etc/apk/keys/
+
+ADD alpine/py3-openssh-wrapper /src/alpine/py3-openssh-wrapper
+WORKDIR /src/alpine/py3-openssh-wrapper
+RUN abuild -r -F && apk add --no-cache /root/packages/alpine/*/py3-openssh-wrapper-*.apk
+
+ADD alpine/py3-proxmoxer /src/alpine/py3-proxmoxer
+WORKDIR /src/alpine/py3-proxmoxer
+RUN abuild -r -F && apk add --no-cache /root/packages/alpine/*/py3-proxmoxer-*.apk
+
+ADD . /src/alpine/pve-exporter
+WORKDIR /src/alpine/pve-exporter
+RUN abuild -r -F && apk add --no-cache /root/packages/alpine/*/pve-exporter-*.apk
 
 FROM base as runtime
 
-COPY --from=builder /opt /opt
+COPY --from=builder /root/.abuild/*.pub /etc/apk/keys/
+COPY --from=builder /root/packages/alpine/ /root/packages/alpine/
 
-RUN pip3 install --no-cache-dir --no-index /opt/*py3-none-any.whl && \
-    rm /opt/*py3-none-any.whl && \
+RUN apk add --no-cache /root/packages/alpine/*/*.apk && \
+    rm -rf /root/packages && \
     addgroup -S -g 101 prometheus && \
     adduser -D -H -S -G prometheus -u 101 prometheus
 
