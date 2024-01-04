@@ -1,0 +1,7 @@
+prometheus_client>=0.0.11
+proxmoxer
+pyyaml
+requests
+Werkzeug
+gunicorn
+paramiko
