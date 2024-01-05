@@ -39,4 +39,4 @@ jobs:
         run: pylint pve_exporter
 
       - name: Run pyflakes
-        run: pyflakes3 src/pve_exporter
+        run: pyflakes src/pve_exporter
