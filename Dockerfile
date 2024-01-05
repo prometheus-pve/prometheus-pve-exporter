@@ -9,7 +9,7 @@ RUN apk add --no-cache \
 ADD . /src/prometheus-pve-exporter
 RUN python3 -m venv /opt/prometheus-pve-exporter && \
     /opt/prometheus-pve-exporter/bin/pip install -r /src/prometheus-pve-exporter/requirements.txt && \
-    /opt/prometheus-pve-exporter/bin/pip install --no-index /src/prometheus-pve-exporter && \
+    /opt/prometheus-pve-exporter/bin/pip install /src/prometheus-pve-exporter && \
     ln -s /opt/prometheus-pve-exporter/bin/pve_exporter /usr/bin/pve_exporter && \
     rm -rf /src/prometheus-pve-exporter /root/.cache
 

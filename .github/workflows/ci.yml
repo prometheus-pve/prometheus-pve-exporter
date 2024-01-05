@@ -33,7 +33,7 @@ jobs:
         run: pip install -r requirements-test.txt
 
       - name: Install pve_exporter
-        run: pip install --no-index .
+        run: pip install .
 
       - name: Run pylint
         run: pylint pve_exporter
