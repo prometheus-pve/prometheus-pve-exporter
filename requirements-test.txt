@@ -1,2 +1,2 @@
-pylint
+pylint==2.12.2
 pyflakes
