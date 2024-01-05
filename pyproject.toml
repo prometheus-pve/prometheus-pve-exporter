@@ -4,13 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "prometheus-pve-exporter"
-authors = [
-    {name = "Lorenz Schori", email = "lo@znerol.ch"},
-]
-description="Proxmox VE exporter for the Prometheus monitoring system."
+authors = [{ name = "Lorenz Schori", email = "lo@znerol.ch" }]
+description = "Proxmox VE exporter for the Prometheus monitoring system."
 requires-python = ">=3.9"
 keywords = ["prometheus", "exporter", "network", "monitoring", "proxmox"]
-license = {text = "Apache-2.0"}
+license = { text = "Apache-2.0" }
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Information Technology",
@@ -30,4 +28,4 @@ pve_exporter = "pve_exporter.cli:main"
 [tool.setuptools.dynamic]
 dependencies = { file = ["requirements.in"] }
 optional-dependencies.test = { file = ["requirements-test.txt"] }
-readme = {file = ["README.rst"]}
+readme = { file = ["README.rst"] }
