@@ -4,6 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "prometheus-pve-exporter"
+version = "3.1.0"
 authors = [{ name = "Lorenz Schori", email = "lo@znerol.ch" }]
 description = "Proxmox VE exporter for the Prometheus monitoring system."
 requires-python = ">=3.9"
@@ -17,7 +18,7 @@ classifiers = [
     "Topic :: System :: Networking :: Monitoring",
     "License :: OSI Approved :: Apache Software License",
 ]
-dynamic = ["dependencies", "optional-dependencies", "readme", "version"]
+dynamic = ["dependencies", "optional-dependencies", "readme"]
 
 [project.urls]
 Homepage = "https://github.com/prometheus-pve/prometheus-pve-exporter"
