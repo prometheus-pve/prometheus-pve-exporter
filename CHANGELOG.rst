@@ -9,6 +9,17 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 `Unreleased`_
 -------------
 
+`3.2.0`_ - 2024-01-06
+---------------------
+
+Changed
+~~~~~~~
+
+- Bump alpine from 3.18.5 to 3.19.0 (#216)
+- Update to pylint 3 (#218)
+- Use pyproject.toml, pip-compile and venv to build container image (#215)
+
+
 `3.1.0`_ - 2024-01-03
 ---------------------
 
@@ -329,7 +340,8 @@ Added
 
 .. _Keep a Changelog: http://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: http://semver.org/spec/v2.0.0.html
-.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.1.0...HEAD
+.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.2.0...HEAD
+.. _3.2.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.2.0...v3.1.0
 .. _3.1.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.1.0...v3.0.2
 .. _3.0.2: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.0.2...v3.0.1
 .. _3.0.1: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.0.1...v3.0.0
