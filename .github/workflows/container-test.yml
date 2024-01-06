@@ -1,0 +1,41 @@
+---
+name: Build and test container image
+
+# yamllint disable-line rule:truthy
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - v*
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          platforms: linux/arm64,linux/amd64
+          tags: prometheus-pve-exporter:develop
+
+      - name: Container image smoketest
+        run: docker run -it --rm prometheus-pve-exporter:develop --help
