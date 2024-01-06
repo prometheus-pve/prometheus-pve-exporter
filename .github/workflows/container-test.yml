@@ -15,7 +15,17 @@ on:
       - 'setup.py'
 
 jobs:
-  deploy:
+  test:
+    strategy:
+      matrix:
+        include:
+          - platform: 'linux/arm64'
+            tag: prometheus-pve-exporter:develop-arm64
+            smoketest: false
+          - platform: 'linux/amd64'
+            tag: prometheus-pve-exporter:develop-amd64
+            smoketest: true
+
     runs-on: ubuntu-latest
 
     permissions:
@@ -31,13 +41,14 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build Docker image
+      - name: Build Docker image (all architectures)
         uses: docker/build-push-action@v5
         with:
           context: .
           load: true
-          platforms: linux/arm64,linux/amd64
-          tags: prometheus-pve-exporter:develop
+          platforms: ${{ matrix.platform }}
+          tags: ${{ matrix.tag }}
 
       - name: Container image smoketest
-        run: docker run --rm prometheus-pve-exporter:develop --help
+        if: ${{ matrix.smoketest }}
+        run: docker run --rm ${{ matrix.tag }} --help
