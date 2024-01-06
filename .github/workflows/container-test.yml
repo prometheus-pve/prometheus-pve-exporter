@@ -40,4 +40,4 @@ jobs:
           tags: prometheus-pve-exporter:develop
 
       - name: Container image smoketest
-        run: docker run -it --rm prometheus-pve-exporter:develop --help
+        run: docker run --rm prometheus-pve-exporter:develop --help
