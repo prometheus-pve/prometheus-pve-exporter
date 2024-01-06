@@ -35,7 +35,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          push: false
+          load: true
           platforms: linux/arm64,linux/amd64
           tags: prometheus-pve-exporter:develop
 
