@@ -10,16 +10,19 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
 
       - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install --yes python3-setuptools python3-wheel
+        run: pip install build
 
       - name: Build
-        run: |
-          python3 setup.py sdist bdist_wheel
+        run: python -m build .
 
       - uses: actions/upload-artifact@v4
         with:
