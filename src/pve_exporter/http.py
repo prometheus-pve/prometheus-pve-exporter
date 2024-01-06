@@ -4,6 +4,7 @@ HTTP API for Proxmox VE prometheus collector.
 
 import logging
 import time
+from functools import partial
 
 import gunicorn.app.base
 from prometheus_client import CONTENT_TYPE_LATEST, Summary, Counter, generate_latest
@@ -17,8 +18,6 @@ class PveExporterApplication:
     """
     Proxmox VE prometheus collector HTTP handler.
     """
-
-    # pylint: disable=no-self-use
 
     def __init__(self, config, duration, errors, collectors):
         self._config = config
@@ -114,7 +113,7 @@ class PveExporterApplication:
         ])
 
         urls = url_map.bind_to_environ(request.environ)
-        view_func = lambda endpoint, values: self.view(endpoint, values, request.args)
+        view_func = partial(self.view, args=request.args)
         return urls.dispatch(view_func, catch_http_exceptions=True)
 
 
