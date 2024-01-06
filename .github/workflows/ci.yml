@@ -21,16 +21,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install pylint / pyflakes
-        run: |
-          sudo apt-get update
-          sudo apt-get install --yes pylint pyflakes3
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install test dependencies
+        run: pip install -r requirements-test.txt
 
       - name: Install pve_exporter
-        run: sudo pip install -e .
+        run: pip install .
 
       - name: Run pylint
         run: pylint pve_exporter
 
       - name: Run pyflakes
-        run: pyflakes3 src/pve_exporter
+        run: pyflakes src/pve_exporter
