@@ -1,0 +1,54 @@
+---
+name: Build and test container image
+
+# yamllint disable-line rule:truthy
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'Dockerfile'
+      - 'requirements.txt'
+      - 'setup.py'
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        include:
+          - platform: 'linux/arm64'
+            tag: prometheus-pve-exporter:develop-arm64
+            smoketest: false
+          - platform: 'linux/amd64'
+            tag: prometheus-pve-exporter:develop-amd64
+            smoketest: true
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image (all architectures)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          load: true
+          platforms: ${{ matrix.platform }}
+          tags: ${{ matrix.tag }}
+
+      - name: Container image smoketest
+        if: ${{ matrix.smoketest }}
+        run: docker run --rm ${{ matrix.tag }} --help
