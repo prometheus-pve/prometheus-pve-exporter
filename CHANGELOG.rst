@@ -17,6 +17,7 @@ Changed
 
 - Build cffi and pyyaml from source (#222)
 - Use appropriate build tools to create dist for pypi (#220)
+- Bump alpine container image version from 3.19.0 to 3.19.1 (#225)
 
 
 `3.2.0`_ - 2024-01-06
