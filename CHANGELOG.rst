@@ -9,6 +9,16 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 `Unreleased`_
 -------------
 
+`3.2.2`_ - 2024-02-06
+---------------------
+
+Changed
+~~~~~~~
+
+- Bump cryptography from 41.0.7 to 42.0.0 (#226)
+- Bump alpine container image version from 3.19.0 to 3.19.1 (#225)
+
+
 `3.2.1`_ - 2024-01-07
 ---------------------
 
@@ -17,7 +27,6 @@ Changed
 
 - Build cffi and pyyaml from source (#222)
 - Use appropriate build tools to create dist for pypi (#220)
-- Bump alpine container image version from 3.19.0 to 3.19.1 (#225)
 
 
 `3.2.0`_ - 2024-01-06
