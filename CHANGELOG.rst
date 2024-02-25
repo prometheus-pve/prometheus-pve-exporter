@@ -9,6 +9,16 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 `Unreleased`_
 -------------
 
+
+`3.2.3`_ - 2024-02-25
+---------------------
+
+Changed
+~~~~~~~
+
+- Bump cryptography from 42.0.2 to 42.0.4 (#232)
+
+
 `3.2.2`_ - 2024-02-06
 ---------------------
 
@@ -360,7 +370,9 @@ Added
 
 .. _Keep a Changelog: http://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: http://semver.org/spec/v2.0.0.html
-.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.2.1...HEAD
+.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.2.3...HEAD
+.. _3.2.3: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.2.3...v3.2.2
+.. _3.2.2: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.2.2...v3.2.1
 .. _3.2.1: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.2.1...v3.2.0
 .. _3.2.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.2.0...v3.1.0
 .. _3.1.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.1.0...v3.0.2
