@@ -10,6 +10,16 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 -------------
 
 
+`3.2.4`_ - 2024-04-12
+---------------------
+
+Changed
+~~~~~~~
+
+- Bump idna from 3.6 to 3.7 (#239)
+- Bump werkzeug from 3.0.1 to 3.0.2 (#237)
+
+
 `3.2.3`_ - 2024-02-25
 ---------------------
 
@@ -370,7 +380,8 @@ Added
 
 .. _Keep a Changelog: http://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: http://semver.org/spec/v2.0.0.html
-.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.2.3...HEAD
+.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.2.4...HEAD
+.. _3.2.4: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.2.4...v3.2.3
 .. _3.2.3: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.2.3...v3.2.2
 .. _3.2.2: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.2.2...v3.2.1
 .. _3.2.1: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.2.1...v3.2.0
