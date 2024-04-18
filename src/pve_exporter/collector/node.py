@@ -57,3 +57,51 @@ class NodeConfigCollector:
                     metrics[key].add_metric(label_values, metric_value)
 
         return metrics.values()
+
+class NodeReplicationCollector:
+    """
+    Collects Proxmox VE Replication information directly from status, i.e. replication time,last_time
+    For manual test: "pvesh get /nodes/<node>/replication/<id>/status"
+    # HELP pve_replication_duration Proxmox vm replication duration
+    # TYPE pve_replication_duration gauge
+    pve_replication_duration{id="101-0",type="local", vmtype="lxc", source="server1", target="server2", guest="101"} 47.56
+    """
+
+    def __init__(self, pve):
+        self._pve = pve
+
+    def collect(self): # pylint: disable=missing-docstring
+        metrics = {
+            'duration': GaugeMetricFamily(
+                'pve_replication_duration',
+                'Proxmox vm replication duration',
+                labels=['id', 'type', 'vmtype', 'source', 'target', 'guest']),
+            'last_sync': GaugeMetricFamily(
+                'pve_replication_last_sync',
+                'Proxmox vm replication last_sync',
+                labels=['id', 'type', 'vmtype', 'source', 'target', 'guest']),
+            'last_try': GaugeMetricFamily(
+                'pve_replication_last_try',
+                'Proxmox vm replication last_try',
+                labels=['id', 'type', 'vmtype', 'source', 'target', 'guest']),
+            'next_sync': GaugeMetricFamily(
+                'pve_replication_next_sync',
+                'Proxmox vm replication next_sync',
+                labels=['id', 'type', 'vmtype', 'source', 'target', 'guest']),
+            'fail_count': GaugeMetricFamily(
+                'pve_replication_fail_count',
+                'Proxmox vm replication fail_count',
+                labels=['id', 'type', 'vmtype', 'source', 'target', 'guest']),
+        }
+
+        for entry in self._pve.cluster.status.get():
+            if entry['type'] == 'node':
+                node = entry['name']
+
+                for vmdata in self._pve("nodes/{0}/replication/".format(node)).get():
+                    for key, metric_value in self._pve("nodes/{0}/replication/{1}/status".format(node,vmdata['id'])).get().items():
+                        label_values = [str(vmdata['id']), str(vmdata['type']), str(vmdata['vmtype']), str(vmdata['source']), str(vmdata['target']), str(vmdata['guest'])]
+                        if key in metrics:
+                            metrics[key].add_metric(label_values, metric_value)
+
+        return metrics.values()

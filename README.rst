@@ -52,6 +52,7 @@ Usage
                         [--collector.cluster | --no-collector.cluster]
                         [--collector.resources | --no-collector.resources]
                         [--collector.config | --no-collector.config]
+                        [--collector.replication | --no-collector.replication]
                         [--config.file CONFIG_FILE]
                         [--web.listen-address WEB_LISTEN_ADDRESS]
                         [--server.keyfile SERVER_KEYFILE]
@@ -90,6 +91,8 @@ Usage
 
       --collector.config, --no-collector.config
                             Exposes PVE onboot status
+      --collector.replication, --no-collector.replication
+                            Exposes PVE replication info
 
 
 Use `[::]` in the `--web.listen-address` flag in order to bind to both IPv6 and
@@ -191,6 +194,21 @@ Here's an example of the metrics exported.
     # HELP pve_version_info Proxmox VE version info
     # TYPE pve_version_info gauge
     pve_version_info{release="7.1",repoid="6fe299a0",version="7.1-5"} 1.0
+    # HELP pve_replication_duration Proxmox vm replication duration
+    # TYPE pve_replication_duration gauge
+    pve_replication_duration{guest="1",id="1-0",source="proxmox1",target="proxmox2",type="local",vmtype="qemu"} 7.73584
+    # HELP pve_replication_last_sync Proxmox vm replication last_sync
+    # TYPE pve_replication_last_sync gauge
+    pve_replication_last_sync{guest="1",id="1-0",source="proxmox1",target="proxmox2",type="local",vmtype="qemu"} 1.713382503e+09
+    # HELP pve_replication_last_try Proxmox vm replication last_try
+    # TYPE pve_replication_last_try gauge
+    pve_replication_last_try{guest="1",id="1-0",source="proxmox1",target="proxmox2",type="local",vmtype="qemu"} 1.713382503e+09
+    # HELP pve_replication_next_sync Proxmox vm replication next_sync
+    # TYPE pve_replication_next_sync gauge
+    pve_replication_next_sync{guest="1",id="1-0",source="proxmox1",target="proxmox2",type="local",vmtype="qemu"} 1.7134689e+09
+    # HELP pve_replication_fail_count Proxmox vm replication fail_count
+    # TYPE pve_replication_fail_count gauge
+    pve_replication_fail_count{guest="1",id="1-0",source="proxmox1",target="proxmox2",type="local",vmtype="qemu"} 0.0
 
 Authentication
 --------------
