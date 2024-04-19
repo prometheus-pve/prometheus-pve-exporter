@@ -10,14 +10,15 @@ from prometheus_client.core import GaugeMetricFamily
 
 class StatusCollector:
     """
-    Collects Proxmox VE Node/VM/CT-Status
+    Collects Proxmox VE Node/VM/CT/Replication-Status
 
-    # HELP pve_up Node/VM/CT-Status is online/running
+    # HELP pve_up Node/VM/CT/Replication-Status is online/running/enabled
     # TYPE pve_up gauge
     pve_up{id="node/proxmox-host"} 1.0
     pve_up{id="cluster/pvec"} 1.0
     pve_up{id="lxc/101"} 1.0
     pve_up{id="qemu/102"} 1.0
+    pve_up{id="replication/102-0"} 1.0
     """
 
     def __init__(self, pve):
@@ -26,7 +27,7 @@ class StatusCollector:
     def collect(self):  # pylint: disable=missing-docstring
         status_metrics = GaugeMetricFamily(
             'pve_up',
-            'Node/VM/CT-Status is online/running',
+            'Node/VM/CT/Replication-Status is online/running/enabled',
             labels=['id'])
 
         for entry in self._pve.cluster.status.get():
@@ -42,6 +43,13 @@ class StatusCollector:
         for resource in self._pve.cluster.resources.get(type='vm'):
             label_values = [resource['id']]
             status_metrics.add_metric(label_values, resource['status'] == 'running')
+
+        for job in self._pve.cluster.replication.get():
+            label_values = [f"replication/{job['id']}"]
+            if 'disable' in job:
+                status_metrics.add_metric(label_values, job['disable'] == 0)
+            else:
+                status_metrics.add_metric(label_values, 1)
 
         yield status_metrics
 

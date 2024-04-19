@@ -122,10 +122,11 @@ Here's an example of the metrics exported.
 
 ::
 
-    # HELP pve_up Node/VM/CT-Status is online/running
+    # HELP pve_up Node/VM/CT/Replication-Status is online/running/enabled
     # TYPE pve_up gauge
     pve_up{id="node/proxmox"} 1.0
     pve_up{id="qemu/100"} 1.0
+    pve_up{id="replication/100-0"} 1.0
     # HELP pve_disk_size_bytes Size of storage device
     # TYPE pve_disk_size_bytes gauge
     pve_disk_size_bytes{id="qemu/100"} 6.8719476736e+010
