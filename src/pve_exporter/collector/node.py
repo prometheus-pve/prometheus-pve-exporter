@@ -109,7 +109,13 @@ class NodeReplicationCollector:
         for vmdata in self._pve("nodes/{0}/replication/".format(node)).get():
             # Add info metric
             label_values = [str(vmdata['id']), str(vmdata['type']), f"node/{vmdata['source']}", f"node/{vmdata['target']}", f"{vmdata['vmtype']}/{vmdata['guest']}"]
-            info_metrics['info'].add_metric(label_values, 1)
+
+            # Set info metric to 0 if replication job is disabled
+            status = self._pve("nodes/{0}/replication/{1}/status".format(node,vmdata['id'])).get().get('disable')
+            if status == 1:
+                info_metrics['info'].add_metric(label_values, 0)
+            else:
+                info_metrics['info'].add_metric(label_values, 1)
 
             # Add metrics
             label_values = [str(vmdata['id'])]
