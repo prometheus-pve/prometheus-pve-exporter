@@ -4,6 +4,7 @@ Prometheus collecters for Proxmox VE cluster.
 # pylint: disable=too-few-public-methods
 
 import logging
+import itertools
 
 from prometheus_client.core import GaugeMetricFamily
 
@@ -71,27 +72,35 @@ class NodeReplicationCollector:
         self._pve = pve
 
     def collect(self): # pylint: disable=missing-docstring
+
+        info_metrics = {
+            'info': GaugeMetricFamily(
+            'pve_replication_info',
+            'Proxmox vm replication info',
+            labels=['id', 'type', 'source', 'target', 'guest'])
+        }
+
         metrics = {
             'duration': GaugeMetricFamily(
                 'pve_replication_duration',
                 'Proxmox vm replication duration',
-                labels=['id', 'type', 'vmtype', 'source', 'target', 'guest']),
+                labels=['id']),
             'last_sync': GaugeMetricFamily(
                 'pve_replication_last_sync',
                 'Proxmox vm replication last_sync',
-                labels=['id', 'type', 'vmtype', 'source', 'target', 'guest']),
+                labels=['id']),
             'last_try': GaugeMetricFamily(
                 'pve_replication_last_try',
                 'Proxmox vm replication last_try',
-                labels=['id', 'type', 'vmtype', 'source', 'target', 'guest']),
+                labels=['id']),
             'next_sync': GaugeMetricFamily(
                 'pve_replication_next_sync',
                 'Proxmox vm replication next_sync',
-                labels=['id', 'type', 'vmtype', 'source', 'target', 'guest']),
+                labels=['id']),
             'fail_count': GaugeMetricFamily(
                 'pve_replication_fail_count',
                 'Proxmox vm replication fail_count',
-                labels=['id', 'type', 'vmtype', 'source', 'target', 'guest']),
+                labels=['id']),
         }
 
         node = None
@@ -101,9 +110,14 @@ class NodeReplicationCollector:
                 break
 
         for vmdata in self._pve("nodes/{0}/replication/".format(node)).get():
+            # Add info metric
+            label_values = [str(vmdata['id']), str(vmdata['type']), f"node/{vmdata['source']}", f"node/{vmdata['target']}", f"{vmdata['vmtype']}/{vmdata['guest']}"]
+            info_metrics['info'].add_metric(label_values, 1)
+
+            # Add metrics
+            label_values = [str(vmdata['id'])]
             for key, metric_value in self._pve("nodes/{0}/replication/{1}/status".format(node,vmdata['id'])).get().items():
-                label_values = [str(vmdata['id']), str(vmdata['type']), str(vmdata['vmtype']), str(vmdata['source']), str(vmdata['target']), str(vmdata['guest'])]
                 if key in metrics:
                     metrics[key].add_metric(label_values, metric_value)
 
-        return metrics.values()
+        return itertools.chain(metrics.values(), info_metrics.values())
