@@ -94,14 +94,16 @@ class NodeReplicationCollector:
                 labels=['id', 'type', 'vmtype', 'source', 'target', 'guest']),
         }
 
+        node = None
         for entry in self._pve.cluster.status.get():
-            if entry['type'] == 'node':
+            if entry['type'] == 'node' and entry['local']:
                 node = entry['name']
+                break
 
-                for vmdata in self._pve("nodes/{0}/replication/".format(node)).get():
-                    for key, metric_value in self._pve("nodes/{0}/replication/{1}/status".format(node,vmdata['id'])).get().items():
-                        label_values = [str(vmdata['id']), str(vmdata['type']), str(vmdata['vmtype']), str(vmdata['source']), str(vmdata['target']), str(vmdata['guest'])]
-                        if key in metrics:
-                            metrics[key].add_metric(label_values, metric_value)
+        for vmdata in self._pve("nodes/{0}/replication/".format(node)).get():
+            for key, metric_value in self._pve("nodes/{0}/replication/{1}/status".format(node,vmdata['id'])).get().items():
+                label_values = [str(vmdata['id']), str(vmdata['type']), str(vmdata['vmtype']), str(vmdata['source']), str(vmdata['target']), str(vmdata['guest'])]
+                if key in metrics:
+                    metrics[key].add_metric(label_values, metric_value)
 
         return metrics.values()
