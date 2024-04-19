@@ -61,11 +61,8 @@ class NodeConfigCollector:
 
 class NodeReplicationCollector:
     """
-    Collects Proxmox VE Replication information directly from status, i.e. replication time,last_time
+    Collects Proxmox VE Replication information directly from status, i.e. replication duration, last_sync, last_try, next_sync, fail_count.
     For manual test: "pvesh get /nodes/<node>/replication/<id>/status"
-    # HELP pve_replication_duration Proxmox vm replication duration
-    # TYPE pve_replication_duration gauge
-    pve_replication_duration{id="101-0",type="local", vmtype="lxc", source="server1", target="server2", guest="101"} 47.56
     """
 
     def __init__(self, pve):
@@ -82,23 +79,23 @@ class NodeReplicationCollector:
 
         metrics = {
             'duration': GaugeMetricFamily(
-                'pve_replication_duration',
+                'pve_replication_duration_seconds',
                 'Proxmox vm replication duration',
                 labels=['id']),
             'last_sync': GaugeMetricFamily(
-                'pve_replication_last_sync',
+                'pve_replication_last_sync_timestamp_seconds',
                 'Proxmox vm replication last_sync',
                 labels=['id']),
             'last_try': GaugeMetricFamily(
-                'pve_replication_last_try',
+                'pve_replication_last_try_timestamp_seconds',
                 'Proxmox vm replication last_try',
                 labels=['id']),
             'next_sync': GaugeMetricFamily(
-                'pve_replication_next_sync',
+                'pve_replication_next_sync_timestamp_seconds',
                 'Proxmox vm replication next_sync',
                 labels=['id']),
             'fail_count': GaugeMetricFamily(
-                'pve_replication_fail_count',
+                'pve_replication_failures_total',
                 'Proxmox vm replication fail_count',
                 labels=['id']),
         }
