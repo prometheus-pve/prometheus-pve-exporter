@@ -206,9 +206,9 @@ Here's an example of the metrics exported.
     # HELP pve_replication_next_sync_timestamp_seconds Proxmox vm replication next_sync
     # TYPE pve_replication_next_sync_timestamp_seconds gauge
     pve_replication_next_sync_timestamp_seconds{id="1-0"} 1.7134689e+09
-    # HELP pve_replication_failures_total Proxmox vm replication fail_count
-    # TYPE pve_replication_failures_total gauge
-    pve_replication_failures_total{id="1-0"} 0.0
+    # HELP pve_replication_failed_syncs Proxmox vm replication fail_count
+    # TYPE pve_replication_failed_syncs gauge
+    pve_replication_failed_syncs{id="1-0"} 0.0
     # HELP pve_replication_info Proxmox vm replication info
     # TYPE pve_replication_info gauge
     pve_replication_info{guest="qemu/1",id="1-0",source="node/proxmox1",target="node/proxmox2",type="local"} 1.0

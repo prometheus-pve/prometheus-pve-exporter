@@ -96,7 +96,7 @@ class NodeReplicationCollector:
                 'Proxmox vm replication next_sync',
                 labels=['id']),
             'fail_count': GaugeMetricFamily(
-                'pve_replication_failures_total',
+                'pve_replication_failed_syncs',
                 'Proxmox vm replication fail_count',
                 labels=['id']),
         }
