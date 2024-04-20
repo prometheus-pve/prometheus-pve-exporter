@@ -61,7 +61,8 @@ class NodeConfigCollector:
 
 class NodeReplicationCollector:
     """
-    Collects Proxmox VE Replication information directly from status, i.e. replication duration, last_sync, last_try, next_sync, fail_count.
+    Collects Proxmox VE Replication information directly from status, i.e. replication duration,
+    last_sync, last_try, next_sync, fail_count.
     For manual test: "pvesh get /nodes/<node>/replication/<id>/status"
     """
 
@@ -106,15 +107,21 @@ class NodeReplicationCollector:
                 node = entry['name']
                 break
 
-        for vmdata in self._pve("nodes/{0}/replication/".format(node)).get():
+        for vmdata in self._pve(f"nodes/{node}/replication/").get():
             # Add info metric
-            label_values = [str(vmdata['id']), str(vmdata['type']), f"node/{vmdata['source']}", f"node/{vmdata['target']}", f"{vmdata['vmtype']}/{vmdata['guest']}"]
-
+            label_values = [
+                str(vmdata['id']),
+                str(vmdata['type']),
+                f"node/{vmdata['source']}",
+                f"node/{vmdata['target']}",
+                f"{vmdata['vmtype']}/{vmdata['guest']}",
+            ]
             info_metrics['info'].add_metric(label_values, 1)
 
             # Add metrics
             label_values = [str(vmdata['id'])]
-            for key, metric_value in self._pve("nodes/{0}/replication/{1}/status".format(node,vmdata['id'])).get().items():
+            status = self._pve(f"nodes/{node}/replication/{vmdata['id']}/status").get().items()
+            for key, metric_value in status:
                 if key in metrics:
                     metrics[key].add_metric(label_values, metric_value)
 

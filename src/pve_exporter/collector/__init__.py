@@ -45,7 +45,7 @@ def collect_pve(config, host, cluster, node, options: CollectorsOptions):
     if cluster and options.cluster:
         registry.register(ClusterInfoCollector(pve))
     if cluster and options.version:
-        registry.register(VersionCollector(pve))        
+        registry.register(VersionCollector(pve))
     if node and options.config:
         registry.register(NodeConfigCollector(pve))
     if node and options.replication:
