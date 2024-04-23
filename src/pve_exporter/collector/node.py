@@ -107,20 +107,20 @@ class NodeReplicationCollector:
                 node = entry['name']
                 break
 
-        for vmdata in self._pve.nodes(node).replication.get():
+        for jobdata in self._pve.nodes(node).replication.get():
             # Add info metric
             label_values = [
-                str(vmdata['id']),
-                str(vmdata['type']),
-                f"node/{vmdata['source']}",
-                f"node/{vmdata['target']}",
-                f"{vmdata['vmtype']}/{vmdata['guest']}",
+                str(jobdata['id']),
+                str(jobdata['type']),
+                f"node/{jobdata['source']}",
+                f"node/{jobdata['target']}",
+                f"{jobdata['vmtype']}/{jobdata['guest']}",
             ]
             info_metrics['info'].add_metric(label_values, 1)
 
             # Add metrics
-            label_values = [str(vmdata['id'])]
-            status = self._pve.nodes(node).replication(vmdata['id']).status.get()
+            label_values = [str(jobdata['id'])]
+            status = self._pve.nodes(node).replication(jobdata['id']).status.get()
             for key, metric_value in status.items():
                 if key in metrics:
                     metrics[key].add_metric(label_values, metric_value)
