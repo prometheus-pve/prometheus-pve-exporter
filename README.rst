@@ -52,6 +52,7 @@ Usage
                         [--collector.cluster | --no-collector.cluster]
                         [--collector.resources | --no-collector.resources]
                         [--collector.config | --no-collector.config]
+                        [--collector.replication | --no-collector.replication]
                         [--config.file CONFIG_FILE]
                         [--web.listen-address WEB_LISTEN_ADDRESS]
                         [--server.keyfile SERVER_KEYFILE]
@@ -90,6 +91,8 @@ Usage
 
       --collector.config, --no-collector.config
                             Exposes PVE onboot status
+      --collector.replication, --no-collector.replication
+                            Exposes PVE replication info
 
 
 Use `[::]` in the `--web.listen-address` flag in order to bind to both IPv6 and
@@ -191,6 +194,24 @@ Here's an example of the metrics exported.
     # HELP pve_version_info Proxmox VE version info
     # TYPE pve_version_info gauge
     pve_version_info{release="7.1",repoid="6fe299a0",version="7.1-5"} 1.0
+    # HELP pve_replication_duration_seconds Proxmox vm replication duration
+    # TYPE pve_replication_duration_seconds gauge
+    pve_replication_duration_seconds{id="1-0"} 7.73584
+    # HELP pve_replication_last_sync_timestamp_seconds Proxmox vm replication last_sync
+    # TYPE pve_replication_last_sync_timestamp_seconds gauge
+    pve_replication_last_sync_timestamp_seconds{id="1-0"} 1.713382503e+09
+    # HELP pve_replication_last_try_timestamp_seconds Proxmox vm replication last_try
+    # TYPE pve_replication_last_try_timestamp_seconds gauge
+    pve_replication_last_try_timestamp_seconds{id="1-0"} 1.713382503e+09
+    # HELP pve_replication_next_sync_timestamp_seconds Proxmox vm replication next_sync
+    # TYPE pve_replication_next_sync_timestamp_seconds gauge
+    pve_replication_next_sync_timestamp_seconds{id="1-0"} 1.7134689e+09
+    # HELP pve_replication_failed_syncs Proxmox vm replication fail_count
+    # TYPE pve_replication_failed_syncs gauge
+    pve_replication_failed_syncs{id="1-0"} 0.0
+    # HELP pve_replication_info Proxmox vm replication info
+    # TYPE pve_replication_info gauge
+    pve_replication_info{guest="qemu/1",id="1-0",source="node/proxmox1",target="node/proxmox2",type="local"} 1.0
 
 Authentication
 --------------

@@ -46,6 +46,10 @@ def main():
                            action=BooleanOptionalAction, default=True,
                            help='Exposes PVE onboot status')
 
+    nodeflags.add_argument('--collector.replication', dest='collector_replication',
+                           action=BooleanOptionalAction, default=True,
+                           help='Exposes PVE replication info')
+
     parser.add_argument('--config.file', type=pathlib.Path,
                         dest="config_file", default='/etc/prometheus/pve.yml',
                         help='Path to config file (/etc/prometheus/pve.yml)')
@@ -69,7 +73,8 @@ def main():
         node=params.collector_node,
         cluster=params.collector_cluster,
         resources=params.collector_resources,
-        config=params.collector_config
+        config=params.collector_config,
+        replication=params.collector_replication
     )
 
     # Load configuration.
