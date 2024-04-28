@@ -27,20 +27,20 @@ class StatusCollector:
         status_metrics = GaugeMetricFamily(
             'pve_up',
             'Node/VM/CT-Status is online/running',
-            labels=['id', 'tags'])
+            labels=['id'])
 
         for entry in self._pve.cluster.status.get():
             if entry['type'] == 'node':
-                label_values = [entry['id'], '']
+                label_values = [entry['id']]
                 status_metrics.add_metric(label_values, entry['online'])
             elif entry['type'] == 'cluster':
-                label_values = [f"cluster/{entry['name']}", '']
+                label_values = [f"cluster/{entry['name']}"]
                 status_metrics.add_metric(label_values, entry['quorate'])
             else:
                 raise ValueError(f"Got unexpected status entry type {entry['type']}")
 
         for resource in self._pve.cluster.resources.get(type='vm'):
-            label_values = [resource['id'], resource.get('tags', '')]
+            label_values = [resource['id']]
             status_metrics.add_metric(label_values, resource['status'] == 'running')
 
         yield status_metrics
@@ -158,47 +158,47 @@ class ClusterResourcesCollector:
             'maxdisk': GaugeMetricFamily(
                 'pve_disk_size_bytes',
                 'Size of storage device',
-                labels=['id', 'tags']),
+                labels=['id']),
             'disk': GaugeMetricFamily(
                 'pve_disk_usage_bytes',
                 'Disk usage in bytes',
-                labels=['id', 'tags']),
+                labels=['id']),
             'maxmem': GaugeMetricFamily(
                 'pve_memory_size_bytes',
                 'Size of memory',
-                labels=['id', 'tags']),
+                labels=['id']),
             'mem': GaugeMetricFamily(
                 'pve_memory_usage_bytes',
                 'Memory usage in bytes',
-                labels=['id', 'tags']),
+                labels=['id']),
             'netout': GaugeMetricFamily(
                 'pve_network_transmit_bytes',
                 'Number of bytes transmitted over the network',
-                labels=['id', 'tags']),
+                labels=['id']),
             'netin': GaugeMetricFamily(
                 'pve_network_receive_bytes',
                 'Number of bytes received over the network',
-                labels=['id', 'tags']),
+                labels=['id']),
             'diskwrite': GaugeMetricFamily(
                 'pve_disk_write_bytes',
                 'Number of bytes written to storage',
-                labels=['id', 'tags']),
+                labels=['id']),
             'diskread': GaugeMetricFamily(
                 'pve_disk_read_bytes',
                 'Number of bytes read from storage',
-                labels=['id', 'tags']),
+                labels=['id']),
             'cpu': GaugeMetricFamily(
                 'pve_cpu_usage_ratio',
                 'CPU usage (value between 0.0 and pve_cpu_usage_limit)',
-                labels=['id', 'tags']),
+                labels=['id']),
             'maxcpu': GaugeMetricFamily(
                 'pve_cpu_usage_limit',
                 'Maximum allowed CPU usage',
-                labels=['id', 'tags']),
+                labels=['id']),
             'uptime': GaugeMetricFamily(
                 'pve_uptime_seconds',
                 'Number of seconds since the last boot',
-                labels=['id', 'tags']),
+                labels=['id']),
             'shared': GaugeMetricFamily(
                 'pve_storage_shared',
                 'Whether or not the storage is shared among cluster nodes',
@@ -226,7 +226,7 @@ class ClusterResourcesCollector:
                 'gauge': info_metrics['guest'],
             },
             'storage': {
-                'labels': ['id', 'node', 'storage', 'tags'],
+                'labels': ['id', 'node', 'storage'],
                 'gauge': info_metrics['storage'],
             },
         }
@@ -239,7 +239,7 @@ class ClusterResourcesCollector:
                 label_values = [str(resource.get(key, '')) for key in labels]
                 info_lookup[restype]['gauge'].add_metric(label_values, 1)
 
-            label_values = [resource['id'], resource.get('tags', '')]
+            label_values = [resource['id']]
             for key, metric_value in resource.items():
                 if key in metrics:
                     metrics[key].add_metric(label_values, metric_value)
