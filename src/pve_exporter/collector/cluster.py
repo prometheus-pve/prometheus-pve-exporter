@@ -27,20 +27,20 @@ class StatusCollector:
         status_metrics = GaugeMetricFamily(
             'pve_up',
             'Node/VM/CT-Status is online/running',
-            labels=['id'])
+            labels=['id', 'tags'])
 
         for entry in self._pve.cluster.status.get():
             if entry['type'] == 'node':
-                label_values = [entry['id']]
+                label_values = [entry['id'], '']
                 status_metrics.add_metric(label_values, entry['online'])
             elif entry['type'] == 'cluster':
-                label_values = [f"cluster/{entry['name']}"]
+                label_values = [f"cluster/{entry['name']}", '']
                 status_metrics.add_metric(label_values, entry['quorate'])
             else:
                 raise ValueError(f"Got unexpected status entry type {entry['type']}")
 
         for resource in self._pve.cluster.resources.get(type='vm'):
-            label_values = [resource['id']]
+            label_values = [resource['id'], resource.get('tags', '')]
             status_metrics.add_metric(label_values, resource['status'] == 'running')
 
         yield status_metrics
@@ -158,47 +158,47 @@ class ClusterResourcesCollector:
             'maxdisk': GaugeMetricFamily(
                 'pve_disk_size_bytes',
                 'Size of storage device',
-                labels=['id']),
+                labels=['id', 'tags']),
             'disk': GaugeMetricFamily(
                 'pve_disk_usage_bytes',
                 'Disk usage in bytes',
-                labels=['id']),
+                labels=['id', 'tags']),
             'maxmem': GaugeMetricFamily(
                 'pve_memory_size_bytes',
                 'Size of memory',
-                labels=['id']),
+                labels=['id', 'tags']),
             'mem': GaugeMetricFamily(
                 'pve_memory_usage_bytes',
                 'Memory usage in bytes',
-                labels=['id']),
+                labels=['id', 'tags']),
             'netout': GaugeMetricFamily(
                 'pve_network_transmit_bytes',
                 'Number of bytes transmitted over the network',
-                labels=['id']),
+                labels=['id', 'tags']),
             'netin': GaugeMetricFamily(
                 'pve_network_receive_bytes',
                 'Number of bytes received over the network',
-                labels=['id']),
+                labels=['id', 'tags']),
             'diskwrite': GaugeMetricFamily(
                 'pve_disk_write_bytes',
                 'Number of bytes written to storage',
-                labels=['id']),
+                labels=['id', 'tags']),
             'diskread': GaugeMetricFamily(
                 'pve_disk_read_bytes',
                 'Number of bytes read from storage',
-                labels=['id']),
+                labels=['id', 'tags']),
             'cpu': GaugeMetricFamily(
                 'pve_cpu_usage_ratio',
                 'CPU usage (value between 0.0 and pve_cpu_usage_limit)',
-                labels=['id']),
+                labels=['id', 'tags']),
             'maxcpu': GaugeMetricFamily(
                 'pve_cpu_usage_limit',
                 'Maximum allowed CPU usage',
-                labels=['id']),
+                labels=['id', 'tags']),
             'uptime': GaugeMetricFamily(
                 'pve_uptime_seconds',
                 'Number of seconds since the last boot',
-                labels=['id']),
+                labels=['id', 'tags']),
             'shared': GaugeMetricFamily(
                 'pve_storage_shared',
                 'Whether or not the storage is shared among cluster nodes',
@@ -209,7 +209,7 @@ class ClusterResourcesCollector:
             'guest': GaugeMetricFamily(
                 'pve_guest_info',
                 'VM/CT info',
-                labels=['id', 'node', 'name', 'type', 'template']),
+                labels=['id', 'node', 'name', 'type', 'template', 'tags']),
             'storage': GaugeMetricFamily(
                 'pve_storage_info',
                 'Storage info',
@@ -218,15 +218,15 @@ class ClusterResourcesCollector:
 
         info_lookup = {
             'lxc': {
-                'labels': ['id', 'node', 'name', 'type', 'template'],
+                'labels': ['id', 'node', 'name', 'type', 'template', 'tags'],
                 'gauge': info_metrics['guest'],
             },
             'qemu': {
-                'labels': ['id', 'node', 'name', 'type', 'template'],
+                'labels': ['id', 'node', 'name', 'type', 'template', 'tags'],
                 'gauge': info_metrics['guest'],
             },
             'storage': {
-                'labels': ['id', 'node', 'storage'],
+                'labels': ['id', 'node', 'storage', 'tags'],
                 'gauge': info_metrics['storage'],
             },
         }
@@ -239,7 +239,7 @@ class ClusterResourcesCollector:
                 label_values = [str(resource.get(key, '')) for key in labels]
                 info_lookup[restype]['gauge'].add_metric(label_values, 1)
 
-            label_values = [resource['id']]
+            label_values = [resource['id'], resource.get('tags', '')]
             for key, metric_value in resource.items():
                 if key in metrics:
                     metrics[key].add_metric(label_values, metric_value)
