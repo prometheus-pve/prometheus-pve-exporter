@@ -179,7 +179,7 @@ Here's an example of the metrics exported.
     pve_storage_shared{id="storage/proxmox/vms"} 0.0
     # HELP pve_guest_info VM/CT info
     # TYPE pve_guest_info gauge
-    pve_guest_info{id="qemu/100",name="samplevm1",node="proxmox",type="qemu"} 1.0
+    pve_guest_info{id="qemu/100",name="samplevm1",node="proxmox",type="qemu",tags="tag1;tag2"} 1.0
     # HELP pve_storage_info Storage info
     # TYPE pve_storage_info gauge
     pve_storage_info{id="storage/proxmox/local",node="proxmox",storage="local"} 1.0
@@ -324,6 +324,15 @@ Example config for PVE exporter running on Prometheus host:
             target_label: instance
           - target_label: __address__
             replacement: 127.0.0.1:9221  # PVE exporter.
+
+**Note on alerting:**
+
+You can do VM tag based alerting, by using joins on ``pve_guest_info`` metric. For
+example, alerting only when VM with `critical` tag is down:
+
+.. code:: promql
+
+   (pve_guest_info{tags=~".*critical.*"} * on(id) group_left(name) pve_up{}) == 0
 
 **Note on scraping large clusters:**
 
