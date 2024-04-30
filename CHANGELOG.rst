@@ -10,6 +10,15 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 -------------
 
 
+`3.4.0`_ - 2024-04-30
+---------------------
+
+Added
+~~~~~
+
+- Add tags label to pve_guest_info metric (#246)
+
+
 `3.3.0`_ - 2024-04-27
 ---------------------
 
@@ -398,7 +407,8 @@ Added
 
 .. _Keep a Changelog: http://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: http://semver.org/spec/v2.0.0.html
-.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.3.0...HEAD
+.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.4.0...HEAD
+.. _3.4.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.3.0...v3.4.0
 .. _3.3.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.2.5...v3.3.0
 .. _3.2.5: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.2.4...v3.2.5
 .. _3.2.4: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.2.3...v3.2.4
