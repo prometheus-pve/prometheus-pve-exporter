@@ -209,7 +209,7 @@ class ClusterResourcesCollector:
             'guest': GaugeMetricFamily(
                 'pve_guest_info',
                 'VM/CT info',
-                labels=['id', 'node', 'name', 'type', 'template']),
+                labels=['id', 'node', 'name', 'type', 'template', 'tags']),
             'storage': GaugeMetricFamily(
                 'pve_storage_info',
                 'Storage info',
@@ -218,11 +218,11 @@ class ClusterResourcesCollector:
 
         info_lookup = {
             'lxc': {
-                'labels': ['id', 'node', 'name', 'type', 'template'],
+                'labels': ['id', 'node', 'name', 'type', 'template', 'tags'],
                 'gauge': info_metrics['guest'],
             },
             'qemu': {
-                'labels': ['id', 'node', 'name', 'type', 'template'],
+                'labels': ['id', 'node', 'name', 'type', 'template', 'tags'],
                 'gauge': info_metrics['guest'],
             },
             'storage': {
