@@ -223,15 +223,15 @@ Here's an example of the metrics exported.
     # HELP pve_zfs_health_status Proxmox ZFS health status
     # TYPE pve_zfs_health_status gauge
     pve_zfs_health_status{id="node/proxmox",name="pool1"} 1.0
-    # HELP pve_zfs_total_size_bytes Proxmox ZFS total size in bytes
-    # TYPE pve_zfs_total_size_bytes gauge
-    pve_zfs_total_size_bytes{id="node/proxmox",name="pool1"} 1.906965479424e+012
+    # HELP pve_zfs_size_bytes Proxmox ZFS total size in bytes
+    # TYPE pve_zfs_size_bytes gauge
+    pve_zfs_size_bytes{id="node/proxmox",name="pool1"} 1.906965479424e+012
     # HELP pve_zfs_fragmentation_percentage Proxmox ZFS fragmentation percentage
     # TYPE pve_zfs_fragmentation_percentage gauge
     pve_zfs_fragmentation_percentage{id="node/proxmox",name="pool1"} 13.0
-    # HELP pve_zfs_allocated_space_bytes Proxmox ZFS allocated space in bytes
-    # TYPE pve_zfs_allocated_space_bytes gauge
-    pve_zfs_allocated_space_bytes{id="node/proxmox",name="pool1"} 2.42927853568e+011
+    # HELP pve_zfs_allocated_bytes Proxmox ZFS allocated space in bytes
+    # TYPE pve_zfs_allocated_bytes gauge
+    pve_zfs_allocated_bytes{id="node/proxmox",name="pool1"} 2.42927853568e+011
 
 Authentication
 --------------

@@ -129,8 +129,8 @@ class NodeReplicationCollector:
 
 class NodeZFSCollector:
     """
-    Collects Proxmox VE ZFS information such as name, errors, state.
-    For manual test: "pvesh get /nodes/{node}/disks/zfs/{name}"
+    Collects Proxmox VE ZFS information such as name, size, health, free, dedup, frag, alloc.
+    For manual test: "pvesh get /nodes/<node>/disks/zfs"
     """
 
     def __init__(self, pve):
@@ -152,16 +152,16 @@ class NodeZFSCollector:
                 'Proxmox ZFS health status',
                 labels=['name', 'id']),
             'size': GaugeMetricFamily(
-                'pve_zfs_total_size_bytes',
-                'Proxmox ZFS total size in bytes',
+                'pve_zfs_size_bytes',
+                'Proxmox ZFS size in bytes',
                 labels=['name', 'id']),
             'frag': GaugeMetricFamily(
                 'pve_zfs_fragmentation_percentage',
                 'Proxmox ZFS fragmentation percentage',
                 labels=['name', 'id']),
             'alloc': GaugeMetricFamily(
-                'pve_zfs_allocated_space_bytes',
-                'Proxmox ZFS allocated space in bytes',
+                'pve_zfs_allocated_bytes',
+                'Proxmox ZFS allocated in bytes',
                 labels=['name', 'id']),
         }
 
