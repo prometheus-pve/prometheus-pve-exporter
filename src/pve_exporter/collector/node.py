@@ -180,7 +180,7 @@ class NodeZFSCollector:
                         if metric_value == 'ONLINE':
                             metric_value = 1
                         else:
-                            metric_value = 0 
+                            metric_value = 0
 
                     metrics[key].add_metric(label_values, metric_value)
 
