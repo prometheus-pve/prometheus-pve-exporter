@@ -10,6 +10,15 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 -------------
 
 
+`3.4.2`_ - 2024-05-26
+---------------------
+
+Changed
+~~~~~~~
+
+- Bump requests from 2.31.0 to 2.32.0 (#251)
+
+
 `3.4.1`_ - 2024-05-06
 ---------------------
 
@@ -416,7 +425,8 @@ Added
 
 .. _Keep a Changelog: http://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: http://semver.org/spec/v2.0.0.html
-.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.4.1...HEAD
+.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.4.2...HEAD
+.. _3.4.2: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.4.1...v3.4.2
 .. _3.4.1: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.4.0...v3.4.1
 .. _3.4.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.3.0...v3.4.0
 .. _3.3.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.2.5...v3.3.0
