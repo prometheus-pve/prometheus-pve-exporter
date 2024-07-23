@@ -271,6 +271,24 @@ to the credentials. Note that PVE `supports Let's Encrypt`_ out ouf the box. In
 many cases setting up trusted certificates is the better option than operating
 with self-signed certs.
 
+**Note on using Docker with a custom CA:**
+
+When operating PVE with certificates signed by a custom Certificate Authority
+(or a public CA certificate that is not yet included in the Docker image), and
+the easiest way is to import the certificate into the local trust store of the
+host (see this `SE answer`_ for Debian/Ubuntu) then bind mount the host's
+ca-certificates.crt file, and set the ``REQUESTS_CA_BUNDLE`` enviroment variable
+in Docker to use the CA bundle (otherwise the exporter will ignore it).
+
+Docker Compose snippet:
+
+.. code:: yaml
+
+    volumes:
+      - '/etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro'
+    environment:
+      - REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
+
 Proxmox VE Configuration
 ------------------------
 
