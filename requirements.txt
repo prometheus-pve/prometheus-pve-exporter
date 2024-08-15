@@ -301,9 +301,9 @@ prometheus-client==0.20.0 \
     --hash=sha256:287629d00b147a32dcb2be0b9df905da599b2d82f80377083ec8463309a4bb89 \
     --hash=sha256:cde524a85bce83ca359cc837f28b8c0db5cac7aa653a588fd7e84ba061c329e7
     # via -r requirements.in
-proxmoxer==2.0.1 \
-    --hash=sha256:088923f1a81ee27631e88314c609bfe22b33d8a41271b5f02e86f996f837fe31 \
-    --hash=sha256:badb3095507e486b76dfda75177545dd85da608a3aef8590d362901253f10576
+proxmoxer==2.1.0 \
+    --hash=sha256:59d69abc5742c6c1b1737ce2944599136f66cdbbb1d044cd4b7aad30100ddde6 \
+    --hash=sha256:d92993782e74ed8a76ff355dc050f58aa039fa697f9349a68e643552bd0fa62e
     # via -r requirements.in
 pycparser==2.21 \
     --hash=sha256:8ee45429555515e1f6b185e78100aea234072576aa43ab53aefcae078162fca9 \
