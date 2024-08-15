@@ -10,6 +10,17 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 -------------
 
 
+`3.4.4`_ - 2024-08-15
+---------------------
+
+- Bump pyyaml from 6.0.1 to 6.0.2 (#274)
+- Bump proxmoxer from 2.0.1 to 2.1.0 (#273)
+- Bump paramiko from 3.4.0 to 3.4.1 (#272)
+- Bump gunicorn from 22.0.0 to 23.0.0 (#271)
+- Bump alpine from 3.20.1 to 3.20.2 (#269)
+- Bump certifi from 2023.11.17 to 2024.7.4 (#263)
+
+
 `3.4.3`_ - 2024-07-03
 ---------------------
 
@@ -437,7 +448,8 @@ Added
 
 .. _Keep a Changelog: http://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: http://semver.org/spec/v2.0.0.html
-.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.4.3...HEAD
+.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.4.4...HEAD
+.. _3.4.4: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.4.3...v3.4.4
 .. _3.4.3: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.4.2...v3.4.3
 .. _3.4.2: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.4.1...v3.4.2
 .. _3.4.1: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.4.0...v3.4.1
