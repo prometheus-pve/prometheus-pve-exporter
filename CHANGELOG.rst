@@ -10,6 +10,15 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 -------------
 
 
+`3.4.5`_ - 2024-09-16
+---------------------
+
+- Bump cryptography to 43.0.1 (#283)
+- Bump paramiko from 3.4.1 to 3.5.0 (#282)
+- Bump alpine from 3.20.2 to 3.20.3 (#281)
+- Bump werkzeug from 3.0.3 to 3.0.4 (#277)
+
+
 `3.4.4`_ - 2024-08-15
 ---------------------
 
@@ -448,7 +457,8 @@ Added
 
 .. _Keep a Changelog: http://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: http://semver.org/spec/v2.0.0.html
-.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.4.4...HEAD
+.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.4.5...HEAD
+.. _3.4.5: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.4.4...v3.4.5
 .. _3.4.4: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.4.3...v3.4.4
 .. _3.4.3: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.4.2...v3.4.3
 .. _3.4.2: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.4.1...v3.4.2
