@@ -108,8 +108,8 @@ class PveExporterApplication:
     def __call__(self, request):
         url_map = Map([
             Rule('/', endpoint='index'),
-            Rule('/metrics', endpoint='metrics'),
-            Rule('/pve', endpoint='pve'),
+            Rule('/pve_metrics', endpoint='metrics'),
+            Rule('/metrics', endpoint='pve'),
         ])
 
         urls = url_map.bind_to_environ(request.environ)

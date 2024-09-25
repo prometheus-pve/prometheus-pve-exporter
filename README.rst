@@ -98,7 +98,7 @@ Usage
 Use `[::]` in the `--web.listen-address` flag in order to bind to both IPv6 and
 IPv4 sockets on dual stacked machines.
 
-Visit http://localhost:9221/pve?target=1.2.3.4&cluster=1&node=1 where 1.2.3.4
+Visit http://localhost:9221/metrics?target=1.2.3.4&cluster=1&node=1 where 1.2.3.4
 is the IP of the Proxmox VE node to get metrics from. Specify the ``module``
 request parameter, to choose which module to use from the config file.
 
@@ -296,7 +296,7 @@ Example config for PVE exporter running on PVE node:
           - targets:
             - 192.168.1.2:9221  # Proxmox VE node with PVE exporter.
             - 192.168.1.3:9221  # Proxmox VE node with PVE exporter.
-        metrics_path: /pve
+        metrics_path: /metrics
         params:
           module: [default]
           cluster: ['1']
@@ -312,7 +312,7 @@ Example config for PVE exporter running on Prometheus host:
           - targets:
             - 192.168.1.2  # Proxmox VE node.
             - 192.168.1.3  # Proxmox VE node.
-        metrics_path: /pve
+        metrics_path: /metrics
         params:
           module: [default]
           cluster: ['1']
