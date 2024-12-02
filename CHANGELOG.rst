@@ -10,7 +10,7 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 -------------
 
 
-`3.4.6`_ - 2024-11-02
+`3.4.6`_ - 2024-12-02
 ---------------------
 
 Changed
