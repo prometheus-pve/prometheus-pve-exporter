@@ -126,49 +126,49 @@ Here's an example of the metrics exported.
     # TYPE pve_up gauge
     pve_up{id="node/proxmox"} 1.0
     pve_up{id="qemu/100"} 1.0
-    # HELP pve_disk_size_bytes Size of storage device
+    # HELP pve_disk_size_bytes Storage size in bytes (for type 'storage'), root image size for VMs (for types 'qemu' and 'lxc').
     # TYPE pve_disk_size_bytes gauge
     pve_disk_size_bytes{id="qemu/100"} 6.8719476736e+010
     pve_disk_size_bytes{id="node/proxmox"} 3.1044079616e+010
     pve_disk_size_bytes{id="storage/proxmox/local"} 3.1044079616e+010
     pve_disk_size_bytes{id="storage/proxmox/local-lvm"} 6.9243764736e+010
     pve_disk_size_bytes{id="storage/proxmox/vms"} 1.934882766848e+012
-    # HELP pve_disk_usage_bytes Disk usage in bytes
+    # HELP pve_disk_usage_bytes Used disk space in bytes (for type 'storage'), used root image space for VMs (for types 'qemu' and 'lxc').
     # TYPE pve_disk_usage_bytes gauge
     pve_disk_usage_bytes{id="qemu/100"} 0.0
     pve_disk_usage_bytes{id="node/proxmox"} 1.7571426304e+010
     pve_disk_usage_bytes{id="storage/proxmox/local"} 1.7571426304e+010
     pve_disk_usage_bytes{id="storage/proxmox/local-lvm"} 6.619703908e+09
     pve_disk_usage_bytes{id="storage/proxmox/vms"} 8.32870981632e+011
-    # HELP pve_memory_size_bytes Size of memory
+    # HELP pve_memory_size_bytes Number of available memory in bytes (for types 'node', 'qemu' and 'lxc').
     # TYPE pve_memory_size_bytes gauge
     pve_memory_size_bytes{id="qemu/100"} 1.7179869184e+010
     pve_memory_size_bytes{id="node/proxmox"} 6.739961856e+010
-    # HELP pve_memory_usage_bytes Memory usage in bytes
+    # HELP pve_memory_usage_bytes Used memory in bytes (for types 'node', 'qemu' and 'lxc').
     # TYPE pve_memory_usage_bytes gauge
     pve_memory_usage_bytes{id="qemu/100"} 1.6573280275e+010
     pve_memory_usage_bytes{id="node/proxmox"} 5.3907812352e+010
-    # HELP pve_network_transmit_bytes Number of bytes transmitted over the network
+    # HELP pve_network_transmit_bytes The amount of traffic in bytes that was sent from the guest over the network since it was started. (for types 'qemu' and 'lxc')
     # TYPE pve_network_transmit_bytes gauge
     pve_network_transmit_bytes{id="qemu/100"} 7.75070828e+09
-    # HELP pve_network_receive_bytes Number of bytes received over the network
+    # HELP pve_network_receive_bytes The amount of traffic in bytes that was sent to the guest over the network since it was started. (for types 'qemu' and 'lxc')
     # TYPE pve_network_receive_bytes gauge
     pve_network_receive_bytes{id="qemu/100"} 1.529756162e+09
-    # HELP pve_disk_write_bytes Number of bytes written to storage
+    # HELP pve_disk_write_bytes The amount of bytes the guest wrote to its block devices since the guest was started. This info is not available for all storage types. (for types 'qemu' and 'lxc')
     # TYPE pve_disk_write_bytes gauge
     pve_disk_write_bytes{id="qemu/100"} 1.50048127488e+011
-    # HELP pve_disk_read_bytes Number of bytes read from storage
+    # HELP pve_disk_read_bytes The amount of bytes the guest read from its block devices since the guest was started. This info is not available for all storage types. (for types 'qemu' and 'lxc')
     # TYPE pve_disk_read_bytes gauge
     pve_disk_read_bytes{id="qemu/100"} 7.473739264e+09
-    # HELP pve_cpu_usage_ratio CPU usage (value between 0.0 and pve_cpu_usage_limit)
+    # HELP pve_cpu_usage_ratio CPU utilization (for types 'node', 'qemu' and 'lxc').
     # TYPE pve_cpu_usage_ratio gauge
     pve_cpu_usage_ratio{id="qemu/100"} 0.105009724408557
     pve_cpu_usage_ratio{id="node/proxmox"} 0.984243806697115
-    # HELP pve_cpu_usage_limit Maximum allowed CPU usage
+    # HELP pve_cpu_usage_limit Number of available CPUs (for types 'node', 'qemu' and 'lxc').
     # TYPE pve_cpu_usage_limit gauge
     pve_cpu_usage_limit{id="qemu/100"} 1.0
     pve_cpu_usage_limit{id="node/proxmox"} 4.0
-    # HELP pve_uptime_seconds Number of seconds since the last boot
+    # HELP pve_uptime_seconds Uptime of node or virtual guest in seconds (for types 'node', 'qemu' and 'lxc').
     # TYPE pve_uptime_seconds gauge
     pve_uptime_seconds{id="qemu/100"} 315039.0
     pve_uptime_seconds{id="node/proxmox"} 315069.0
