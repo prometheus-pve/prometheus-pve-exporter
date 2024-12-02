@@ -157,11 +157,17 @@ class ClusterResourcesCollector:
         metrics = {
             'maxdisk': GaugeMetricFamily(
                 'pve_disk_size_bytes',
-                "Storage size in bytes (for type 'storage'), root image size for VMs (for types 'qemu' and 'lxc').",
+                (
+                    "Storage size in bytes (for type 'storage'), root image size for VMs "
+                    "(for types 'qemu' and 'lxc')."
+                ),
                 labels=['id']),
             'disk': GaugeMetricFamily(
                 'pve_disk_usage_bytes',
-                "Used disk space in bytes (for type 'storage'), used root image space for VMs (for types 'qemu' and 'lxc').",
+                (
+                    "Used disk space in bytes (for type 'storage'), used root image space for VMs "
+                    "(for types 'qemu' and 'lxc')."
+                ),
                 labels=['id']),
             'maxmem': GaugeMetricFamily(
                 'pve_memory_size_bytes',
@@ -173,19 +179,33 @@ class ClusterResourcesCollector:
                 labels=['id']),
             'netout': GaugeMetricFamily(
                 'pve_network_transmit_bytes',
-                "The amount of traffic in bytes that was sent from the guest over the network since it was started. (for types 'qemu' and 'lxc')",
+                (
+                    "The amount of traffic in bytes that was sent from the guest over the network "
+                    "since it was started. (for types 'qemu' and 'lxc')"
+                ),
                 labels=['id']),
             'netin': GaugeMetricFamily(
                 'pve_network_receive_bytes',
-                "The amount of traffic in bytes that was sent to the guest over the network since it was started. (for types 'qemu' and 'lxc')",
+                (
+                    "The amount of traffic in bytes that was sent to the guest over the network "
+                    "since it was started. (for types 'qemu' and 'lxc')"
+                ),
                 labels=['id']),
             'diskwrite': GaugeMetricFamily(
                 'pve_disk_write_bytes',
-                "The amount of bytes the guest wrote to its block devices since the guest was started. This info is not available for all storage types. (for types 'qemu' and 'lxc')",
+                (
+                    "The amount of bytes the guest wrote to its block devices since the guest was "
+                    "started. This info is not available for all storage types. "
+                    "(for types 'qemu' and 'lxc')"
+                ),
                 labels=['id']),
             'diskread': GaugeMetricFamily(
                 'pve_disk_read_bytes',
-                "The amount of bytes the guest read from its block devices since the guest was started. This info is not available for all storage types. (for types 'qemu' and 'lxc')",
+                (
+                    "The amount of bytes the guest read from its block devices since the guest was "
+                    "started. This info is not available for all storage types. "
+                    "(for types 'qemu' and 'lxc')"
+                ),
                 labels=['id']),
             'cpu': GaugeMetricFamily(
                 'pve_cpu_usage_ratio',
