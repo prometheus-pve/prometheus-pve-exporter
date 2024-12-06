@@ -325,6 +325,30 @@ Example config for PVE exporter running on Prometheus host:
           - target_label: __address__
             replacement: 127.0.0.1:9221  # PVE exporter.
 
+Example config for PVE exporter running on Prometheus host + `Service Discovery using DNS:<https://prometheus.io/docs/prometheus/latest/configuration/configuration/#dns_sd_config>`_
+
+.. code:: yaml
+
+    scrape_configs:
+      - job_name: 'pve'
+        dns_sd_configs:
+          - names:
+            - 'pve-cluster-01.yr.tld' #dns resolves multiple A records (for each host)
+            type: 'A'
+            port: 9221 #port is not used, this can be any integer
+        metrics_path: /pve
+        params:
+          module: [default]
+        relabel_configs:
+          - source_labels: [__address__]
+            target_label: __param_target
+            replacement: '${1}'  # Remove port
+            regex: (.+):\d+  # Regex, to get hostname/ip adress
+          - source_labels: [__param_target]
+            target_label: instance
+          - target_label: __address__
+            replacement: 127.0.0.1:9221  # PVE exporter.
+
 **Note on alerting:**
 
 You can do VM tag based alerting, by using joins on ``pve_guest_info`` metric. For
