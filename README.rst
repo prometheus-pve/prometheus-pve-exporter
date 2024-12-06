@@ -325,7 +325,7 @@ Example config for PVE exporter running on Prometheus host:
           - target_label: __address__
             replacement: 127.0.0.1:9221  # PVE exporter.
 
-Example config for PVE exporter running on Prometheus host + `Service Discovery using DNS:<https://prometheus.io/docs/prometheus/latest/configuration/configuration/#dns_sd_config>`_
+Example config for PVE exporter running on Prometheus host + `Service Discovery using DNS`_:
 
 .. code:: yaml
 
@@ -388,3 +388,4 @@ Grafana Dashboards
 .. _`supports Let's Encrypt`: https://pve.proxmox.com/pve-docs/pve-admin-guide.html#sysadmin_certificate_management
 .. _`Proxmox Documentation`: https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_permission_management
 .. _`Proxmox via Prometheus by Pietro Saccardi`: https://grafana.com/grafana/dashboards/10347-proxmox-via-prometheus/
+.. _`Service Discovery using DNS`: https://prometheus.io/docs/prometheus/latest/configuration/configuration/#dns_sd_config
