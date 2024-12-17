@@ -10,6 +10,17 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 -------------
 
 
+`3.4.7`_ - 2024-12-17
+---------------------
+
+Changed
+~~~~~~~
+
+- Bump proxmoxer from 2.1.0 to 2.2.0 (#309)
+- Bump prometheus-client from 0.21.0 to 0.21.1 (#308)
+- Bump alpine from 3.20.3 to 3.21.0 (#307)
+
+
 `3.4.6`_ - 2024-12-02
 ---------------------
 
@@ -474,7 +485,8 @@ Added
 
 .. _Keep a Changelog: http://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: http://semver.org/spec/v2.0.0.html
-.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.4.6...HEAD
+.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.4.7...HEAD
+.. _3.4.7: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.4.6...v3.4.7
 .. _3.4.6: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.4.5...v3.4.6
 .. _3.4.5: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.4.4...v3.4.5
 .. _3.4.4: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.4.3...v3.4.4
