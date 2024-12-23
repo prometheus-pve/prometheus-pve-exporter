@@ -177,6 +177,24 @@ Here's an example of the metrics exported.
     pve_storage_shared{id="storage/proxmox/local"} 0.0
     pve_storage_shared{id="storage/proxmox/local-lvm"} 0.0
     pve_storage_shared{id="storage/proxmox/vms"} 0.0
+    # HELP pve_ha_state HA service status (for HA managed VMs).
+    # TYPE pve_ha_state gauge
+    pve_ha_state{id="qemu/100",state="stopped"} 0.0
+    pve_ha_state{id="qemu/100",state="request_stop"} 0.0
+    pve_ha_state{id="qemu/100",state="request_start"} 0.0
+    pve_ha_state{id="qemu/100",state="request_start_balance"} 0.0
+    pve_ha_state{id="qemu/100",state="started"} 1.0
+    pve_ha_state{id="qemu/100",state="fence"} 0.0
+    pve_ha_state{id="qemu/100",state="recovery"} 0.0
+    pve_ha_state{id="qemu/100",state="migrate"} 0.0
+    pve_ha_state{id="qemu/100",state="relocate"} 0.0
+    pve_ha_state{id="qemu/100",state="freeze"} 0.0
+    pve_ha_state{id="qemu/100",state="error"} 0.0
+    pve_ha_state{id="node/proxmox",state="online"} 1.0
+    pve_ha_state{id="node/proxmox",state="maintenance"} 0.0
+    pve_ha_state{id="node/proxmox",state="unknown"} 0.0
+    pve_ha_state{id="node/proxmox",state="fence"} 0.0
+    pve_ha_state{id="node/proxmox",state="gone"} 0.0
     # HELP pve_guest_info VM/CT info
     # TYPE pve_guest_info gauge
     pve_guest_info{id="qemu/100",name="samplevm1",node="proxmox",type="qemu",tags="tag1;tag2"} 1.0

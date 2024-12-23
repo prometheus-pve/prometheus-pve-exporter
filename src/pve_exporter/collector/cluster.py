@@ -236,6 +236,37 @@ class ClusterResourcesCollector:
                 labels=['id', 'node', 'storage']),
         }
 
+        guest_states = [
+            'stopped',
+            'request_stop',
+            'request_start',
+            'request_start_balance',
+            'started',
+            'fence',
+            'recovery',
+            'migrate',
+            'relocate',
+            'freeze',
+            'error',
+        ]
+
+        ha_lookup = {
+            'lxc': guest_states,
+            'qemu': guest_states,
+            'node': [
+                'online',
+                'maintenance',
+                'unknown',
+                'fence',
+                'gone',
+            ]
+        }
+
+        ha_metric = GaugeMetricFamily(
+            'pve_ha_state',
+            'HA service status (for HA managed VMs).',
+            labels=['id', 'state'])
+
         info_lookup = {
             'lxc': {
                 'labels': ['id', 'node', 'name', 'type', 'template', 'tags'],
@@ -259,9 +290,14 @@ class ClusterResourcesCollector:
                 label_values = [str(resource.get(key, '')) for key in labels]
                 info_lookup[restype]['gauge'].add_metric(label_values, 1)
 
+            if restype in ha_lookup:
+                for state in ha_lookup[restype]:
+                    value = (resource.get('hastate', None) == state)
+                    ha_metric.add_metric([resource['id'], state], value)
+
             label_values = [resource['id']]
             for key, metric_value in resource.items():
                 if key in metrics:
                     metrics[key].add_metric(label_values, metric_value)
 
-        return itertools.chain(metrics.values(), info_metrics.values())
+        return itertools.chain(metrics.values(), [ha_metric], info_metrics.values())
