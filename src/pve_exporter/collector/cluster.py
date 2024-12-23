@@ -230,6 +230,11 @@ class ClusterResourcesCollector:
             'HA service status (for HA managed VMs).',
             labels=['id', 'state'])
 
+        lock_metric = GaugeMetricFamily(
+            'pve_lock_state',
+            "The guest's current config lock (for types 'qemu' and 'lxc')",
+            labels=['id', 'state'])
+
         info_metrics = {
             'guest': GaugeMetricFamily(
                 'pve_guest_info',
@@ -276,6 +281,23 @@ class ClusterResourcesCollector:
             },
         }
 
+        lock_states = [
+            'backup',
+            'clone',
+            'create',
+            'migrate',
+            'rollback',
+            'snapshot',
+            'snapshot-delete',
+            'suspended',
+            'suspending',
+        ]
+
+        lock_lookup = {
+            'qemu': lock_states,
+            'lxc': lock_states,
+        }
+
         for resource in self._pve.cluster.resources.get():
             restype = resource['type']
 
@@ -289,9 +311,14 @@ class ClusterResourcesCollector:
                     value = resource.get('hastate', None) == state
                     ha_metric.add_metric([resource['id'], state], value)
 
+            if restype in lock_lookup:
+                for state in lock_lookup[restype]:
+                    value = resource.get('lock', None) == state
+                    lock_metric.add_metric([resource['id'], state], value)
+
             label_values = [resource['id']]
             for key, metric_value in resource.items():
                 if key in metrics:
                     metrics[key].add_metric(label_values, metric_value)
 
-        return itertools.chain(metrics.values(), [ha_metric], info_metrics.values())
+        return itertools.chain(metrics.values(), [ha_metric, lock_metric], info_metrics.values())
