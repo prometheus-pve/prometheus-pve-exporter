@@ -325,7 +325,7 @@ class ClusterResourcesCollector:
             'storage': GaugeMetricFamily(
                 'pve_storage_info',
                 'Storage info',
-                labels=['id', 'node', 'storage']),
+                labels=['id', 'node', 'storage', 'plugintype']),
         }
 
         info_lookup = {
@@ -338,7 +338,7 @@ class ClusterResourcesCollector:
                 'gauge': info_metrics['guest'],
             },
             'storage': {
-                'labels': ['id', 'node', 'storage'],
+                'labels': ['id', 'node', 'storage', 'plugintype'],
                 'gauge': info_metrics['storage'],
             },
         }
