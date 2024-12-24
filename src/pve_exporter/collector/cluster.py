@@ -43,6 +43,10 @@ class StatusCollector:
             label_values = [resource['id']]
             status_metrics.add_metric(label_values, resource['status'] == 'running')
 
+        for resource in self._pve.cluster.resources.get(type='storage'):
+            label_values = [resource['id']]
+            status_metrics.add_metric(label_values, resource['status'] == 'available')
+
         yield status_metrics
 
 
@@ -325,7 +329,7 @@ class ClusterResourcesCollector:
             'storage': GaugeMetricFamily(
                 'pve_storage_info',
                 'Storage info',
-                labels=['id', 'node', 'storage']),
+                labels=['id', 'node', 'storage', 'plugintype', 'content']),
         }
 
         info_lookup = {
@@ -338,7 +342,7 @@ class ClusterResourcesCollector:
                 'gauge': info_metrics['guest'],
             },
             'storage': {
-                'labels': ['id', 'node', 'storage'],
+                'labels': ['id', 'node', 'storage', 'plugintype', 'content'],
                 'gauge': info_metrics['storage'],
             },
         }
