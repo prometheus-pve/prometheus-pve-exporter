@@ -43,6 +43,10 @@ class StatusCollector:
             label_values = [resource['id']]
             status_metrics.add_metric(label_values, resource['status'] == 'running')
 
+        for resource in self._pve.cluster.resources.get(type='storage'):
+            label_values = [resource['id']]
+            status_metrics.add_metric(label_values, resource['status'] == 'available')
+
         yield status_metrics
 
 
