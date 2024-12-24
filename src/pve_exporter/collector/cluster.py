@@ -144,6 +144,95 @@ class ClusterInfoCollector:
             yield info_metrics
 
 
+class HighAvailabilityStateMetric(GaugeMetricFamily):
+    """
+    A single gauge representing PVE ha state.
+    """
+
+    GUEST_STATES = [
+        'stopped',
+        'request_stop',
+        'request_start',
+        'request_start_balance',
+        'started',
+        'fence',
+        'recovery',
+        'migrate',
+        'relocate',
+        'freeze',
+        'error',
+    ]
+
+    NODE_STATES = ['online', 'maintenance', 'unknown', 'fence', 'gone']
+
+    STATES = {
+        'lxc': GUEST_STATES,
+        'qemu': GUEST_STATES,
+        'node': NODE_STATES,
+    }
+
+    def __init__(self):
+        super().__init__(
+            'pve_ha_state',
+            'HA service status (for HA managed VMs).',
+            labels=['id', 'state']
+        )
+
+    def add_metric_from_resource(self, resource: dict):
+        """Inspect resource and add suitable metric- to the metric family.
+
+        Args:
+          resource: A PVE cluster resource
+        """
+        restype = resource['type']
+        if restype in self.STATES:
+            for state in self.STATES[restype]:
+                value = resource.get('hastate', None) == state
+                self.add_metric([resource['id'], state], value)
+
+
+class LockStateMetric(GaugeMetricFamily):
+    """
+    A single gauge representing PVE guest lock state.
+    """
+
+    GUEST_STATES = [
+        'backup',
+        'clone',
+        'create',
+        'migrate',
+        'rollback',
+        'snapshot',
+        'snapshot-delete',
+        'suspended',
+        'suspending',
+    ]
+
+    STATES = {
+        'qemu': GUEST_STATES,
+        'lxc': GUEST_STATES,
+    }
+
+    def __init__(self):
+        super().__init__(
+            'pve_lock_state',
+            "The guest's current config lock (for types 'qemu' and 'lxc')",
+            labels=['id', 'state']
+        )
+
+    def add_metric_from_resource(self, resource: dict):
+        """Inspect resource and add suitable metric- to the metric family.
+
+        Args:
+          resource: A PVE cluster resource
+        """
+        restype = resource['type']
+        if restype in self.STATES:
+            for state in self.STATES[restype]:
+                value = resource.get('lock', None) == state
+                self.add_metric([resource['id'], state], value)
+
+
 class ClusterResourcesCollector:
     """
     Collects Proxmox VE cluster resources information, i.e. memory, storage, cpu
@@ -225,6 +314,9 @@ class ClusterResourcesCollector:
                 labels=['id']),
         }
 
+        ha_metric = HighAvailabilityStateMetric()
+        lock_metric = LockStateMetric()
+
         info_metrics = {
             'guest': GaugeMetricFamily(
                 'pve_guest_info',
@@ -259,9 +351,12 @@ class ClusterResourcesCollector:
                 label_values = [str(resource.get(key, '')) for key in labels]
                 info_lookup[restype]['gauge'].add_metric(label_values, 1)
 
+            ha_metric.add_metric_from_resource(resource)
+            lock_metric.add_metric_from_resource(resource)
+
             label_values = [resource['id']]
             for key, metric_value in resource.items():
                 if key in metrics:
                     metrics[key].add_metric(label_values, metric_value)
 
-        return itertools.chain(metrics.values(), info_metrics.values())
+        return itertools.chain(metrics.values(), [ha_metric, lock_metric], info_metrics.values())
