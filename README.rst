@@ -126,6 +126,9 @@ Here's an example of the metrics exported.
     # TYPE pve_up gauge
     pve_up{id="node/proxmox"} 1.0
     pve_up{id="qemu/100"} 1.0
+    pve_up{id="storage/proxmox/local"} 1.0
+    pve_up{id="storage/proxmox/local-lvm"} 1.0
+    pve_up{id="storage/proxmox/vms"} 1.0
     # HELP pve_disk_size_bytes Storage size in bytes (for type 'storage'), root image size for VMs (for types 'qemu' and 'lxc').
     # TYPE pve_disk_size_bytes gauge
     pve_disk_size_bytes{id="qemu/100"} 6.8719476736e+010
@@ -211,9 +214,9 @@ Here's an example of the metrics exported.
     pve_guest_info{id="qemu/100",name="samplevm1",node="proxmox",type="qemu",tags="tag1;tag2"} 1.0
     # HELP pve_storage_info Storage info
     # TYPE pve_storage_info gauge
-    pve_storage_info{id="storage/proxmox/local",node="proxmox",storage="local"} 1.0
-    pve_storage_info{id="storage/proxmox/local-lvm",node="proxmox",storage="local-lvm"} 1.0
-    pve_storage_info{id="storage/proxmox/vms",node="proxmox",storage="vms"} 1.0
+    pve_storage_info{content="iso,vztmpl,rootdir",id="storage/proxmox/local",node="proxmox",plugintype="dir",storage="local"} 1.0
+    pve_storage_info{content="backup",id="storage/proxmox/local-lvm",node="proxmox",plugintype="lvm",storage="local-lvm"} 1.0
+    pve_storage_info{content="images",id="storage/proxmox/vms",node="proxmox",plugintype="rbd",storage="vms"} 1.0
     # HELP pve_node_info Node info
     # TYPE pve_node_info gauge
     pve_node_info{id="node/proxmox",level="",name="proxmox",nodeid="0"} 1.0
