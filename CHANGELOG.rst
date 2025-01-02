@@ -10,6 +10,16 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 -------------
 
 
+`3.5.0`_ - 2025-01-02
+---------------------
+
+Added
+~~~~~
+
+- Extend storage info (#312)
+- Add pve_ha_state and pve_lock_state metrics (#311)
+
+
 `3.4.7`_ - 2024-12-17
 ---------------------
 
@@ -485,7 +495,8 @@ Added
 
 .. _Keep a Changelog: http://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: http://semver.org/spec/v2.0.0.html
-.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.4.7...HEAD
+.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.5.0...HEAD
+.. _3.5.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.4.7...v3.5.0
 .. _3.4.7: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.4.6...v3.4.7
 .. _3.4.6: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.4.5...v3.4.6
 .. _3.4.5: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.4.4...v3.4.5
