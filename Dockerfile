@@ -1,4 +1,4 @@
-FROM alpine:3.21.0 as base
+FROM alpine:3.21.2 as base
 
 FROM base as build
 RUN apk update && apk add --no-cache \
