@@ -45,7 +45,7 @@ class StorageCollector:
                     item['size']
                 )
 
-                if item['verification']:
+                if 'verification' in item:
                     metrics['verification'].add_metric(
                         [self._node, self._storage, str(item['vmid']), item['content'], item['volid'], item['verification']['state']],
                         1

@@ -53,7 +53,7 @@ class PveExporterApplication:
 
         return response
 
-    def on_storage(self, module='default', target='localhost', node='1', storage='local'):
+    def on_storage(self, module='default', target='localhost', node='pve', storage='local'):
         """
         Request handler for /storage route
         """
