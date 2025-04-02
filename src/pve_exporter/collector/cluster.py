@@ -352,7 +352,16 @@ class ClusterResourcesCollector:
 
             if restype in info_lookup:
                 labels = info_lookup[restype]['labels']
-                label_values = [str(resource.get(key, '')) for key in labels]
+                label_values = [
+                    str(resource.get(key, ''))
+                    if restype != 'storage' or key != 'content' else
+                    # This field is a comma-separated list of content types, which is randomly sorted.
+                    # Randomly sorted label values cause different metrics on every scrape, which results
+                    # in both churn rate and cardinality to explode.
+                    # Split the list up, sort it, and rejoin to avoid this.
+                    ','.join(sorted(str(resource.get(key, '')).split(',')))
+                    for key in labels
+                ]
                 info_lookup[restype]['gauge'].add_metric(label_values, 1)
 
             ha_metric.add_metric_from_resource(resource)
