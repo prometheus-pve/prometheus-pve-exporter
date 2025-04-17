@@ -342,7 +342,8 @@ class ClusterResourcesCollector:
                 'gauge': info_metrics['guest'],
             },
             'storage': {
-                'labels': ['id', 'node', 'storage', 'plugintype', 'content'],
+                'labels': ['id', 'node', 'storage', 'plugintype'],
+                'csv_labels': ['content'],
                 'gauge': info_metrics['storage'],
             },
         }
@@ -352,17 +353,26 @@ class ClusterResourcesCollector:
 
             if restype in info_lookup:
                 labels = info_lookup[restype]['labels']
-                label_values = [
-                    str(resource.get(key, ''))
-                    if restype != 'storage' or key != 'content' else
-                    # This field is a comma-separated list of content types, which is randomly sorted.
-                    # Randomly sorted label values cause different metrics on every scrape, which results
-                    # in both churn rate and cardinality to explode.
-                    # Split the list up, sort it, and rejoin to avoid this.
-                    ','.join(sorted(str(resource.get(key, '')).split(',')))
-                    for key in labels
+                label_values = [str(resource.get(key, '')) for key in labels]
+
+                # Labels with comma-separated values are randomly ordered by
+                # Proxmox. This causes different metrics on every scrape, which
+                # results in both churn rate and cardinality to explode.
+                # Split the list up, sort it, and rejoin to avoid this.
+                csv_labels = info_lookup[restype].get('csv_labels') or []
+                csv_label_values_unsorted = [
+                    str(resource.get(key, '')) for key in csv_labels
                 ]
-                info_lookup[restype]['gauge'].add_metric(label_values, 1)
+
+                csv_label_values = []
+                for lable_value in csv_label_values_unsorted:
+                    split_values = lable_value.split(',')
+                    split_values.sort()
+                    sorted_values = ','.join(split_values)
+                    csv_label_values.append(sorted_values)
+
+                all_labels = label_values + csv_label_values
+                info_lookup[restype]['gauge'].add_metric(all_labels, 1)
 
             ha_metric.add_metric_from_resource(resource)
             lock_metric.add_metric_from_resource(resource)
