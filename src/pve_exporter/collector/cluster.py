@@ -4,6 +4,7 @@ Prometheus collecters for Proxmox VE cluster.
 # pylint: disable=too-few-public-methods
 
 import itertools
+import typing
 
 from prometheus_client.core import GaugeMetricFamily
 
@@ -352,26 +353,7 @@ class ClusterResourcesCollector:
             restype = resource['type']
 
             if restype in info_lookup:
-                labels = info_lookup[restype]['labels']
-                label_values = [str(resource.get(key, '')) for key in labels]
-
-                # Labels with comma-separated values are randomly ordered by
-                # Proxmox. This causes different metrics on every scrape, which
-                # results in both churn rate and cardinality to explode.
-                # Split the list up, sort it, and rejoin to avoid this.
-                csv_labels = info_lookup[restype].get('csv_labels') or []
-                csv_label_values_unsorted = [
-                    str(resource.get(key, '')) for key in csv_labels
-                ]
-
-                csv_label_values = []
-                for lable_value in csv_label_values_unsorted:
-                    split_values = lable_value.split(',')
-                    split_values.sort()
-                    sorted_values = ','.join(split_values)
-                    csv_label_values.append(sorted_values)
-
-                all_labels = label_values + csv_label_values
+                all_labels = self._extract_resource_labels(info_lookup[restype], resource)
                 info_lookup[restype]['gauge'].add_metric(all_labels, 1)
 
             ha_metric.add_metric_from_resource(resource)
@@ -383,3 +365,32 @@ class ClusterResourcesCollector:
                     metrics[key].add_metric(label_values, metric_value)
 
         return itertools.chain(metrics.values(), [ha_metric, lock_metric], info_metrics.values())
+
+    def _extract_resource_labels(self, resource_lookup_info: dict[str, typing.Any],
+                                 api_response_resource: dict[str, typing.Any]) -> list[str]:
+        """Extract resource labels from the PVE API response.
+
+        Returns:
+            list[str]: A list of labels.
+        """
+        labels = resource_lookup_info['labels']
+        label_values = [str(api_response_resource.get(key, ''))
+                        for key in labels]
+
+        # Labels with comma-separated values are randomly ordered by
+        # Proxmox. This causes different metrics on every scrape, which
+        # results in both churn rate and cardinality to explode.
+        # Split the list up, sort it, and rejoin to avoid this.
+        csv_labels = resource_lookup_info.get('csv_labels') or []
+        csv_label_values_unsorted = [
+            str(api_response_resource.get(key, '')) for key in csv_labels
+        ]
+
+        csv_label_values = []
+        for label_value in csv_label_values_unsorted:
+            split_values = label_value.split(',')
+            split_values.sort()
+            sorted_values = ','.join(split_values)
+            csv_label_values.append(sorted_values)
+
+        return label_values + csv_label_values
