@@ -9,6 +9,17 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 `Unreleased`_
 -------------
 
+
+`3.5.3`_ - 2025-04-17
+---------------------
+
+Changed
+~~~~~~~
+
+- Fix storage content label causing churn rate + cardinality explosion (#326)
+- Add ghcr.io as registry (#325)
+
+
 `3.5.2`_ - 2025-02-18
 ---------------------
 
@@ -514,7 +525,8 @@ Added
 
 .. _Keep a Changelog: http://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: http://semver.org/spec/v2.0.0.html
-.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.5.2...HEAD
+.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.5.3...HEAD
+.. _3.5.3: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.5.2...v3.5.3
 .. _3.5.2: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.5.1...v3.5.2
 .. _3.5.1: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.5.0...v3.5.1
 .. _3.5.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.4.7...v3.5.0
