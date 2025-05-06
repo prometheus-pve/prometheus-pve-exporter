@@ -16,7 +16,8 @@ from pve_exporter.collector.cluster import (
 )
 from pve_exporter.collector.node import (
     NodeConfigCollector,
-    NodeReplicationCollector
+    NodeReplicationCollector,
+    NodeZFSCollector
 )
 
 CollectorsOptions = collections.namedtuple('CollectorsOptions', [
@@ -26,7 +27,8 @@ CollectorsOptions = collections.namedtuple('CollectorsOptions', [
     'cluster',
     'resources',
     'config',
-    'replication'
+    'replication',
+    'zfs'
 ])
 
 
@@ -50,5 +52,7 @@ def collect_pve(config, host, cluster, node, options: CollectorsOptions):
         registry.register(NodeConfigCollector(pve))
     if node and options.replication:
         registry.register(NodeReplicationCollector(pve))
+    if node and options.zfs:
+        registry.register(NodeZFSCollector(pve))
 
     return generate_latest(registry)

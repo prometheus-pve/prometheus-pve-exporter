@@ -1,4 +1,4 @@
-"""
+    """
 Proxmox VE exporter for the Prometheus monitoring system.
 """
 
@@ -50,6 +50,10 @@ def main():
                            action=BooleanOptionalAction, default=True,
                            help='Exposes PVE replication info')
 
+    nodeflags.add_argument('--collector.zfs', dest='collector_zfs',
+                           action=BooleanOptionalAction, default=True,
+                           help='Exposes PVE ZFS info')
+
     parser.add_argument('--config.file', type=pathlib.Path,
                         dest="config_file", default='/etc/prometheus/pve.yml',
                         help='Path to config file (/etc/prometheus/pve.yml)')
@@ -74,7 +78,8 @@ def main():
         cluster=params.collector_cluster,
         resources=params.collector_resources,
         config=params.collector_config,
-        replication=params.collector_replication
+        replication=params.collector_replication,
+        zfs=params.collector_zfs
     )
 
     # Load configuration.

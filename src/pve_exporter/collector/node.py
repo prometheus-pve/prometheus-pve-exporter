@@ -126,3 +126,62 @@ class NodeReplicationCollector:
                     metrics[key].add_metric(label_values, metric_value)
 
         return itertools.chain(metrics.values(), info_metrics.values())
+
+class NodeZFSCollector:
+    """
+    Collects Proxmox VE ZFS information such as name, size, health, free, dedup, frag, alloc.
+    For manual test: "pvesh get /nodes/<node>/disks/zfs"
+    """
+
+    def __init__(self, pve):
+        self._pve = pve
+
+    def collect(self): # pylint: disable=missing-docstring
+
+        metrics = {
+            'free': GaugeMetricFamily(
+                'pve_zfs_free_bytes',
+                'Proxmox ZFS free space in bytes',
+                labels=['name', 'id']),
+            'dedup': GaugeMetricFamily(
+                'pve_zfs_deduplication_ratio',
+                'Proxmox ZFS deduplication ratio',
+                labels=['name', 'id']),
+            'health': GaugeMetricFamily(
+                'pve_zfs_health_status',
+                'Proxmox ZFS health status',
+                labels=['name', 'id']),
+            'size': GaugeMetricFamily(
+                'pve_zfs_size_bytes',
+                'Proxmox ZFS size in bytes',
+                labels=['name', 'id']),
+            'frag': GaugeMetricFamily(
+                'pve_zfs_fragmentation_percentage',
+                'Proxmox ZFS fragmentation percentage',
+                labels=['name', 'id']),
+            'alloc': GaugeMetricFamily(
+                'pve_zfs_allocated_bytes',
+                'Proxmox ZFS allocated in bytes',
+                labels=['name', 'id']),
+        }
+
+        node = None
+        for entry in self._pve.cluster.status.get():
+            if entry['type'] == 'node' and entry['local']:
+                node = entry['name']
+                break
+
+        for zfsdata in self._pve.nodes(node).disks.zfs.get():
+            for key, metric_value in zfsdata.items():
+                label_values = [zfsdata['name'], f"node/{node}"]
+                if key in metrics:
+                    if key == 'health':
+                        # Convert ONLINE to 1 and other states to 0
+                        if metric_value == 'ONLINE':
+                            metric_value = 1
+                        else:
+                            metric_value = 0
+
+                    metrics[key].add_metric(label_values, metric_value)
+
+        return metrics.values()
