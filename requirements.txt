@@ -296,9 +296,9 @@ paramiko==3.5.1 \
     --hash=sha256:43b9a0501fc2b5e70680388d9346cf252cfb7d00b0667c39e80eb43a408b8f61 \
     --hash=sha256:b2c665bc45b2b215bd7d7f039901b14b067da00f3a11e6640995fd58f2664822
     # via -r requirements.in
-prometheus-client==0.21.1 \
-    --hash=sha256:252505a722ac04b0456be05c05f75f45d760c2911ffc45f2a06bcaed9f3ae3fb \
-    --hash=sha256:594b45c410d6f4f8888940fe80b5cc2521b305a1fafe1c58609ef715a001f301
+prometheus-client==0.22.1 \
+    --hash=sha256:190f1331e783cf21eb60bca559354e0a4d4378facecf78f5428c39b675d20d28 \
+    --hash=sha256:cca895342e308174341b2cbf99a56bef291fbc0ef7b9e5412a0f26d653ba7094
     # via -r requirements.in
 proxmoxer==2.2.0 \
     --hash=sha256:3ed63a58e5c0822841afdb3801f9d913a4996955c1c54f7319b5842ba2615006 \
