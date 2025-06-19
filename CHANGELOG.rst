@@ -9,6 +9,19 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 `Unreleased`_
 -------------
 
+
+`3.5.5`_ - 2025-06-19
+---------------------
+
+Changed
+~~~~~~~
+
+- Bump alpine from 3.21.3 to 3.22.0 (#338)
+- Bump prometheus-client from 0.21.1 to 0.22.1 (#339)
+- Bump requests from 2.32.3 to 2.32.4 (#340)
+- Bump urllib3 from 2.2.2 to 2.5.0 (#341)
+
+
 `3.5.4`_ - 2025-05-02
 ---------------------
 
@@ -533,7 +546,8 @@ Added
 
 .. _Keep a Changelog: http://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: http://semver.org/spec/v2.0.0.html
-.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.5.4...HEAD
+.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.5.5...HEAD
+.. _3.5.5: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.5.4...v3.5.5
 .. _3.5.4: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.5.3...v3.5.4
 .. _3.5.3: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.5.2...v3.5.3
 .. _3.5.2: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.5.1...v3.5.2
