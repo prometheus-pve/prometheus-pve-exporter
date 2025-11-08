@@ -13,7 +13,8 @@ RUN apk update && apk add --no-cache \
 
 ADD . /src/prometheus-pve-exporter
 WORKDIR /src/prometheus-pve-exporter
-RUN python3 -m pip wheel -w dist --no-binary "cffi" --no-binary "pyyaml" -r requirements.txt && \
+RUN --mount=type=cache,target=/root/.cache/pip \
+    python3 -m pip wheel -w dist --no-binary "cffi" --no-binary "pyyaml" -r requirements.txt && \
     python3 -m build .
 
 FROM base
