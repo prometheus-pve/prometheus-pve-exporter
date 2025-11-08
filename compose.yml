@@ -1,0 +1,10 @@
+services:
+  pve-exporter:
+    container_name: pve-exporter
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 127.0.0.1:9221:9221
+    volumes:
+      - ./pve.yml:/etc/prometheus/pve.yml
