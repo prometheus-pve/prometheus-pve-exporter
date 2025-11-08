@@ -2,14 +2,16 @@
 Proxmox VE exporter for the Prometheus monitoring system.
 """
 
-from argparse import ArgumentParser, BooleanOptionalAction
+import logging
 import os
 import pathlib
+from argparse import ArgumentParser, BooleanOptionalAction
+
 import yaml
-from pve_exporter.http import start_http_server
-from pve_exporter.config import config_from_yaml
-from pve_exporter.config import config_from_env
+
 from pve_exporter.collector import CollectorsOptions
+from pve_exporter.config import config_from_env, config_from_yaml
+from pve_exporter.http import start_http_server
 
 
 def main():
@@ -90,6 +92,12 @@ def main():
         'keyfile': params.server_keyfile,
         'certfile': params.server_certfile,
     }
+
+    logging.basicConfig(
+        format="[%(asctime)s] [%(levelname)s] %(message)s",
+        level=logging.INFO,
+        datefmt="%Y-%m-%d %H:%M:%S %z",
+    )
 
     if config.valid:
         start_http_server(config, gunicorn_options, collectors)
