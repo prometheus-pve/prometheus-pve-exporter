@@ -1,6 +1,6 @@
-FROM alpine:3.22.1 as base
+FROM alpine:3.22.1 AS base
 
-FROM base as build
+FROM base AS build
 RUN apk update && apk add --no-cache \
     build-base \
     ca-certificates \
