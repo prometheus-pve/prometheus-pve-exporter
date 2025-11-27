@@ -28,6 +28,9 @@ def main():
     clusterflags.add_argument('--collector.version', dest='collector_version',
                               action=BooleanOptionalAction, default=True,
                               help='Exposes PVE version info')
+    clusterflags.add_argument('--collector.subscription', dest='collector_subscription',
+                              action=BooleanOptionalAction, default=True,
+                              help='Exposes PVE subscription info')
     clusterflags.add_argument('--collector.node', dest='collector_node',
                               action=BooleanOptionalAction, default=True,
                               help='Exposes PVE node info')
@@ -70,6 +73,7 @@ def main():
     collectors = CollectorsOptions(
         status=params.collector_status,
         version=params.collector_version,
+        subscription=params.collector_subscription,
         node=params.collector_node,
         cluster=params.collector_cluster,
         resources=params.collector_resources,

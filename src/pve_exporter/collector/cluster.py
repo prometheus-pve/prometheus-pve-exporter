@@ -5,6 +5,7 @@ Prometheus collecters for Proxmox VE cluster.
 
 import itertools
 import typing
+from datetime import datetime
 
 from prometheus_client.core import GaugeMetricFamily
 
@@ -79,6 +80,51 @@ class VersionCollector:
 
         yield metric
 
+
+class SubscriptionCollector:
+    """
+    Collects Proxmox VE subscription information (node, subscription level, status, next due date).
+    """
+
+    def __init__(self, pve):
+        self._pve = pve
+
+    def collect(self):  # pylint: disable=missing-docstring
+        nodes = [node for node in self._pve.cluster.status.get() if node['type'] == 'node']
+
+        info_metric = GaugeMetricFamily(
+            "pve_subscription_info",
+            "Proxmox VE subscription info (1 if present)",
+            labels=["node", "level", "status"],
+        )
+
+        next_due_metric = GaugeMetricFamily(
+            "pve_subscription_next_due_timestamp",
+            "Subscription next due date as Unix timestamp",
+            labels=["node", "level"],
+        )
+
+        for node in nodes:
+            subscription = self._pve.nodes(node['name']).subscription.get()
+
+            level = subscription.get("level", "unknown")
+            status = subscription.get("status", "unknown")
+
+            info_metric.add_metric(
+                [node["name"], level, status],
+                1,
+            )
+
+            next_due_date = subscription.get("nextduedate")
+            if next_due_date:
+                timestamp = datetime.strptime(next_due_date, "%Y-%m-%d").timestamp()
+                next_due_metric.add_metric(
+                    [node["name"], level],
+                    timestamp,
+                )
+
+        yield info_metric
+        yield next_due_metric
 
 class ClusterNodeCollector:
     """
