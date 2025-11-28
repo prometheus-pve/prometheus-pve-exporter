@@ -12,12 +12,12 @@ from pve_exporter.collector.cluster import (
     ClusterResourcesCollector,
     ClusterNodeCollector,
     VersionCollector,
-    ClusterInfoCollector,
-    SubscriptionCollector
+    ClusterInfoCollector
 )
 from pve_exporter.collector.node import (
     NodeConfigCollector,
-    NodeReplicationCollector
+    NodeReplicationCollector,
+    SubscriptionCollector
 )
 
 CollectorsOptions = collections.namedtuple('CollectorsOptions', [
