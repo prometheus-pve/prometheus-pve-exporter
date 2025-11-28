@@ -140,13 +140,20 @@ class SubscriptionCollector:
         info_metric = GaugeMetricFamily(
             "pve_subscription_info",
             "Proxmox VE subscription info (1 if present)",
-            labels=["node", "level", "status"],
+            labels=["id", "node", "level", "status"],
+        )
+
+        possible_statuses = ["new", "notfound", "active", "invalid", "expired", "suspended"]
+        status_metric = GaugeMetricFamily(
+            "pve_subscription_status",
+            "Proxmox VE subscription status (1 if matches status)",
+            labels=["id", "node", "status"],
         )
 
         next_due_metric = GaugeMetricFamily(
-            "pve_subscription_next_due_timestamp",
+            "pve_subscription_next_due_timestamp_seconds",
             "Subscription next due date as Unix timestamp",
-            labels=["node", "level"],
+            labels=["id", "node", "level"],
         )
 
         node = None
@@ -161,17 +168,25 @@ class SubscriptionCollector:
         status = subscription.get("status", "unknown")
 
         info_metric.add_metric(
-            [node, level, status],
+            [f"node/{node}", node, level, status],
             1,
         )
+
+        for possible_status in possible_statuses:
+            value = 1 if status == possible_status else 0
+            status_metric.add_metric(
+                [f"node/{node}", node, possible_status],
+                value,
+            )
 
         next_due_date = subscription.get("nextduedate")
         if next_due_date:
             timestamp = datetime.strptime(next_due_date, "%Y-%m-%d").timestamp()
             next_due_metric.add_metric(
-                [node, level],
+                [f"node/{node}", node, level],
                 timestamp,
             )
 
         yield info_metric
+        yield status_metric
         yield next_due_metric
