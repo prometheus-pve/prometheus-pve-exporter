@@ -5,7 +5,6 @@ Prometheus collecters for Proxmox VE cluster.
 
 import itertools
 import typing
-from datetime import datetime
 
 from prometheus_client.core import GaugeMetricFamily
 
@@ -79,6 +78,7 @@ class VersionCollector:
         metric.add_metric(label_values, 1)
 
         yield metric
+
 
 class ClusterNodeCollector:
     """
