@@ -137,8 +137,6 @@ class SubscriptionCollector:
         self._pve = pve
 
     def collect(self):  # pylint: disable=missing-docstring
-        nodes = [node for node in self._pve.cluster.status.get() if node['type'] == 'node']
-
         info_metric = GaugeMetricFamily(
             "pve_subscription_info",
             "Proxmox VE subscription info (1 if present)",
@@ -151,24 +149,29 @@ class SubscriptionCollector:
             labels=["node", "level"],
         )
 
-        for node in nodes:
-            subscription = self._pve.nodes(node['name']).subscription.get()
+        node = None
+        for entry in self._pve.cluster.status.get():
+            if entry['type'] == 'node' and entry['local']:
+                node = entry['name']
+                break
 
-            level = subscription.get("level", "unknown")
-            status = subscription.get("status", "unknown")
+        subscription = self._pve.nodes(node).subscription.get()
 
-            info_metric.add_metric(
-                [node["name"], level, status],
-                1,
+        level = subscription.get("level", "unknown")
+        status = subscription.get("status", "unknown")
+
+        info_metric.add_metric(
+            [node, level, status],
+            1,
+        )
+
+        next_due_date = subscription.get("nextduedate")
+        if next_due_date:
+            timestamp = datetime.strptime(next_due_date, "%Y-%m-%d").timestamp()
+            next_due_metric.add_metric(
+                [node, level],
+                timestamp,
             )
-
-            next_due_date = subscription.get("nextduedate")
-            if next_due_date:
-                timestamp = datetime.strptime(next_due_date, "%Y-%m-%d").timestamp()
-                next_due_metric.add_metric(
-                    [node["name"], level],
-                    timestamp,
-                )
 
         yield info_metric
         yield next_due_metric
