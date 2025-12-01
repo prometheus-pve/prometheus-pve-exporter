@@ -53,6 +53,7 @@ Usage
                         [--collector.resources | --no-collector.resources]
                         [--collector.config | --no-collector.config]
                         [--collector.replication | --no-collector.replication]
+                        [--collector.subscription | --no-collector.subscription]
                         [--config.file CONFIG_FILE]
                         [--web.listen-address WEB_LISTEN_ADDRESS]
                         [--server.keyfile SERVER_KEYFILE]
@@ -93,6 +94,8 @@ Usage
                             Exposes PVE onboot status
       --collector.replication, --no-collector.replication
                             Exposes PVE replication info
+      --collector.subscription, --no-collector.subscription
+                            Exposes PVE subscription info
 
 
 Use `[::]` in the `--web.listen-address` flag in order to bind to both IPv6 and
@@ -220,6 +223,20 @@ Here's an example of the metrics exported.
     # HELP pve_node_info Node info
     # TYPE pve_node_info gauge
     pve_node_info{id="node/proxmox",level="",name="proxmox",nodeid="0"} 1.0
+    # HELP pve_subscription_info Proxmox VE subscription info (1 if present)
+    # TYPE pve_subscription_info gauge
+    pve_subscription_info{id="node/proxmox",level="c"} 1.0
+    # HELP pve_subscription_status Proxmox VE subscription status (1 if matches status)
+    # TYPE pve_subscription_status gauge
+    pve_subscription_status{id="node/proxmox",status="new"} 0.0
+    pve_subscription_status{id="node/proxmox",status="notfound"} 0.0
+    pve_subscription_status{id="node/proxmox",status="active"} 1.0
+    pve_subscription_status{id="node/proxmox",status="invalid"} 0.0
+    pve_subscription_status{id="node/proxmox",status="expired"} 0.0
+    pve_subscription_status{id="node/proxmox",status="suspended"} 0.0
+    # HELP pve_subscription_next_due_timestamp_seconds Subscription next due date as Unix timestamp
+    # TYPE pve_subscription_next_due_timestamp_seconds gauge
+    pve_subscription_next_due_timestamp_seconds{id="node/proxmox"} 1.713382503e+09
     # HELP pve_onboot_status Proxmox vm config onboot value
     # TYPE pve_onboot_status gauge
     pve_onboot_status{id="qemu/201",node="proxmox",type="qemu"} 1.0
