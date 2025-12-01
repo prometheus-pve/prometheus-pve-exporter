@@ -140,20 +140,20 @@ class SubscriptionCollector:
         info_metric = GaugeMetricFamily(
             "pve_subscription_info",
             "Proxmox VE subscription info (1 if present)",
-            labels=["id", "node", "level", "status"],
+            labels=["id", "level"],
         )
 
         possible_statuses = ["new", "notfound", "active", "invalid", "expired", "suspended"]
         status_metric = GaugeMetricFamily(
             "pve_subscription_status",
             "Proxmox VE subscription status (1 if matches status)",
-            labels=["id", "node", "status"],
+            labels=["id", "status"],
         )
 
         next_due_metric = GaugeMetricFamily(
             "pve_subscription_next_due_timestamp_seconds",
             "Subscription next due date as Unix timestamp",
-            labels=["id", "node", "level"],
+            labels=["id"],
         )
 
         node = None
