@@ -168,14 +168,14 @@ class SubscriptionCollector:
         status = subscription.get("status", "unknown")
 
         info_metric.add_metric(
-            [f"node/{node}", node, level, status],
+            [f"node/{node}", level],
             1,
         )
 
         for possible_status in possible_statuses:
             value = 1 if status == possible_status else 0
             status_metric.add_metric(
-                [f"node/{node}", node, possible_status],
+                [f"node/{node}", possible_status],
                 value,
             )
 
@@ -183,7 +183,7 @@ class SubscriptionCollector:
         if next_due_date:
             timestamp = datetime.strptime(next_due_date, "%Y-%m-%d").timestamp()
             next_due_metric.add_metric(
-                [f"node/{node}", node, level],
+                [f"node/{node}"],
                 timestamp,
             )
 
