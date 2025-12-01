@@ -10,6 +10,27 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 -------------
 
 
+`3.6.0`_ - 2025-12-01
+---------------------
+
+Added
+~~~~~
+
+- Add collector and CLI flag for PVE subscription info (#370)
+
+Changed
+~~~~~~~
+
+- Bump werkzeug from 3.1.3 to 3.1.4 (#371)
+- Bump actions/checkout from 5 to 6 (#369)
+- Bump actions/upload-artifact from 4 to 5 (#365)
+- Bump actions/download-artifact from 5 to 6 (#364)
+- Bump alpine from 3.22.1 to 3.22.2 (#363)
+- Bump pyyaml from 6.0.2 to 6.0.3 (#362)
+- Bump prometheus-client from 0.22.1 to 0.23.1 (#361)
+- Bump actions/setup-python from 5 to 6 (#359)
+
+
 `3.5.5`_ - 2025-06-19
 ---------------------
 
@@ -546,7 +567,8 @@ Added
 
 .. _Keep a Changelog: http://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: http://semver.org/spec/v2.0.0.html
-.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.5.5...HEAD
+.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.6.0...HEAD
+.. _3.6.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.5.5...v3.6.0
 .. _3.5.5: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.5.4...v3.5.5
 .. _3.5.4: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.5.3...v3.5.4
 .. _3.5.3: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.5.2...v3.5.3
