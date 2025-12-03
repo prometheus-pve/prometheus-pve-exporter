@@ -69,6 +69,12 @@ def main():
                         help='SSL key for server')
     parser.add_argument('--server.certfile', dest='server_certfile',
                         help='SSL certificate for server')
+    parser.add_argument('--server.logs.use_timestamps', dest='server_logs_use_timestamps',
+                        action=BooleanOptionalAction, default=False,
+                        help='Provide timestamps in log output. Default is no timestamps.')
+    parser.add_argument('--server.logs.level', dest='server_logs_level',
+                        choices=logging.getLevelNamesMapping().keys(), default="INFO",
+                        help='Configure the default log level.')
 
     params = parser.parse_args()
 
@@ -97,11 +103,12 @@ def main():
         'certfile': params.server_certfile,
     }
 
-    logging.basicConfig(
-        format="[%(asctime)s] [%(levelname)s] %(message)s",
-        level=logging.INFO,
-        datefmt="%Y-%m-%d %H:%M:%S %z",
-    )
+    if params.server_logs_use_timestamps:
+        logging.basicConfig(
+            format="[%(asctime)s] [%(levelname)s] %(message)s",
+            level=params.server_logs_level,
+            datefmt="%Y-%m-%d %H:%M:%S %z",
+        )
 
     if config.valid:
         start_http_server(config, gunicorn_options, collectors)

@@ -4,7 +4,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    command:
+      - "--server.logs.use_timestamps"
+      - "--server.logs.level"
+      - "DEBUG"
     ports:
-      - 127.0.0.1:9221:9221
+      - "127.0.0.1:9221:9221"
     volumes:
-      - ./pve.yml:/etc/prometheus/pve.yml
+      - "./pve.yml:/etc/prometheus/pve.yml"
