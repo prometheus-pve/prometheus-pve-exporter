@@ -51,6 +51,9 @@ def main():
     nodeflags.add_argument('--collector.replication', dest='collector_replication',
                            action=BooleanOptionalAction, default=True,
                            help='Exposes PVE replication info')
+    nodeflags.add_argument('--collector.subscription', dest='collector_subscription',
+                              action=BooleanOptionalAction, default=True,
+                              help='Exposes PVE subscription info')
 
     parser.add_argument('--config.file', type=pathlib.Path,
                         dest="config_file", default='/etc/prometheus/pve.yml',
@@ -72,6 +75,7 @@ def main():
     collectors = CollectorsOptions(
         status=params.collector_status,
         version=params.collector_version,
+        subscription=params.collector_subscription,
         node=params.collector_node,
         cluster=params.collector_cluster,
         resources=params.collector_resources,
