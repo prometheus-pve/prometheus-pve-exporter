@@ -22,7 +22,6 @@ class NodeConfigCollector:
 
     def __init__(self, pve):
         self._pve = pve
-        self._log = logging.getLogger(__name__)
 
     def collect(self):  # pylint: disable=missing-docstring
         metrics = {

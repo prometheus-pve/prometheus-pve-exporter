@@ -19,11 +19,10 @@ class PveExporterApplication:
     Proxmox VE prometheus collector HTTP handler.
     """
 
-    def __init__(self, config, collectors):
+    def __init__(self, config, collectors, logger):
         self._config = config
         self._collectors = collectors
-
-        self._log = logging.getLogger(__name__)
+        self._log = logger
 
         self._duration = Summary(
             'pve_collection_duration_seconds',
@@ -162,5 +161,9 @@ def start_http_server(config, gunicorn_options, collectors):
     Start a HTTP API server for Proxmox VE prometheus collector.
     """
 
-    app = PveExporterApplication(config, collectors)
+    # If running under gunicorn, reuse the gunicorn.error logger for the
+    # exporter application.
+    # https://trstringer.com/logging-flask-gunicorn-the-manageable-way/
+    logger = logging.getLogger('gunicorn.error')
+    app = PveExporterApplication(config, collectors, logger)
     StandaloneGunicornApplication(app, gunicorn_options).run()
