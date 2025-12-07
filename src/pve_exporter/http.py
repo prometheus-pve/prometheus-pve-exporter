@@ -19,13 +19,30 @@ class PveExporterApplication:
     Proxmox VE prometheus collector HTTP handler.
     """
 
-    def __init__(self, config, duration, errors, collectors):
+    def __init__(self, config, collectors):
         self._config = config
-        self._duration = duration
-        self._errors = errors
         self._collectors = collectors
 
         self._log = logging.getLogger(__name__)
+
+        self._duration = Summary(
+            'pve_collection_duration_seconds',
+            'Duration of collections by the PVE exporter',
+            ['module'],
+        )
+        self._errors = Counter(
+            'pve_request_errors_total',
+            'Errors in requests to PVE exporter',
+            ['module'],
+        )
+
+        # Initialize metrics.
+        for module in config.keys():
+            # pylint: disable=no-member
+            self._errors.labels(module)
+            # pylint: disable=no-member
+            self._duration.labels(module)
+
 
     def on_pve(self, module='default', target='localhost', cluster='1', node='1'):
         """
@@ -145,23 +162,5 @@ def start_http_server(config, gunicorn_options, collectors):
     Start a HTTP API server for Proxmox VE prometheus collector.
     """
 
-    duration = Summary(
-        'pve_collection_duration_seconds',
-        'Duration of collections by the PVE exporter',
-        ['module'],
-    )
-    errors = Counter(
-        'pve_request_errors_total',
-        'Errors in requests to PVE exporter',
-        ['module'],
-    )
-
-    # Initialize metrics.
-    for module in config.keys():
-        # pylint: disable=no-member
-        errors.labels(module)
-        # pylint: disable=no-member
-        duration.labels(module)
-
-    app = PveExporterApplication(config, duration, errors, collectors)
+    app = PveExporterApplication(config, collectors)
     StandaloneGunicornApplication(app, gunicorn_options).run()
