@@ -402,7 +402,7 @@ class BackupCollector:
     pve_backup_not_enabled_total{id="cluster/pvec"} 2.0
     pve_backup_not_enabled_info{id="qemu/102",name="vm-102"} 1.0
     """
-    
+
     def __init__(self, pve):
         self._pve = pve
 
@@ -424,7 +424,7 @@ class BackupCollector:
         for entry in not_enabled_data:
             label_values = [f"{entry['type']}/{entry['vmid']}", entry['name']]
             not_enabled_info.add_metric(label_values, 1)
-        
+
         not_enabled_total.add_metric(
             [f"cluster/{cluster_name}"],
             len(not_enabled_data)
