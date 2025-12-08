@@ -37,6 +37,9 @@ def main():
     clusterflags.add_argument('--collector.resources', dest='collector_resources',
                               action=BooleanOptionalAction, default=True,
                               help='Exposes PVE resources info')
+    clusterflags.add_argument('--collector.backup', dest='collector_backup',
+                              action=BooleanOptionalAction, default=True,
+                              help='Exposes PVE backup info')
 
     nodeflags = parser.add_argument_group('node collectors', description=(
         'node collectors are run if the url parameter node=1 is set and '
@@ -77,6 +80,7 @@ def main():
         node=params.collector_node,
         cluster=params.collector_cluster,
         resources=params.collector_resources,
+        backup=params.collector_backup,
         config=params.collector_config,
         replication=params.collector_replication
     )

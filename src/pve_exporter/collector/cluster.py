@@ -394,3 +394,41 @@ class ClusterResourcesCollector:
             csv_label_values.append(sorted_values)
 
         return label_values + csv_label_values
+
+class BackupCollector:
+    """
+    Collects Proxmox VE backup job information. E.g.:
+
+    pve_backup_not_enabled_total{id="cluster/pvec"} 2.0
+    pve_backup_not_enabled_info{id="qemu/102",name="vm-102"} 1.0
+    """
+    
+    def __init__(self, pve):
+        self._pve = pve
+
+    def collect(self):  # pylint: disable=missing-docstring
+        not_enabled_total = GaugeMetricFamily(
+            'pve_backup_not_enabled_total',
+            'Total number of VMs/CTs without backup enabled',
+            labels=['id']
+        )
+        not_enabled_info = GaugeMetricFamily(
+            'pve_backup_not_enabled_info',
+            'VM/CTs without backup enabled',
+            labels=['id', 'name']
+        )
+
+        not_enabled_data = self._pve.cluster("backup-info/not-backed-up").get()
+        cluster_name = self._pve.cluster.status.get()[0]['name']
+
+        for entry in not_enabled_data:
+            label_values = [f"{entry['type']}/{entry['vmid']}", entry['name']]
+            not_enabled_info.add_metric(label_values, 1)
+        
+        not_enabled_total.add_metric(
+            [f"cluster/{cluster_name}"],
+            len(not_enabled_data)
+        )
+
+        yield not_enabled_total
+        yield not_enabled_info
