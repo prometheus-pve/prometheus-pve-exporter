@@ -1,5 +1,4 @@
 from prometheus_client.core import GaugeMetricFamily
-import logging
 from typing import Dict, List, Tuple
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -11,10 +10,9 @@ class QgaFsCollector:
 
     def __init__(self, pve, max_workers: int = 16, timeout: float = 10.0):
         self.pve = pve
-        self.logger = logging.getLogger("gunicorn.error")
         self.max_workers = max_workers
         self.timeout = timeout
-        # Cache per (node, vmid) -> cfg (dict) to avoid repeated GET /config for same VM
+
         self._config_cache: Dict[Tuple[str, int], Dict] = {}
 
     def collect(self):

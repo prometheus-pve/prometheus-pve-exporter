@@ -11,7 +11,7 @@ from pve_exporter.config import config_from_yaml
 from pve_exporter.config import config_from_env
 from pve_exporter.collector import CollectorsOptions
 
-## Settings helper
+## Settings helpers ##
 def env_bool(name: str):
     v = os.getenv(name)
     if v is None:
@@ -118,9 +118,6 @@ def main():
         'threads': 2,
         'keyfile': params.server_keyfile,
         'certfile': params.server_certfile,
-        'loglevel': 'info',   # or 'info'
-        'errorlog': '-',       # send gunicorn error log to stderr
-        'accesslog': '-',      # (optional) log each request
     }
 
     if config.valid:
