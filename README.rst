@@ -54,6 +54,7 @@ Usage
                         [--collector.config | --no-collector.config]
                         [--collector.replication | --no-collector.replication]
                         [--collector.subscription | --no-collector.subscription]
+                        [--collector.qga_fs | --no-collector.qga_fs]
                         [--config.file CONFIG_FILE]
                         [--web.listen-address WEB_LISTEN_ADDRESS]
                         [--server.keyfile SERVER_KEYFILE]
@@ -85,6 +86,8 @@ Usage
                             Exposes PVE cluster info
       --collector.resources, --no-collector.resources
                             Exposes PVE resources info
+      --collector.qga_fs, --no-collector.qga_fs
+                            use Qemu Guest Agent metrics                      
 
     node collectors:
       node collectors are run if the url parameter node=1 is set and skipped if
@@ -261,6 +264,12 @@ Here's an example of the metrics exported.
     # HELP pve_replication_info Proxmox vm replication info
     # TYPE pve_replication_info gauge
     pve_replication_info{guest="qemu/1",id="1-0",source="node/proxmox1",target="node/proxmox2",type="local"} 1.0
+    # HELP pve_qga_fs_size_bytes Filesystem size inside guest from QEMU guest agent (get-fsinfo)
+    # TYPE pve_qga_fs_size_bytes gauge
+    pve_qga_fs_size_bytes{disk="/dev/vda1",fstype="ext4",id="qemu/11283",mountpoint="/",node="proxmox",vm="demo-vm"} 1.8785271808e+010
+    # HELP pve_qga_fs_used_bytes Filesystem used bytes inside guest from QEMU guest agent (get-fsinfo)
+    # TYPE pve_qga_fs_used_bytes gauge
+    pve_qga_fs_used_bytes{disk="/dev/vda1",fstype="ext4",id="qemu/11283",mountpoint="/",node="proxmox",vm="demo-vm"} 1.5238414336e+010
 
 Authentication
 --------------
@@ -310,6 +319,32 @@ Optional:
 * ``PVE_MODULE``: Name of the configuration module. Defaults to ``default``.
 
 The configuration is passed directly into `proxmoxer.ProxmoxAPI()`_.
+
+Collector options via environment variables
+-------------------------------------------
+
+Collector enable/disable flags may now also be defined through environment variables.
+All collector variables follow the form:
+
+``PVE_COLLECTOR_<NAME>``
+
+Where ``<NAME>`` is the upper-case collector name. Values may be ``true``, ``false``,
+``1``, ``0``, ``yes``, ``no``, ``on``, or ``off``.
+
+Example variables include:
+
+* ``PVE_COLLECTOR_STATUS``
+* ``PVE_COLLECTOR_VERSION``
+* ``PVE_COLLECTOR_NODE``
+* ``PVE_COLLECTOR_CLUSTER``
+* ``PVE_COLLECTOR_RESOURCES``
+* ``PVE_COLLECTOR_CONFIG``
+* ``PVE_COLLECTOR_REPLICATION``
+* ``PVE_COLLECTOR_SUBSCRIPTION``
+* ``PVE_COLLECTOR_QGA_FS`` (defaults to ``false`` if not specified)
+
+Environment-defined collector flags override the built-in defaults but remain below
+explicit CLI flags in precedence.
 
 **Note on verify_ssl and certificate trust store:**
 
