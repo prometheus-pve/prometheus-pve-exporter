@@ -113,13 +113,6 @@ def main():
         default=None,
         help="Exposes PVE subscription info",
     )
-    nodeflags.add_argument(
-        "--collector.qga_fs",
-        dest="collector_qga_fs",
-        action=BooleanOptionalAction,
-        default=None,
-        help="use Qemu Guest Agent metrics",
-    )
 
     parser.add_argument(
         "--config.file",
