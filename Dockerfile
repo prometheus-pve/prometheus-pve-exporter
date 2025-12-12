@@ -11,7 +11,7 @@ RUN apk update && apk add --no-cache \
     python3-dev \
     yaml-dev
 
-COPY . /src/prometheus-pve-exporter
+ADD . /src/prometheus-pve-exporter
 WORKDIR /src/prometheus-pve-exporter
 RUN python3 -m pip wheel -w dist --no-binary "cffi" --no-binary "pyyaml" -r requirements.txt && \
     python3 -m build .

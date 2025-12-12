@@ -1,6 +1,9 @@
-from prometheus_client.core import GaugeMetricFamily
-from typing import Dict, List, Tuple
+import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import Dict
+
+from prometheus_client.core import GaugeMetricFamily
+
 
 class QgaFsCollector:
     """
@@ -10,10 +13,10 @@ class QgaFsCollector:
 
     def __init__(self, pve, max_workers: int = 16, timeout: float = 10.0):
         self.pve = pve
+        self.logger = logging.getLogger(__name__)
         self.max_workers = max_workers
         self.timeout = timeout
-
-        self._config_cache: Dict[Tuple[str, int], Dict] = {}
+        self._config_cache: Dict[int, Dict] = {}
 
     def collect(self):
         size_metric = GaugeMetricFamily(
@@ -27,7 +30,13 @@ class QgaFsCollector:
             labels=["id", "node", "vm", "disk", "mountpoint", "fstype"],
         )
 
-        vms = list(self._iter_qemu_vms())
+        node = self._get_local_node()
+        if not node:
+            yield size_metric
+            yield used_metric
+            return
+
+        vms = list(self._iter_local_qemu_vms(node))
         if not vms:
             yield size_metric
             yield used_metric
@@ -46,24 +55,29 @@ class QgaFsCollector:
                 except Exception as exc:
                     self.logger.info(
                         "Failed to collect FS info for vmid=%s on node=%s: %s",
-                        vm["vmid"], vm["node"], exc
+                        vm["vmid"],
+                        vm["node"],
+                        exc,
                     )
 
         yield size_metric
         yield used_metric
 
-    def _iter_qemu_vms(self):
-        resources = self.pve.cluster.resources.get(type="vm")
+    def _get_local_node(self) -> str | None:
+        for entry in self.pve.cluster.status.get():
+            if entry.get("type") == "node" and entry.get("local"):
+                return entry.get("name")
+        return None
 
-        for res in resources:
-            if res.get("type") != "qemu" or res.get("status") != "running":
+    def _iter_local_qemu_vms(self, node: str):
+        for vmdata in self.pve.nodes(node).qemu.get():
+            if vmdata.get("status") != "running":
                 continue
-
             yield {
-                "id":   res["id"],
-                "vmid": int(res["vmid"]),
-                "node": res["node"],
-                "name": res.get("name", ""),
+                "id": vmdata.get("id", f"qemu/{vmdata['vmid']}"),
+                "vmid": int(vmdata["vmid"]),
+                "node": node,
+                "name": vmdata.get("name", ""),
             }
 
     def _collect_vm_fs(self, vm, size_metric, used_metric):
@@ -72,15 +86,16 @@ class QgaFsCollector:
         id_ = vm["id"]
         name = vm["name"]
 
-        # Config (cached)
-        cache_key = (node, vmid)
+        cache_key = vmid
         cfg = self._config_cache.get(cache_key)
         if cfg is None:
             try:
                 cfg = self.pve.nodes(node).qemu(vmid).config.get()
                 self._config_cache[cache_key] = cfg
             except Exception as exc:
-                self.logger.info("Failed to get config for vmid=%s on node=%s: %s", vmid, node, exc)
+                self.logger.info(
+                    "Failed to get config for vmid=%s on node=%s: %s", vmid, node, exc
+                )
                 return
 
         if not self._agent_enabled(cfg):
@@ -90,7 +105,9 @@ class QgaFsCollector:
         try:
             fsinfo = self.pve.nodes(node).qemu(vmid).agent("get-fsinfo").get()
         except Exception as exc:
-            self.logger.info("QGA get-fsinfo failed for vmid=%s on node=%s: %s", vmid, node, exc)
+            self.logger.info(
+                "QGA get-fsinfo failed for vmid=%s on node=%s: %s", vmid, node, exc
+            )
             return
 
         fs_list = fsinfo.get("result") if isinstance(fsinfo, dict) else fsinfo
@@ -109,7 +126,17 @@ class QgaFsCollector:
                 continue
 
             disks = fs.get("disk") or []
-            devs = [d.get("dev", "unknown") for d in disks] if disks else [fs.get("name", "unknown")]
+            devs = (
+                [d.get("dev", "unknown") for d in disks]
+                if disks
+                else [fs.get("name", "unknown")]
+            )
+            disks = fs.get("disk") or []
+            devs = (
+                [d.get("dev", "unknown") for d in disks]
+                if disks
+                else [fs.get("name", "unknown")]
+            )
 
             for dev in devs:
                 labels = [id_, node, name, dev, mount, fstype]
