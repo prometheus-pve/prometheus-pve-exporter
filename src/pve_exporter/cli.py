@@ -174,9 +174,6 @@ def main():
         "threads": 2,
         "keyfile": params.server_keyfile,
         "certfile": params.server_certfile,
-        "loglevel": "info",  # or 'info'
-        "errorlog": "-",  # send gunicorn error log to stderr
-        "accesslog": "-",  # (optional) log each request
     }
 
     if config.valid:
