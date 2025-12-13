@@ -3,7 +3,6 @@ Prometheus collecters for Proxmox VE cluster.
 """
 # pylint: disable=too-few-public-methods
 
-import logging
 import itertools
 from datetime import datetime
 
