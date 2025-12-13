@@ -3,33 +3,36 @@ Prometheus collecters for Proxmox VE cluster.
 """
 
 import collections
-from proxmoxer import ProxmoxAPI
 
 from prometheus_client import CollectorRegistry, generate_latest
+from proxmoxer import ProxmoxAPI
 
 from pve_exporter.collector.cluster import (
-    StatusCollector,
-    ClusterResourcesCollector,
+    ClusterInfoCollector,
     ClusterNodeCollector,
+    ClusterResourcesCollector,
+    StatusCollector,
     VersionCollector,
-    ClusterInfoCollector
 )
 from pve_exporter.collector.node import (
     NodeConfigCollector,
     NodeReplicationCollector,
-    SubscriptionCollector
+    SubscriptionCollector,
 )
 
-CollectorsOptions = collections.namedtuple('CollectorsOptions', [
-    'status',
-    'version',
-    'subscription',
-    'node',
-    'cluster',
-    'resources',
-    'config',
-    'replication'
-])
+CollectorsOptions = collections.namedtuple(
+    "CollectorsOptions",
+    [
+        "status",
+        "version",
+        "subscription",
+        "node",
+        "cluster",
+        "resources",
+        "config",
+        "replication",
+    ],
+)
 
 
 def collect_pve(config, host, cluster, node, options: CollectorsOptions):
