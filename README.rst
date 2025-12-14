@@ -54,6 +54,8 @@ Usage
                         [--collector.config | --no-collector.config]
                         [--collector.replication | --no-collector.replication]
                         [--collector.subscription | --no-collector.subscription]
+                        [--collector.pve-api-metrics | --no-collector.pve-api-metrics]
+                        [--collector.target-metrics | --no-collector.target-metrics]
                         [--config.file CONFIG_FILE]
                         [--web.listen-address WEB_LISTEN_ADDRESS]
                         [--server.keyfile SERVER_KEYFILE]
@@ -97,6 +99,14 @@ Usage
       --collector.subscription, --no-collector.subscription
                             Exposes PVE subscription info
 
+    scrape collectors:
+      metrics concerning the operation of the Prometheus PVE exporter itself.
+
+      --collector.pve-api-metrics, --no-collector.pve-api-metrics
+                            Exposes duration of PVE API calls
+      --collector.target-metrics, --no-collector.target-metrics
+                            Exposes duration of scrapes by target
+
 
 Use `[::]` in the `--web.listen-address` flag in order to bind to both IPv6 and
 IPv4 sockets on dual stacked machines.
@@ -115,6 +125,9 @@ collectors.
 Note that that the config collector results in one API call per guest VM/CT.
 It is therefore recommended to disable this collector using the
 `--no-collector.config` flag on big deployments.
+
+Scrape collectors return metrics concerning the operation of the Prometheus PVE
+exporter itself. Those metrics are available from the `/metric`.
 
 See the wiki_  for more examples and docs.
 
