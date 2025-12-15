@@ -19,13 +19,29 @@ class PveExporterApplication:
     Proxmox VE prometheus collector HTTP handler.
     """
 
-    def __init__(self, config, duration, errors, collectors):
+    def __init__(self, config, collectors, logger):
         self._config = config
-        self._duration = duration
-        self._errors = errors
         self._collectors = collectors
+        self._log = logger
 
-        self._log = logging.getLogger(__name__)
+        self._duration = Summary(
+            'pve_collection_duration_seconds',
+            'Duration of collections by the PVE exporter',
+            ['module'],
+        )
+        self._errors = Counter(
+            'pve_request_errors_total',
+            'Errors in requests to PVE exporter',
+            ['module'],
+        )
+
+        # Initialize metrics.
+        for module in config.keys():
+            # pylint: disable=no-member
+            self._errors.labels(module)
+            # pylint: disable=no-member
+            self._duration.labels(module)
+
 
     def on_pve(self, module='default', target='localhost', cluster='1', node='1'):
         """
@@ -145,23 +161,9 @@ def start_http_server(config, gunicorn_options, collectors):
     Start a HTTP API server for Proxmox VE prometheus collector.
     """
 
-    duration = Summary(
-        'pve_collection_duration_seconds',
-        'Duration of collections by the PVE exporter',
-        ['module'],
-    )
-    errors = Counter(
-        'pve_request_errors_total',
-        'Errors in requests to PVE exporter',
-        ['module'],
-    )
-
-    # Initialize metrics.
-    for module in config.keys():
-        # pylint: disable=no-member
-        errors.labels(module)
-        # pylint: disable=no-member
-        duration.labels(module)
-
-    app = PveExporterApplication(config, duration, errors, collectors)
+    # If running under gunicorn, reuse the gunicorn.error logger for the
+    # exporter application.
+    # https://trstringer.com/logging-flask-gunicorn-the-manageable-way/
+    logger = logging.getLogger('gunicorn.error')
+    app = PveExporterApplication(config, collectors, logger)
     StandaloneGunicornApplication(app, gunicorn_options).run()

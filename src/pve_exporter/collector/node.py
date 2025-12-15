@@ -3,7 +3,6 @@ Prometheus collecters for Proxmox VE cluster.
 """
 # pylint: disable=too-few-public-methods
 
-import logging
 import itertools
 from datetime import datetime
 
@@ -22,7 +21,6 @@ class NodeConfigCollector:
 
     def __init__(self, pve):
         self._pve = pve
-        self._log = logging.getLogger(__name__)
 
     def collect(self):  # pylint: disable=missing-docstring
         metrics = {
