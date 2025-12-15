@@ -22,17 +22,17 @@ from pve_exporter.collector.node import (
 from pve_exporter.collector.qga import QgaFsCollector
 
 CollectorsOptions = collections.namedtuple(
-    "CollectorsOptions",
+    'CollectorsOptions',
     [
-        "status",
-        "version",
-        "subscription",
-        "node",
-        "cluster",
-        "resources",
-        "config",
-        "replication",
-        "qga_fs",
+        'status',
+        'version',
+        'subscription',
+        'node',
+        'cluster',
+        'resources',
+        'config',
+        'replication',
+        'qga_fs',
     ],
 )
 
@@ -41,6 +41,7 @@ def collect_pve(config, host, cluster, node, options: CollectorsOptions):
     """Scrape a host and return prometheus text format for it"""
 
     pve = ProxmoxAPI(host, **config)
+    
     registry = CollectorRegistry()
     if cluster and options.status:
         registry.register(StatusCollector(pve))

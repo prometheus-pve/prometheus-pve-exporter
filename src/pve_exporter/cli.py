@@ -20,105 +20,83 @@ def main():
 
     parser = ArgumentParser()
     clusterflags = parser.add_argument_group(
-        "cluster collectors",
+        'cluster collectors',
         description=(
-            "cluster collectors are run if the url parameter cluster=1 is set and "
-            "skipped if the url parameter cluster=0 is set on a scrape url."
+            'cluster collectors are run if the url parameter cluster=1 is set and '
+            'skipped if the url parameter cluster=0 is set on a scrape url.'
         ),
     )
     clusterflags.add_argument(
-        "--collector.status",
-        dest="collector_status",
-        action=BooleanOptionalAction,
-        default=True,
-        help="Exposes Node/VM/CT-Status",
+        '--collector.status', dest='collector_status',
+        action=BooleanOptionalAction, default=True,
+        help='Exposes Node/VM/CT-Status',
     )
     clusterflags.add_argument(
-        "--collector.version",
-        dest="collector_version",
-        action=BooleanOptionalAction,
-        default=True,
-        help="Exposes PVE version info",
+        '--collector.version', dest='collector_version',
+        action=BooleanOptionalAction, default=True,
+        help='Exposes PVE version info',
     )
     clusterflags.add_argument(
-        "--collector.node",
-        dest="collector_node",
-        action=BooleanOptionalAction,
-        default=True,
-        help="Exposes PVE node info",
+        '--collector.node', dest='collector_node',
+        action=BooleanOptionalAction, default=True,
+        help='Exposes PVE node info',
     )
     clusterflags.add_argument(
-        "--collector.cluster",
-        dest="collector_cluster",
-        action=BooleanOptionalAction,
-        default=True,
-        help="Exposes PVE cluster info",
+        '--collector.cluster', dest='collector_cluster',
+        action=BooleanOptionalAction, default=True,
+        help='Exposes PVE cluster info',
     )
     clusterflags.add_argument(
-        "--collector.resources",
-        dest="collector_resources",
-        action=BooleanOptionalAction,
-        default=True,
-        help="Exposes PVE resources info",
+        '--collector.resources', dest='collector_resources',
+        action=BooleanOptionalAction, default=True,
+        help='Exposes PVE resources info',
     )
 
     nodeflags = parser.add_argument_group(
-        "node collectors",
+        'node collectors',
         description=(
-            "node collectors are run if the url parameter node=1 is set and "
-            "skipped if the url parameter node=0 is set on a scrape url."
+            'node collectors are run if the url parameter node=1 is set and '
+            'skipped if the url parameter node=0 is set on a scrape url.'
         ),
     )
     nodeflags.add_argument(
-        "--collector.config",
-        dest="collector_config",
-        action=BooleanOptionalAction,
-        default=True,
-        help="Exposes PVE onboot status",
+        '--collector.config', dest='collector_config',
+        action=BooleanOptionalAction, default=True,
+        help='Exposes PVE onboot status',
     )
 
     nodeflags.add_argument(
-        "--collector.replication",
-        dest="collector_replication",
-        action=BooleanOptionalAction,
-        default=True,
-        help="Exposes PVE replication info",
+        '--collector.replication', dest='collector_replication',
+        action=BooleanOptionalAction, default=True,
+        help='Exposes PVE replication info',
     )
     nodeflags.add_argument(
-        "--collector.subscription",
-        dest="collector_subscription",
-        action=BooleanOptionalAction,
-        default=True,
-        help="Exposes PVE subscription info",
+        '--collector.subscription', dest='collector_subscription',
+        action=BooleanOptionalAction, default=True,
+        help='Exposes PVE subscription info',
     )
     nodeflags.add_argument(
-        "--collector.qga_fs",
-        dest="collector_qga_fs",
-        action=BooleanOptionalAction,
-        default=False,
-        help="use Qemu Guest Agent metrics",
+        '--collector.qga_fs', dest='collector_qga_fs',
+        action=BooleanOptionalAction, default=False,
+        help='use Qemu Guest Agent metrics',
     )
 
     parser.add_argument(
-        "--config.file",
-        type=pathlib.Path,
-        dest="config_file",
-        default="/etc/prometheus/pve.yml",
-        help="Path to config file (/etc/prometheus/pve.yml)",
+        '--config.file', type=pathlib.Path,
+        dest='config_file', default='/etc/prometheus/pve.yml',
+        help='Path to config file (/etc/prometheus/pve.yml)',
     )
 
-    parser.add_argument(
-        "--web.listen-address",
-        dest="web_listen_address",
-        default="[::]:9221",
-        help=("Address on which to expose metrics and web server. ([::]:9221)"),
-    )
-    parser.add_argument(
-        "--server.keyfile", dest="server_keyfile", help="SSL key for server"
-    )
-    parser.add_argument(
-        "--server.certfile", dest="server_certfile", help="SSL certificate for server"
-    )
+    parser.add_argument('--web.listen-address',
+                    dest="web_listen_address", default='[::]:9221',
+                    help=(
+                        'Address on which to expose metrics and web server. '
+                        '([::]:9221)'
+                    ))
+    parser.add_argument('--server.keyfile', dest='server_keyfile',
+                        help='SSL key for server')
+    parser.add_argument('--server.certfile', dest='server_certfile',
+                        help='SSL certificate for server')
 
     params = parser.parse_args()
 
@@ -135,17 +113,17 @@ def main():
     )
 
     # Load configuration.
-    if "PVE_USER" in os.environ:
+    if 'PVE_USER' in os.environ:
         config = config_from_env(os.environ)
     else:
-        with open(params.config_file, encoding="utf-8") as handle:
+        with open(params.config_file, encoding='utf-8') as handle:
             config = config_from_yaml(yaml.safe_load(handle))
 
     gunicorn_options = {
-        "bind": f"{params.web_listen_address}",
-        "threads": 2,
-        "keyfile": params.server_keyfile,
-        "certfile": params.server_certfile,
+        'bind': f"{params.web_listen_address}",
+        'threads': 2,
+        'keyfile': params.server_keyfile,
+        'certfile': params.server_certfile,
     }
 
     if config.valid:
