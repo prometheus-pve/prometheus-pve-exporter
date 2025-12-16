@@ -154,18 +154,30 @@ Here's an example of the metrics exported.
     # TYPE pve_memory_usage_bytes gauge
     pve_memory_usage_bytes{id="qemu/100"} 1.6573280275e+010
     pve_memory_usage_bytes{id="node/proxmox"} 5.3907812352e+010
-    # HELP pve_network_transmit_bytes The amount of traffic in bytes that was sent from the guest over the network since it was started. (for types 'qemu' and 'lxc')
+    # HELP pve_network_transmit_bytes The amount of traffic in bytes that was sent from the guest over the network since it was started. (for types 'qemu' and 'lxc') DEPRECATED: use pve_network_transmit_bytes_total instead.
     # TYPE pve_network_transmit_bytes gauge
     pve_network_transmit_bytes{id="qemu/100"} 7.75070828e+09
-    # HELP pve_network_receive_bytes The amount of traffic in bytes that was sent to the guest over the network since it was started. (for types 'qemu' and 'lxc')
+    # HELP pve_network_transmit_bytes_total The amount of traffic in bytes that was sent from the guest over the network since it was started. (for types 'qemu' and 'lxc')
+    # TYPE pve_network_transmit_bytes_total counter
+    pve_network_transmit_bytes_total{id="qemu/100"} 7.75070828e+09
+    # HELP pve_network_receive_bytes The amount of traffic in bytes that was sent to the guest over the network since it was started. (for types 'qemu' and 'lxc') DEPRECATED: use pve_network_receive_bytes_total instead.
     # TYPE pve_network_receive_bytes gauge
     pve_network_receive_bytes{id="qemu/100"} 1.529756162e+09
-    # HELP pve_disk_write_bytes The amount of bytes the guest wrote to its block devices since the guest was started. This info is not available for all storage types. (for types 'qemu' and 'lxc')
+    # HELP pve_network_receive_bytes_total The amount of traffic in bytes that was sent to the guest over the network since it was started. (for types 'qemu' and 'lxc')
+    # TYPE pve_network_receive_bytes_total counter
+    pve_network_receive_bytes_total{id="qemu/100"} 1.529756162e+09
+    # HELP pve_disk_write_bytes The amount of bytes the guest wrote to its block devices since the guest was started. This info is not available for all storage types. (for types 'qemu' and 'lxc') DEPRECATED: use pve_disk_write_bytes_total instead.
     # TYPE pve_disk_write_bytes gauge
     pve_disk_write_bytes{id="qemu/100"} 1.50048127488e+011
-    # HELP pve_disk_read_bytes The amount of bytes the guest read from its block devices since the guest was started. This info is not available for all storage types. (for types 'qemu' and 'lxc')
+    # HELP pve_disk_write_bytes_total The amount of bytes the guest wrote to its block devices since the guest was started. This info is not available for all storage types. (for types 'qemu' and 'lxc')
+    # TYPE pve_disk_write_bytes_total counter
+    pve_disk_write_bytes_total{id="qemu/100"} 1.50048127488e+011
+    # HELP pve_disk_read_bytes The amount of bytes the guest read from its block devices since the guest was started. This info is not available for all storage types. (for types 'qemu' and 'lxc') DEPRECATED: use pve_disk_read_bytes_total instead.
     # TYPE pve_disk_read_bytes gauge
     pve_disk_read_bytes{id="qemu/100"} 7.473739264e+09
+    # HELP pve_disk_read_bytes_total The amount of bytes the guest read from its block devices since the guest was started. This info is not available for all storage types. (for types 'qemu' and 'lxc')
+    # TYPE pve_disk_read_bytes_total counter
+    pve_disk_read_bytes_total{id="qemu/100"} 7.473739264e+09
     # HELP pve_cpu_usage_ratio CPU utilization (for types 'node', 'qemu' and 'lxc').
     # TYPE pve_cpu_usage_ratio gauge
     pve_cpu_usage_ratio{id="qemu/100"} 0.105009724408557

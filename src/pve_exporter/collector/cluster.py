@@ -6,7 +6,7 @@ Prometheus collecters for Proxmox VE cluster.
 import itertools
 import typing
 
-from prometheus_client.core import GaugeMetricFamily
+from prometheus_client.core import GaugeMetricFamily, CounterMetricFamily
 
 
 class StatusCollector:
@@ -275,14 +275,16 @@ class ClusterResourcesCollector:
                 'pve_network_transmit_bytes',
                 (
                     "The amount of traffic in bytes that was sent from the guest over the network "
-                    "since it was started. (for types 'qemu' and 'lxc')"
+                    "since it was started. (for types 'qemu' and 'lxc') "
+                    "DEPRECATED: Use pve_network_transmit_bytes_total instead."
                 ),
                 labels=['id']),
             'netin': GaugeMetricFamily(
                 'pve_network_receive_bytes',
                 (
                     "The amount of traffic in bytes that was sent to the guest over the network "
-                    "since it was started. (for types 'qemu' and 'lxc')"
+                    "since it was started. (for types 'qemu' and 'lxc') "
+                    "DEPRECATED: Use pve_network_receive_bytes_total instead."
                 ),
                 labels=['id']),
             'diskwrite': GaugeMetricFamily(
@@ -290,7 +292,8 @@ class ClusterResourcesCollector:
                 (
                     "The amount of bytes the guest wrote to its block devices since the guest was "
                     "started. This info is not available for all storage types. "
-                    "(for types 'qemu' and 'lxc')"
+                    "(for types 'qemu' and 'lxc') "
+                    "DEPRECATED: Use pve_disk_write_bytes_total instead."
                 ),
                 labels=['id']),
             'diskread': GaugeMetricFamily(
@@ -298,7 +301,8 @@ class ClusterResourcesCollector:
                 (
                     "The amount of bytes the guest read from its block devices since the guest was "
                     "started. This info is not available for all storage types. "
-                    "(for types 'qemu' and 'lxc')"
+                    "(for types 'qemu' and 'lxc') "
+                    "DEPRECATED: Use pve_disk_read_bytes_total instead."
                 ),
                 labels=['id']),
             'cpu': GaugeMetricFamily(
@@ -316,6 +320,39 @@ class ClusterResourcesCollector:
             'shared': GaugeMetricFamily(
                 'pve_storage_shared',
                 'Whether or not the storage is shared among cluster nodes',
+                labels=['id']),
+        }
+
+        counter_metrics = {
+            'netout': CounterMetricFamily(
+                'pve_network_transmit_bytes_total',
+                (
+                    "The amount of traffic in bytes that was sent from the guest over the network "
+                    "since it was started. (for types 'qemu' and 'lxc')"
+                ),
+                labels=['id']),
+            'netin': CounterMetricFamily(
+                'pve_network_receive_bytes_total',
+                (
+                    "The amount of traffic in bytes that was sent to the guest over the network "
+                    "since it was started. (for types 'qemu' and 'lxc')"
+                ),
+                labels=['id']),
+            'diskwrite': CounterMetricFamily(
+                'pve_disk_write_bytes_total',
+                (
+                    "The amount of bytes the guest wrote to its block devices since the guest was "
+                    "started. This info is not available for all storage types. "
+                    "(for types 'qemu' and 'lxc')"
+                ),
+                labels=['id']),
+            'diskread': CounterMetricFamily(
+                'pve_disk_read_bytes_total',
+                (
+                    "The amount of bytes the guest read from its block devices since the guest was "
+                    "started. This info is not available for all storage types. "
+                    "(for types 'qemu' and 'lxc')"
+                ),
                 labels=['id']),
         }
 
@@ -363,8 +400,15 @@ class ClusterResourcesCollector:
             for key, metric_value in resource.items():
                 if key in metrics:
                     metrics[key].add_metric(label_values, metric_value)
+                if key in counter_metrics:
+                    counter_metrics[key].add_metric(label_values, metric_value)
 
-        return itertools.chain(metrics.values(), [ha_metric, lock_metric], info_metrics.values())
+        return itertools.chain(
+            metrics.values(),
+            counter_metrics.values(),
+            [ha_metric, lock_metric],
+            info_metrics.values()
+        )
 
     def _extract_resource_labels(self, resource_lookup_info: dict[str, typing.Any],
                                  api_response_resource: dict[str, typing.Any]) -> list[str]:
