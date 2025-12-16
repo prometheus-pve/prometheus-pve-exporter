@@ -10,6 +10,27 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 -------------
 
 
+`3.7.0`_ - 2025-12-16
+---------------------
+
+Added
+~~~~~
+
+- Expose duration and error total of PVE API calls (#385)
+- Expose information about guests which are not covered by any backup job (#377)
+
+Changed
+~~~~~~~
+
+- Bump actions/download-artifact from 6 to 7 (#386)
+- Bump actions/upload-artifact from 5 to 6 (#387)
+- Adhere to dockerfile best practices (#383)
+- Bump alpine from 3.22.2 to 3.23.0 (#378)
+- Send exception to gunicorn.error logger (#375)
+- Initialize http metrics in PveExporterApplication constructor (#376)
+- Bump urllib3 from 2.5.0 to 2.6.0 (#374)
+
+
 `3.6.0`_ - 2025-12-01
 ---------------------
 
@@ -567,7 +588,8 @@ Added
 
 .. _Keep a Changelog: http://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: http://semver.org/spec/v2.0.0.html
-.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.6.0...HEAD
+.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.7.0...HEAD
+.. _3.7.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.6.0...v3.7.0
 .. _3.6.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.5.5...v3.6.0
 .. _3.5.5: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.5.4...v3.5.5
 .. _3.5.4: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.5.3...v3.5.4
