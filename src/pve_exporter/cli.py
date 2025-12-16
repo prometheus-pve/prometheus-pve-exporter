@@ -6,6 +6,7 @@ from argparse import ArgumentParser, BooleanOptionalAction
 import os
 import pathlib
 import yaml
+from pve_exporter import scrape_metrics
 from pve_exporter.http import start_http_server
 from pve_exporter.config import config_from_yaml
 from pve_exporter.config import config_from_env
@@ -57,6 +58,16 @@ def main():
                               action=BooleanOptionalAction, default=True,
                               help='Exposes PVE subscription info')
 
+    scrapeflags = parser.add_argument_group('scrape collectors', description=(
+        'metrics concerning the operation of the Prometheus PVE exporter itself.'
+    ))
+    scrapeflags.add_argument('--collector.pve-api-metrics', dest='api_metrics_enabled',
+                              action=BooleanOptionalAction, default=False,
+                              help='Exposes duration of PVE API calls')
+    scrapeflags.add_argument('--collector.target-metrics', dest='target_metrics_enabled',
+                              action=BooleanOptionalAction, default=False,
+                              help='Exposes duration of scrapes by target')
+
     parser.add_argument('--config.file', type=pathlib.Path,
                         dest="config_file", default='/etc/prometheus/pve.yml',
                         help='Path to config file (/etc/prometheus/pve.yml)')
@@ -85,6 +96,8 @@ def main():
         config=params.collector_config,
         replication=params.collector_replication
     )
+    scrape_metrics.API_METRICS_ENABLED = params.api_metrics_enabled
+    scrape_metrics.TARGET_METRICS_ENABLED = params.target_metrics_enabled
 
     # Load configuration.
     if 'PVE_USER' in os.environ:
