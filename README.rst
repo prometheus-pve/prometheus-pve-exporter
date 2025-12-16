@@ -51,6 +51,7 @@ Usage
                         [--collector.node | --no-collector.node]
                         [--collector.cluster | --no-collector.cluster]
                         [--collector.resources | --no-collector.resources]
+                        [--collector.backup-info | --no-collector.backup-info]
                         [--collector.config | --no-collector.config]
                         [--collector.replication | --no-collector.replication]
                         [--collector.subscription | --no-collector.subscription]
@@ -87,6 +88,9 @@ Usage
                             Exposes PVE cluster info
       --collector.resources, --no-collector.resources
                             Exposes PVE resources info
+      --collector.backup-info, --no-collector.backup-info
+                            Exposes information about guests which are not covered
+                            by any backup job
 
     node collectors:
       node collectors are run if the url parameter node=1 is set and skipped if
@@ -256,6 +260,13 @@ Here's an example of the metrics exported.
     # HELP pve_version_info Proxmox VE version info
     # TYPE pve_version_info gauge
     pve_version_info{release="7.1",repoid="6fe299a0",version="7.1-5"} 1.0
+    # HELP pve_not_backed_up_total Total number of guests not covered by any backup job.
+    # TYPE pve_not_backed_up_total gauge
+    pve_not_backed_up_total{id="cluster/pvc"} 2.0
+    # HELP pve_not_backed_up_info Present if guest is not covered by any backup job.
+    # TYPE pve_not_backed_up_info gauge
+    pve_not_backed_up_info{id="qemu/100"} 1.0
+    pve_not_backed_up_info{id="qemu/101"} 1.0
     # HELP pve_replication_duration_seconds Proxmox vm replication duration
     # TYPE pve_replication_duration_seconds gauge
     pve_replication_duration_seconds{id="1-0"} 7.73584
