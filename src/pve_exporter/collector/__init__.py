@@ -13,7 +13,7 @@ from pve_exporter.collector.cluster import (
     ClusterNodeCollector,
     VersionCollector,
     ClusterInfoCollector,
-    BackupCollector
+    BackupInfoCollector
 )
 from pve_exporter.collector.node import (
     NodeConfigCollector,
@@ -28,7 +28,7 @@ CollectorsOptions = collections.namedtuple('CollectorsOptions', [
     'node',
     'cluster',
     'resources',
-    'backup',
+    'backup_info',
     'config',
     'replication'
 ])
@@ -50,8 +50,8 @@ def collect_pve(config, host, cluster, node, options: CollectorsOptions):
         registry.register(ClusterInfoCollector(pve))
     if cluster and options.version:
         registry.register(VersionCollector(pve))
-    if cluster and options.backup:
-        registry.register(BackupCollector(pve))
+    if cluster and options.backup_info:
+        registry.register(BackupInfoCollector(pve))
     if node and options.subscription:
         registry.register(SubscriptionCollector(pve))
     if node and options.config:
