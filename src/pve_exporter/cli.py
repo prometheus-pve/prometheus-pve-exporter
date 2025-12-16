@@ -39,7 +39,8 @@ def main():
                               help='Exposes PVE resources info')
     clusterflags.add_argument('--collector.backup-info', dest='collector_backup_info',
                               action=BooleanOptionalAction, default=True,
-                              help='Exposes information about guests which are not covered by any backup job')
+                              help=('Exposes information about guests which are not '
+                                    'covered by any backup job'))
 
     nodeflags = parser.add_argument_group('node collectors', description=(
         'node collectors are run if the url parameter node=1 is set and '
