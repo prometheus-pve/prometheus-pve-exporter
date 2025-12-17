@@ -293,7 +293,7 @@ class ClusterResourcesCollector:
                     "The amount of bytes the guest wrote to its block devices since the guest was "
                     "started. This info is not available for all storage types. "
                     "(for types 'qemu' and 'lxc') "
-                    "DEPRECATED: Use pve_disk_write_bytes_total instead."
+                    "DEPRECATED: Use pve_disk_written_bytes_total instead."
                 ),
                 labels=['id']),
             'diskread': GaugeMetricFamily(
@@ -339,7 +339,7 @@ class ClusterResourcesCollector:
                 ),
                 labels=['id']),
             'diskwrite': CounterMetricFamily(
-                'pve_disk_write_bytes_total',
+                'pve_disk_written_bytes_total',
                 (
                     "The amount of bytes the guest wrote to its block devices since the guest was "
                     "started. This info is not available for all storage types. "
