@@ -10,6 +10,20 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 -------------
 
 
+`3.8.0`_ - 2025-12-23
+---------------------
+
+Added
+~~~~~
+
+- Replace running total gauge metrics with counters (#389)
+
+Changed
+~~~~~~~
+
+- Bump alpine from 3.23.0 to 3.23.2 (#393)
+
+
 `3.7.0`_ - 2025-12-16
 ---------------------
 
@@ -588,7 +602,8 @@ Added
 
 .. _Keep a Changelog: http://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: http://semver.org/spec/v2.0.0.html
-.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.7.0...HEAD
+.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.8.0...HEAD
+.. _3.8.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.7.0...v3.8.0
 .. _3.7.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.6.0...v3.7.0
 .. _3.6.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.5.5...v3.6.0
 .. _3.5.5: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.5.4...v3.5.5
