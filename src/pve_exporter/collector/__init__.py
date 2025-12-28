@@ -20,6 +20,7 @@ from pve_exporter.collector.node import (
     NodeReplicationCollector,
     SubscriptionCollector
 )
+from pve_exporter.collector.storage import StorageCollector
 
 CollectorsOptions = collections.namedtuple('CollectorsOptions', [
     'status',
@@ -58,5 +59,16 @@ def collect_pve(config, host, cluster, node, options: CollectorsOptions):
         registry.register(NodeConfigCollector(pve))
     if node and options.replication:
         registry.register(NodeReplicationCollector(pve))
+
+    return generate_latest(registry)
+
+
+def collect_storage(config, host, node, storage):
+    """Scrape storage metrics and return prometheus text format for it"""
+
+    pve = ProxmoxAPI(host, **config)
+
+    registry = CollectorRegistry()
+    registry.register(StorageCollector(pve, node, storage))
 
     return generate_latest(registry)
