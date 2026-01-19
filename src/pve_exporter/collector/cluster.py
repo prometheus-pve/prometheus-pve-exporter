@@ -430,8 +430,26 @@ class ClusterResourcesCollector:
             },
         }
 
+        # Per-node sums for non-NR qemu/lxc (for other_* metrics used in overallocation)
+        node_sums = {}
+
         for resource in self._pve.cluster.resources.get():
             restype = resource['type']
+
+            # Aggregate non-NR qemu/lxc for other_* per node
+            if restype in ('qemu', 'lxc'):
+                name = resource.get('name') or ''
+                if not name.startswith('NR-'):
+                    node = resource.get('node', '')
+                    if node:
+                        node_sums.setdefault(
+                            node,
+                            {'maxmem': 0, 'maxcpu': 0, 'maxdisk': 0, 'disk': 0},
+                        )
+                        node_sums[node]['maxmem'] += float(resource.get('maxmem') or 0)
+                        node_sums[node]['maxcpu'] += float(resource.get('maxcpu') or 0)
+                        node_sums[node]['maxdisk'] += float(resource.get('maxdisk') or 0)
+                        node_sums[node]['disk'] += float(resource.get('disk') or 0)
 
             if restype in info_lookup:
                 all_labels = self._extract_resource_labels(info_lookup[restype], resource)
@@ -452,11 +470,43 @@ class ClusterResourcesCollector:
                     label_values = self._build_label_values(resource, counter_metrics[key])
                     counter_metrics[key].add_metric(label_values, metric_value)
 
+        # non_nr_* gauges: sum of non-NR qemu/lxc per node (for overallocation when Alloy drops non-NR)
+        non_nr_memory = GaugeMetricFamily(
+            'non_nr_pve_memory_size_bytes',
+            'Sum of memory size in bytes for non-NR qemu/lxc per node.',
+            labels=['node'],
+        )
+        non_nr_cpu = GaugeMetricFamily(
+            'non_nr_pve_cpu_usage_limit',
+            'Sum of vCPUs for non-NR qemu/lxc per node.',
+            labels=['node'],
+        )
+        non_nr_disk_size = GaugeMetricFamily(
+            'non_nr_pve_disk_size_bytes',
+            'Sum of disk size in bytes for non-NR qemu/lxc per node.',
+            labels=['node'],
+        )
+        non_nr_disk_usage = GaugeMetricFamily(
+            'non_nr_pve_disk_usage_bytes',
+            'Sum of disk usage in bytes for non-NR qemu/lxc per node.',
+            labels=['node'],
+        )
+        for node, sums in node_sums.items():
+            if sums['maxmem'] > 0:
+                non_nr_memory.add_metric([node], sums['maxmem'])
+            if sums['maxcpu'] > 0:
+                non_nr_cpu.add_metric([node], sums['maxcpu'])
+            if sums['maxdisk'] > 0:
+                non_nr_disk_size.add_metric([node], sums['maxdisk'])
+            if sums['disk'] > 0:
+                non_nr_disk_usage.add_metric([node], sums['disk'])
+
         return itertools.chain(
             metrics.values(),
             counter_metrics.values(),
             [ha_metric, lock_metric],
-            info_metrics.values()
+            info_metrics.values(),
+            [non_nr_memory, non_nr_cpu, non_nr_disk_size, non_nr_disk_usage],
         )
 
     def _extract_resource_labels(self, resource_lookup_info: dict[str, Any],
