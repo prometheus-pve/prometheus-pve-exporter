@@ -5,6 +5,7 @@ HTTP API for Proxmox VE prometheus collector.
 import logging
 import time
 from functools import partial
+import ipaddress
 
 import gunicorn.app.base
 from prometheus_client import CONTENT_TYPE_LATEST, Summary, Counter, generate_latest
@@ -42,27 +43,83 @@ class PveExporterApplication:
             # pylint: disable=no-member
             self._duration.labels(module)
 
+    def target_allowed(self, target, allowed_targets):
+        """
+        Always allow localhost. All other targets are matched against allowed_targets.
+        """
+        # Always allow localhost / loopback, no matter the whitelist
+        if target in ['localhost', '127.0.0.1', '::1']:
+            return True, "localhost always allowed"
+
+        # Check for 0.0.0.0/0 (allow all - insecure)
+        if allowed_targets and ('0.0.0.0/0' in allowed_targets or '::/0' in allowed_targets):
+            return True, "All targets allowed (0.0.0.0/0 in whitelist)"
+        if not allowed_targets:
+            return False, "No allowed_targets specified, and target is not localhost"
+
+        # Extract hostname/IP without port for CIDR checking
+        target_host = target.split(':')[0] if ':' in target else target
+
+        try:
+            target_ip = ipaddress.ip_address(target_host)
+        except ValueError:
+            target_ip = None
+
+        for allowed in allowed_targets:
+            if target == allowed:
+                return True, f"Exact match: {allowed}"
+            if '/' in allowed:
+                try:
+                    network = ipaddress.ip_network(allowed, strict=False)
+                    if target_ip and target_ip in network:
+                        return True, f"IP in CIDR {allowed}"
+                except ValueError:
+                    self._log.warning("Invalid CIDR in allowed_targets: %s", allowed)
+            if ':' not in allowed and target_host == allowed:
+                return True, f"Hostname match: {allowed}"
+
+        return False, "Target not in whitelist"
 
     def on_pve(self, module='default', target='localhost', cluster='1', node='1'):
         """
         Request handler for /pve route
         """
 
-        if module in self._config:
-            start = time.time()
-            output = collect_pve(
-                self._config[module],
-                target,
-                cluster.lower() not in ['false', '0', ''],
-                node.lower() not in ['false', '0', ''],
-                self._collectors
-            )
-            response = Response(output)
-            response.headers['content-type'] = CONTENT_TYPE_LATEST
-            self._duration.labels(module).observe(time.time() - start)
-        else:
-            response = Response("Module '{module}' not found in config")
+        if module not in self._config:
+            response = Response(f"Module '{module}' not found in config")
             response.status_code = 400
+            return response
+
+        # Get allowed_targets from config
+        module_config = self._config[module]
+        allowed_targets = module_config.get('allowed_targets')
+
+        # Validate target against whitelist 
+        is_allowed, reason = self.target_allowed(target, allowed_targets)
+
+        if not is_allowed:
+            self._log.warning(
+                "Target '%s' rejected for module '%s'. Reason: %s. "
+                "Allowed targets: %s",
+                target, module, reason, allowed_targets or "[]"
+            )
+            response = Response("Forbidden")
+            response.status_code = 403
+            return response
+        
+        api_config = {k: v for k, v in module_config.items() if k != 'allowed_targets'}
+
+        start = time.time()
+        output = collect_pve(
+            api_config,
+            target,
+            cluster.lower() not in ['false', '0', ''],
+            node.lower() not in ['false', '0', ''],
+            self._collectors
+        )
+        response = Response(output)
+        response.headers['content-type'] = CONTENT_TYPE_LATEST
+        self._duration.labels(module).observe(time.time() - start)
 
         return response
 
