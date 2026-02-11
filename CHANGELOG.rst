@@ -16,6 +16,9 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 Changed
 ~~~~~~~
 
+- Bump wrapt from 2.1.0 to 2.1.1 (#406)
+- Bump wrapt from 2.0.1 to 2.1.0 (#403)
+- Bump alpine from 3.23.2 to 3.23.3 (#402)
 - Bump cryptography from 44.0.1 to 46.0.5 (#407)
 - Bump prometheus-client from 0.23.1 to 0.24.1 (#400)
 - Bump werkzeug from 3.1.4 to 3.1.5 (#399)
