@@ -356,6 +356,52 @@ to the credentials. Note that PVE `supports Let's Encrypt`_ out ouf the box. In
 many cases setting up trusted certificates is the better option than operating
 with self-signed certs.
 
+Whitelist: ``allowed_targets``
+-------------------------------
+
+The ``allowed_targets`` config option defines which values for the ``?target=`` query parameter are permitted
+when querying the Proxmox API. This provides an **additional layer of access control inside pve-exporter**, 
+useful in cases where network-level restrictions (e.g. firewall) are misconfigured or incomplete.
+
+If ``allowed_targets`` is not specified, only ``localhost`` is allowed by default — secure out of the box.
+
+**Supported formats:**
+
+- IP address: ``192.168.1.10``
+- IP with port: ``192.168.1.10:8443``
+- DNS hostname: ``pve1.local``
+- DNS with port: ``pve-proxy.local:8443``
+- CIDR subnet: ``192.168.1.0/24``
+- Allow all: ``0.0.0.0/0`` *(NOT RECOMMENDED)*
+
+**Examples:**
+
+.. code-block:: yaml
+
+   # Default (localhost only)
+   # allowed_targets is not specified
+
+   # Specific hosts
+   allowed_targets:
+     - 192.168.1.10
+     - 192.168.1.11:8443
+     - pve1.local
+
+   # Subnet
+   allowed_targets:
+     - 192.168.1.0/24
+
+   # Mixed list
+   allowed_targets:
+     - 192.168.1.0/24
+     - 192.168.2.10
+     - pve1.local:8443
+     - pve1.local
+
+.. note::
+
+   ``localhost``, ``127.0.0.1``, and ``::1`` are **always allowed** even if not explicitly listed.
+
 Proxmox VE Configuration
 ------------------------
 
