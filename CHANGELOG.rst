@@ -10,6 +10,19 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 -------------
 
 
+`3.8.1`_ - 2025-02-11
+---------------------
+
+Changed
+~~~~~~~
+
+- Bump cryptography from 44.0.1 to 46.0.5 (#407)
+- Bump prometheus-client from 0.23.1 to 0.24.1 (#400)
+- Bump werkzeug from 3.1.4 to 3.1.5 (#399)
+- Bump urllib3 from 2.6.0 to 2.6.3 (#398)
+- Bump pynacl from 1.5.0 to 1.6.2 (#396)
+
+
 `3.8.0`_ - 2025-12-23
 ---------------------
 
@@ -602,7 +615,8 @@ Added
 
 .. _Keep a Changelog: http://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: http://semver.org/spec/v2.0.0.html
-.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.8.0...HEAD
+.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.8.1...HEAD
+.. _3.8.1: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.8.0...v3.8.1
 .. _3.8.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.7.0...v3.8.0
 .. _3.7.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.6.0...v3.7.0
 .. _3.6.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.5.5...v3.6.0
