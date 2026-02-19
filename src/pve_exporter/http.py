@@ -5,6 +5,7 @@ HTTP API for Proxmox VE prometheus collector.
 import logging
 import time
 from functools import partial
+import fnmatch
 
 import gunicorn.app.base
 from prometheus_client import CONTENT_TYPE_LATEST, Summary, Counter, generate_latest
@@ -42,27 +43,68 @@ class PveExporterApplication:
             # pylint: disable=no-member
             self._duration.labels(module)
 
+    def target_allowed(self, target, allowed_targets):
+        """
+        Check if target is allowed using simple pattern matching.
+        """
+        # localhost always allowed
+        if target in ['localhost', '127.0.0.1', '::1']:
+            return True, "localhost always allowed"
+        
+        # If no whitelist only localhost allowed
+        if not allowed_targets:
+            return False, "No allowed_targets specified, only localhost allowed"
+        
+        for pattern in allowed_targets:
+            if fnmatch.fnmatch(target, pattern):
+                return True, f"Matched pattern: {pattern}"
+        
+        return False, "Target not in whitelist"
 
     def on_pve(self, module='default', target='localhost', cluster='1', node='1'):
         """
         Request handler for /pve route
         """
 
-        if module in self._config:
-            start = time.time()
-            output = collect_pve(
-                self._config[module],
-                target,
-                cluster.lower() not in ['false', '0', ''],
-                node.lower() not in ['false', '0', ''],
-                self._collectors
-            )
-            response = Response(output)
-            response.headers['content-type'] = CONTENT_TYPE_LATEST
-            self._duration.labels(module).observe(time.time() - start)
-        else:
-            response = Response("Module '{module}' not found in config")
+        if module not in self._config:
+            response = Response(f"Module '{module}' not found in config")
             response.status_code = 400
+            return response
+
+        # Get allowed_targets from config
+        module_config = self._config[module]
+        allowed_targets = module_config.get('allowed_targets')
+
+        # Validate target against whitelist 
+        is_allowed, reason = self.target_allowed(target, allowed_targets)
+
+        if not is_allowed:
+            # Detailed logging (for admin)
+            self._log.warning(
+                "Target '%s' rejected for module '%s'. Reason: %s. "
+                "Allowed patterns: %s",
+                target, module, reason, allowed_targets or "[]"
+            )
+            
+            # Minimal error (for potential attacker)
+            response = Response("Forbidden")
+            response.status_code = 403
+            return response
+        
+        # Filter out allowed_targets before passing to ProxmoxAPI
+        api_config = {k: v for k, v in module_config.items() if k != 'allowed_targets'}
+
+        start = time.time()
+        output = collect_pve(
+            api_config,
+            target,
+            cluster.lower() not in ['false', '0', ''],
+            node.lower() not in ['false', '0', ''],
+            self._collectors
+        )
+        response = Response(output)
+        response.headers['content-type'] = CONTENT_TYPE_LATEST
+        self._duration.labels(module).observe(time.time() - start)
 
         return response
 
