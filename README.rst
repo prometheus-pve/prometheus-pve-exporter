@@ -363,44 +363,65 @@ The ``allowed_targets`` config option defines which values for the ``?target=`` 
 when querying the Proxmox API. This provides an **additional layer of access control inside pve-exporter**, 
 useful in cases where network-level restrictions (e.g. firewall) are misconfigured or incomplete.
 
-If ``allowed_targets`` is not specified, only ``localhost`` is allowed by default — secure out of the box.
+**If `allowed_targets` is not specified, only `localhost` is allowed by default — secure out of the box.**
 
-**Supported formats:**
+Uses shell-style wildcards (fnmatch) for simple and flexible pattern matching:
 
-- IP address: ``192.168.1.10``
-- IP with port: ``192.168.1.10:8443``
-- DNS hostname: ``pve1.local``
-- DNS with port: ``pve-proxy.local:8443``
-- CIDR subnet: ``192.168.1.0/24``
-- Allow all: ``0.0.0.0/0`` *(NOT RECOMMENDED)*
+| Pattern | Meaning |
+|---------|---------|
+| `*` | matches everything |
+| `?` | matches any single character |
+| `[seq]` | matches any character in seq |
+| `[!seq]` | matches any character not in seq |
 
-**Examples:**
+## Supported Formats
 
-.. code-block:: yaml
+* **Exact IP address**: `192.168.1.10`
+* **Exact IP with port**: `192.168.1.10:8443`
+* **IP range with wildcard**: `192.168.1.*` (matches all IPs in 192.168.1.0-255)
+* **IP with any port**: `192.168.1.10:*`
+* **DNS hostname**: `pve1.local`
+* **DNS with port**: `pve-proxy.local:8443`
+* **DNS pattern**: `pve*.local` (matches pve1.local, pve2.local, etc.)
+* **Allow all**: `*` (NOT RECOMMENDED - disables protection)
 
-   # Default (localhost only)
-   # allowed_targets is not specified
+## Examples
 
-   # Specific hosts
-   allowed_targets:
-     - 192.168.1.10
-     - 192.168.1.11:8443
-     - pve1.local
+```yaml
+# Default (localhost only) - RECOMMENDED for single-node deployments
+# allowed_targets is not specified
 
-   # Subnet
-   allowed_targets:
-     - 192.168.1.0/24
+# Specific hosts
+allowed_targets:
+  - 192.168.1.10
+  - 192.168.1.11:8443
+  - pve1.local
 
-   # Mixed list
-   allowed_targets:
-     - 192.168.1.0/24
-     - 192.168.2.10
-     - pve1.local:8443
-     - pve1.local
+# IP range using wildcards (replaces CIDR notation)
+allowed_targets:
+  - '192.168.1.*'        # All IPs in 192.168.1.0-255
+  - '10.0.*.*'           # All IPs in 10.0.0.0-255.255
 
-.. note::
+# Hostname patterns
+allowed_targets:
+  - 'pve*.local'         # Matches pve1.local, pve2.local, pve-backup.local, etc.
+  - 'pve[1-3].local'     # Matches pve1.local, pve2.local, pve3.local
 
-   ``localhost``, ``127.0.0.1``, and ``::1`` are **always allowed** even if not explicitly listed.
+# Mixed list (recommended for multi-site)
+allowed_targets:
+  - '192.168.1.*'        # Site A subnet
+  - '192.168.2.10'       # Specific host in site B
+  - 'pve-proxy.local:8443'  # Proxy with custom port
+  - 'prometheus.test.wb' # Monitoring server
+```
+
+## Important Notes
+
+* `localhost`, `127.0.0.1`, and `::1` are **always allowed** even if not explicitly listed
+* Patterns are case-sensitive
+* Use quotes around patterns containing wildcards in YAML to avoid parsing issues
+* **Security Warning**: The pattern `*` allows ALL targets - only use for testing/debugging
+
 
 Proxmox VE Configuration
 ------------------------
