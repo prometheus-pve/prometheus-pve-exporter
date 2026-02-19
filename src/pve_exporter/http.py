@@ -5,7 +5,7 @@ HTTP API for Proxmox VE prometheus collector.
 import logging
 import time
 from functools import partial
-import ipaddress
+import fnmatch
 
 import gunicorn.app.base
 from prometheus_client import CONTENT_TYPE_LATEST, Summary, Counter, generate_latest
@@ -45,39 +45,20 @@ class PveExporterApplication:
 
     def target_allowed(self, target, allowed_targets):
         """
-        Always allow localhost. All other targets are matched against allowed_targets.
+        Check if target is allowed using simple pattern matching.
         """
-        # Always allow localhost / loopback, no matter the whitelist
+        # localhost always allowed
         if target in ['localhost', '127.0.0.1', '::1']:
             return True, "localhost always allowed"
-
-        # Check for 0.0.0.0/0 (allow all - insecure)
-        if allowed_targets and ('0.0.0.0/0' in allowed_targets or '::/0' in allowed_targets):
-            return True, "All targets allowed (0.0.0.0/0 in whitelist)"
+        
+        # If no whitelist only localhost allowed
         if not allowed_targets:
-            return False, "No allowed_targets specified, and target is not localhost"
-
-        # Extract hostname/IP without port for CIDR checking
-        target_host = target.split(':')[0] if ':' in target else target
-
-        try:
-            target_ip = ipaddress.ip_address(target_host)
-        except ValueError:
-            target_ip = None
-
-        for allowed in allowed_targets:
-            if target == allowed:
-                return True, f"Exact match: {allowed}"
-            if '/' in allowed:
-                try:
-                    network = ipaddress.ip_network(allowed, strict=False)
-                    if target_ip and target_ip in network:
-                        return True, f"IP in CIDR {allowed}"
-                except ValueError:
-                    self._log.warning("Invalid CIDR in allowed_targets: %s", allowed)
-            if ':' not in allowed and target_host == allowed:
-                return True, f"Hostname match: {allowed}"
-
+            return False, "No allowed_targets specified, only localhost allowed"
+        
+        for pattern in allowed_targets:
+            if fnmatch.fnmatch(target, pattern):
+                return True, f"Matched pattern: {pattern}"
+        
         return False, "Target not in whitelist"
 
     def on_pve(self, module='default', target='localhost', cluster='1', node='1'):
@@ -98,15 +79,19 @@ class PveExporterApplication:
         is_allowed, reason = self.target_allowed(target, allowed_targets)
 
         if not is_allowed:
+            # Detailed logging (for admin)
             self._log.warning(
                 "Target '%s' rejected for module '%s'. Reason: %s. "
-                "Allowed targets: %s",
+                "Allowed patterns: %s",
                 target, module, reason, allowed_targets or "[]"
             )
+            
+            # Minimal error (for potential attacker)
             response = Response("Forbidden")
             response.status_code = 403
             return response
         
+        # Filter out allowed_targets before passing to ProxmoxAPI
         api_config = {k: v for k, v in module_config.items() if k != 'allowed_targets'}
 
         start = time.time()
