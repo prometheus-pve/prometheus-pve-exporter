@@ -42,6 +42,12 @@ class PveExporterApplication:
             # pylint: disable=no-member
             self._duration.labels(module)
 
+        self._url_map = Map([
+            Rule('/', endpoint='index'),
+            Rule('/metrics', endpoint='metrics'),
+            Rule('/pve', endpoint='pve'),
+        ])
+
 
     def on_pve(self, module='default', target='localhost', cluster='1', node='1'):
         """
@@ -61,7 +67,7 @@ class PveExporterApplication:
             response.headers['content-type'] = CONTENT_TYPE_LATEST
             self._duration.labels(module).observe(time.time() - start)
         else:
-            response = Response("Module '{module}' not found in config")
+            response = Response(f"Module '{module}' not found in config")
             response.status_code = 400
 
         return response
@@ -122,13 +128,7 @@ class PveExporterApplication:
 
     @Request.application
     def __call__(self, request):
-        url_map = Map([
-            Rule('/', endpoint='index'),
-            Rule('/metrics', endpoint='metrics'),
-            Rule('/pve', endpoint='pve'),
-        ])
-
-        urls = url_map.bind_to_environ(request.environ)
+        urls = self._url_map.bind_to_environ(request.environ)
         view_func = partial(self.view, args=request.args)
         return urls.dispatch(view_func, catch_http_exceptions=True)
 
