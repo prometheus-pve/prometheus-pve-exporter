@@ -49,10 +49,11 @@ Like other prometheus components, the PVE exporter is subject to the security
 threats outlined in the [Prometheus security model](https://prometheus.io/docs/operating/security/).
 Especially:
 
-> [!CAUTION]
-> The HTTP endpoints provided by Prometheus components should not be exposed to
-> publicly accessible networks like the internet (unless you know what you are
-> doing and have taken appropriate measures).
+.. CAUTION::
+
+  The HTTP endpoints provided by Prometheus components should not be exposed to
+  publicly accessible networks like the internet (unless you know what you are
+  doing and have taken appropriate measures).
 
 Usage
 -----
