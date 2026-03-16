@@ -11,20 +11,21 @@ Installation
 
 Requires Python 3.9 or better.
 
-Using pip:
-==========
+**Using pip:**
 
 .. code:: shell
 
     python3 -m pip install prometheus-pve-exporter
     pve_exporter --help
 
-Using docker:
-=============
+**Using docker:**
 
 .. code:: shell
 
    docker pull prompve/prometheus-pve-exporter
+
+Running
+-------
 
 Example: Display usage message:
 
@@ -40,6 +41,18 @@ Example: Run the image with a mounted configuration file and published port:
    docker run --init --name prometheus-pve-exporter -d -p 127.0.0.1:9221:9221 -v /path/to/pve.yml:/etc/prometheus/pve.yml prompve/prometheus-pve-exporter
 
 Prometheus PVE Exporter will now be reachable at http://localhost:9221/.
+
+Security
+--------
+
+Like other prometheus components, the PVE exporter is subject to the security
+threats outlined in the [Prometheus security model](https://prometheus.io/docs/operating/security/).
+Especially:
+
+> [!CAUTION]
+> The HTTP endpoints provided by Prometheus components should not be exposed to
+> publicly accessible networks like the internet (unless you know what you are
+> doing and have taken appropriate measures).
 
 Usage
 -----
