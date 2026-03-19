@@ -59,6 +59,7 @@ Usage
                         [--collector.target-metrics | --no-collector.target-metrics]
                         [--config.file CONFIG_FILE]
                         [--web.listen-address WEB_LISTEN_ADDRESS]
+                        [--web.threads WEB_THREADS]
                         [--server.keyfile SERVER_KEYFILE]
                         [--server.certfile SERVER_CERTFILE]
 
@@ -69,6 +70,9 @@ Usage
       --web.listen-address WEB_LISTEN_ADDRESS
                             Address on which to expose metrics and web server.
                             ([::]:9221)
+      --web.threads WEB_THREADS
+                            Number of worker threads for handling requests.
+                            Increase this when scraping many targets concurrently. (5)
       --server.keyfile SERVER_KEYFILE
                             SSL key for server
       --server.certfile SERVER_CERTFILE
