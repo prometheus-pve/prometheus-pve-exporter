@@ -10,6 +10,27 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 -------------
 
 
+`3.8.2`_ - 2025-03-22
+---------------------
+
+Changed
+~~~~~~~
+
+- Add security note to the README file (#423)
+- Bump docker/setup-buildx-action from 3 to 4 (#424)
+- Bump docker/build-push-action from 6 to 7 (#425)
+- Bump docker/login-action from 3 to 4 (#426)
+- Bump wrapt from 2.1.1 to 2.1.2 (#419)
+- Bump proxmoxer from 2.2.0 to 2.3.0 (#418)
+- Bump werkzeug from 3.1.5 to 3.1.6 (#411)
+- Bump docker/metadata-action from 5 to 6 (#417)
+- Bump docker/setup-qemu-action from 3 to 4 (#416)
+- Bump actions/attest-build-provenance from 3 to 4 (#415)
+- Bump actions/download-artifact from 7 to 8 (#414)
+- Bump actions/upload-artifact from 6 to 7 (#413)
+- fix: f-string in module-not-found response and move url_map to __init__ (#421)
+
+
 `3.8.1`_ - 2025-02-11
 ---------------------
 
@@ -618,7 +639,8 @@ Added
 
 .. _Keep a Changelog: http://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: http://semver.org/spec/v2.0.0.html
-.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.8.1...HEAD
+.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.8.2...HEAD
+.. _3.8.2: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.8.1...v3.8.2
 .. _3.8.1: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.8.0...v3.8.1
 .. _3.8.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.7.0...v3.8.0
 .. _3.7.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.6.0...v3.7.0
