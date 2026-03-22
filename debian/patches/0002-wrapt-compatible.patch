@@ -1,0 +1,90 @@
+Index: prometheus-pve-exporter/src/pve_exporter/scrape_metrics.py
+===================================================================
+--- prometheus-pve-exporter.orig/src/pve_exporter/scrape_metrics.py
++++ prometheus-pve-exporter/src/pve_exporter/scrape_metrics.py
+@@ -5,16 +5,6 @@ Metrics concerning the operation of the
+ import wrapt
+ from prometheus_client.metrics import Counter, Histogram
+ 
+-API_METRICS_ENABLED: bool = False
+-"""
+-Whether or not api metrics are enabled
+-"""
+-
+-TARGET_METRICS_ENABLED: bool = False
+-"""
+-Whether or not target metrics are enabled
+-"""
+-
+ API_DURATION = Histogram(
+     'pve_scrape_api_duration_seconds',
+     'Duration of PVE API calls',
+@@ -38,26 +28,28 @@ TARGET_ERRORS = Counter(
+     ['target', 'cluster', 'node'],
+ )
+ 
+-@wrapt.patch_function_wrapper(
+-    'proxmoxer.core',
+-    'ProxmoxResource._request',
+-    lambda: API_METRICS_ENABLED
+-)
+-def _api_metrics(wrapped, instance, args, kwargs):
+-    # pylint: disable=protected-access
+-    errors = API_ERRORS.labels(args[0], instance._store["base_url"])
+-    duration = API_DURATION.labels(args[0], instance._store["base_url"])
+-    with errors.count_exceptions(), duration.time():
+-        return wrapped(*args, **kwargs)
+-
+-@wrapt.patch_function_wrapper(
+-    'pve_exporter.collector',
+-    'collect_pve',
+-    lambda: TARGET_METRICS_ENABLED
+-)
+-def _target_metrics(wrapped, _, args, kwargs):
+-    # pylint: disable=protected-access
+-    errors = TARGET_ERRORS.labels(args[1], int(args[2]), int(args[3]))
+-    duration = TARGET_DURATION.labels(args[1], int(args[2]), int(args[3]))
+-    with errors.count_exceptions(), duration.time():
+-        return wrapped(*args, **kwargs)
++def enable_api_metrics():
++
++    @wrapt.patch_function_wrapper(
++        'proxmoxer.core',
++        'ProxmoxResource._request'
++    )
++    def _api_metrics(wrapped, instance, args, kwargs):
++        # pylint: disable=protected-access
++        errors = API_ERRORS.labels(args[0], instance._store["base_url"])
++        duration = API_DURATION.labels(args[0], instance._store["base_url"])
++        with errors.count_exceptions(), duration.time():
++            return wrapped(*args, **kwargs)
++
++def enable_target_metrics():
++
++    @wrapt.patch_function_wrapper(
++        'pve_exporter.collector',
++        'collect_pve'
++    )
++    def _target_metrics(wrapped, _, args, kwargs):
++        # pylint: disable=protected-access
++        errors = TARGET_ERRORS.labels(args[1], int(args[2]), int(args[3]))
++        duration = TARGET_DURATION.labels(args[1], int(args[2]), int(args[3]))
++        with errors.count_exceptions(), duration.time():
++            return wrapped(*args, **kwargs)
+Index: prometheus-pve-exporter/src/pve_exporter/cli.py
+===================================================================
+--- prometheus-pve-exporter.orig/src/pve_exporter/cli.py
++++ prometheus-pve-exporter/src/pve_exporter/cli.py
+@@ -96,8 +96,10 @@ def main():
+         config=params.collector_config,
+         replication=params.collector_replication
+     )
+-    scrape_metrics.API_METRICS_ENABLED = params.api_metrics_enabled
+-    scrape_metrics.TARGET_METRICS_ENABLED = params.target_metrics_enabled
++    if params.api_metrics_enabled:
++        scrape_metrics.enable_api_metrics()
++    if params.target_metrics_enabled:
++        scrape_metrics.enable_target_metrics()
+ 
+     # Load configuration.
+     if 'PVE_USER' in os.environ:
