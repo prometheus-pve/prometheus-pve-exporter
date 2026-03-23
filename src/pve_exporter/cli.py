@@ -78,6 +78,12 @@ def main():
                             'Address on which to expose metrics and web server. '
                             '([::]:9221)'
                         ))
+    parser.add_argument('--web.threads', type=int,
+                        dest='web_threads', default=5,
+                        help=(
+                            'Number of worker threads for handling requests. '
+                            'Increase this when scraping many targets concurrently. (5)'
+                        ))
     parser.add_argument('--server.keyfile', dest='server_keyfile',
                         help='SSL key for server')
     parser.add_argument('--server.certfile', dest='server_certfile',
@@ -108,7 +114,7 @@ def main():
 
     gunicorn_options = {
         'bind': f'{params.web_listen_address}',
-        'threads': 2,
+        'threads': params.web_threads,
         'keyfile': params.server_keyfile,
         'certfile': params.server_certfile,
     }
