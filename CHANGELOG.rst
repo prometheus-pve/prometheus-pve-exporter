@@ -10,6 +10,20 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 -------------
 
 
+`3.8.3`_ - 2025-04-27
+---------------------
+
+Changed
+~~~~~~~
+
+- Bump requests from 2.32.5 to 2.33.1 (#438)
+- Bump alpine from 3.23.3 to 3.23.4 (#435)
+- Bump prometheus-client from 0.24.1 to 0.25.0 (#434)
+- Bump cryptography from 46.0.5 to 46.0.7 (#432)
+- Bump werkzeug from 3.1.6 to 3.1.8 (#431)
+- Pin actions in CI workflow to commit SHA (#437)
+
+
 `3.8.2`_ - 2025-03-22
 ---------------------
 
@@ -639,7 +653,8 @@ Added
 
 .. _Keep a Changelog: http://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: http://semver.org/spec/v2.0.0.html
-.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.8.2...HEAD
+.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.8.3...HEAD
+.. _3.8.3: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.8.2...v3.8.3
 .. _3.8.2: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.8.1...v3.8.2
 .. _3.8.1: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.8.0...v3.8.1
 .. _3.8.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.7.0...v3.8.0
