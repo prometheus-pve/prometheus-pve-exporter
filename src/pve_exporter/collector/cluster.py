@@ -7,6 +7,7 @@ import itertools
 import typing
 
 from prometheus_client.core import GaugeMetricFamily, CounterMetricFamily
+from proxmoxer import ResourceException
 
 
 class StatusCollector:
@@ -147,6 +148,73 @@ class ClusterInfoCollector:
                 info_metrics.add_metric(label_values, 1)
 
             yield info_metrics
+
+
+class QDeviceCollector:
+    """
+    Collects Proxmox VE QDevice connection state from the local node's view.
+    For manual test: "pvesh get /cluster/config/qdevice"
+
+    # HELP pve_qdevice_up Proxmox VE QDevice is connected (1) or not (0)
+    # TYPE pve_qdevice_up gauge
+    pve_qdevice_up{id="cluster/pvec"} 1.0
+    # HELP pve_qdevice_info Proxmox VE QDevice info (1 if configured)
+    # TYPE pve_qdevice_info gauge
+    pve_qdevice_info{id="cluster/pvec",model="Net",algorithm="Fifty-Fifty split",
+        qnetd_host="10.0.0.1:5403",tie_breaker="Node with lowest node ID",
+        state="Connected"} 1.0
+    """
+
+    # Maps API response keys to Prometheus label names.
+    LABEL_MAP = {
+        'Model': 'model',
+        'Algorithm': 'algorithm',
+        'QNetd host': 'qnetd_host',
+        'Tie-breaker': 'tie_breaker',
+        'State': 'state',
+    }
+
+    def __init__(self, pve):
+        self._pve = pve
+
+    def collect(self):  # pylint: disable=missing-docstring
+        cluster_id = None
+        for entry in self._pve.cluster.status.get():
+            if entry['type'] == 'cluster':
+                cluster_id = f"cluster/{entry['name']}"
+                break
+
+        if cluster_id is None:
+            return
+
+        try:
+            qdevice = self._pve.cluster.config.qdevice.get()
+        except ResourceException:
+            # No QDevice configured on this cluster.
+            return
+
+        if not qdevice:
+            return
+
+        label_names = ['id'] + list(self.LABEL_MAP.values())
+        label_values = [cluster_id] + [
+            str(qdevice.get(api_key, '')) for api_key in self.LABEL_MAP
+        ]
+
+        info_metric = GaugeMetricFamily(
+            'pve_qdevice_info',
+            'Proxmox VE QDevice info (1 if configured)',
+            labels=label_names)
+        info_metric.add_metric(label_values, 1)
+
+        up_metric = GaugeMetricFamily(
+            'pve_qdevice_up',
+            'Proxmox VE QDevice is connected (1) or not (0)',
+            labels=['id'])
+        up_metric.add_metric([cluster_id], qdevice.get('State') == 'Connected')
+
+        yield up_metric
+        yield info_metric
 
 
 class HighAvailabilityStateMetric(GaugeMetricFamily):

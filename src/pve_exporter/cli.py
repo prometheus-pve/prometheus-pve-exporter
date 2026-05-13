@@ -42,6 +42,9 @@ def main():
                               action=BooleanOptionalAction, default=True,
                               help=('Exposes information about guests which are not '
                                     'covered by any backup job'))
+    clusterflags.add_argument('--collector.qdevice', dest='collector_qdevice',
+                              action=BooleanOptionalAction, default=True,
+                              help='Exposes PVE QDevice connection state')
 
     nodeflags = parser.add_argument_group('node collectors', description=(
         'node collectors are run if the url parameter node=1 is set and '
@@ -94,7 +97,8 @@ def main():
         resources=params.collector_resources,
         backup_info=params.collector_backup_info,
         config=params.collector_config,
-        replication=params.collector_replication
+        replication=params.collector_replication,
+        qdevice=params.collector_qdevice
     )
     scrape_metrics.API_METRICS_ENABLED = params.api_metrics_enabled
     scrape_metrics.TARGET_METRICS_ENABLED = params.target_metrics_enabled

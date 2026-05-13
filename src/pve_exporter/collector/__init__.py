@@ -13,7 +13,8 @@ from pve_exporter.collector.cluster import (
     ClusterNodeCollector,
     VersionCollector,
     ClusterInfoCollector,
-    BackupInfoCollector
+    BackupInfoCollector,
+    QDeviceCollector
 )
 from pve_exporter.collector.node import (
     NodeConfigCollector,
@@ -30,7 +31,8 @@ CollectorsOptions = collections.namedtuple('CollectorsOptions', [
     'resources',
     'backup_info',
     'config',
-    'replication'
+    'replication',
+    'qdevice'
 ])
 
 
@@ -52,6 +54,8 @@ def collect_pve(config, host, cluster, node, options: CollectorsOptions):
         registry.register(VersionCollector(pve))
     if cluster and options.backup_info:
         registry.register(BackupInfoCollector(pve))
+    if cluster and options.qdevice:
+        registry.register(QDeviceCollector(pve))
     if node and options.subscription:
         registry.register(SubscriptionCollector(pve))
     if node and options.config:

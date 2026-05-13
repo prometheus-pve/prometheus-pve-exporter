@@ -65,6 +65,7 @@ Usage
                         [--collector.cluster | --no-collector.cluster]
                         [--collector.resources | --no-collector.resources]
                         [--collector.backup-info | --no-collector.backup-info]
+                        [--collector.qdevice | --no-collector.qdevice]
                         [--collector.config | --no-collector.config]
                         [--collector.replication | --no-collector.replication]
                         [--collector.subscription | --no-collector.subscription]
@@ -104,6 +105,8 @@ Usage
       --collector.backup-info, --no-collector.backup-info
                             Exposes information about guests which are not covered
                             by any backup job
+      --collector.qdevice, --no-collector.qdevice
+                            Exposes PVE QDevice connection state
 
     node collectors:
       node collectors are run if the url parameter node=1 is set and skipped if
@@ -279,6 +282,12 @@ Here's an example of the metrics exported.
     # HELP pve_subscription_next_due_timestamp_seconds Subscription next due date as Unix timestamp
     # TYPE pve_subscription_next_due_timestamp_seconds gauge
     pve_subscription_next_due_timestamp_seconds{id="node/proxmox"} 1.713382503e+09
+    # HELP pve_qdevice_up Proxmox VE QDevice is connected (1) or not (0)
+    # TYPE pve_qdevice_up gauge
+    pve_qdevice_up{id="cluster/pvc"} 1.0
+    # HELP pve_qdevice_info Proxmox VE QDevice info (1 if configured)
+    # TYPE pve_qdevice_info gauge
+    pve_qdevice_info{id="cluster/pvc",model="Net",algorithm="Fifty-Fifty split",qnetd_host="10.0.0.1:5403",tie_breaker="Node with lowest node ID",state="Connected"} 1.0
     # HELP pve_onboot_status Proxmox vm config onboot value
     # TYPE pve_onboot_status gauge
     pve_onboot_status{id="qemu/201",node="proxmox",type="qemu"} 1.0
