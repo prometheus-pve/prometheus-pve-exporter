@@ -10,7 +10,21 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 -------------
 
 
-`3.8.3`_ - 2025-04-27
+`3.9.0`_ - 2026-05-18
+---------------------
+
+Added
+~~~~~
+
+- Add qdevice collector (#442)
+
+Changed
+~~~~~~~
+- Bump paramiko from 4.0.0 to 5.0.0 (#441)
+- Bump urllib2 from 2.6.3 to 2.7.0 (#440)
+
+
+`3.8.3`_ - 2026-04-27
 ---------------------
 
 Changed
@@ -24,7 +38,7 @@ Changed
 - Pin actions in CI workflow to commit SHA (#437)
 
 
-`3.8.2`_ - 2025-03-22
+`3.8.2`_ - 2026-03-22
 ---------------------
 
 Changed
@@ -45,7 +59,7 @@ Changed
 - fix: f-string in module-not-found response and move url_map to __init__ (#421)
 
 
-`3.8.1`_ - 2025-02-11
+`3.8.1`_ - 2026-02-11
 ---------------------
 
 Changed
@@ -653,7 +667,8 @@ Added
 
 .. _Keep a Changelog: http://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: http://semver.org/spec/v2.0.0.html
-.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.8.3...HEAD
+.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.9.0...HEAD
+.. _3.9.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.8.3...v3.9.0
 .. _3.8.3: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.8.2...v3.8.3
 .. _3.8.2: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.8.1...v3.8.2
 .. _3.8.1: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.8.0...v3.8.1
