@@ -139,6 +139,9 @@ The ``target`` request parameter defaults to ``localhost``. Hence if
 ``pve_exporter`` is deployed directly on the proxmox host, ``target``
 can be omitted.
 
+Visit http://localhost:9221/storage?target=1.2.3.4&node=proxmox&storage=local
+to export storage content metrics for a specific node and storage.
+
 Use the `--collector.X` / `--no-collector.X` flags to enable disable selected
 collectors.
 
@@ -265,6 +268,19 @@ Here's an example of the metrics exported.
     pve_storage_info{content="iso,vztmpl,rootdir",id="storage/proxmox/local",node="proxmox",plugintype="dir",storage="local"} 1.0
     pve_storage_info{content="backup",id="storage/proxmox/local-lvm",node="proxmox",plugintype="lvm",storage="local-lvm"} 1.0
     pve_storage_info{content="images",id="storage/proxmox/vms",node="proxmox",plugintype="rbd",storage="vms"} 1.0
+    # HELP pve_storage_contents_ctime_timestamp_seconds Proxmox storage content creation time
+    # TYPE pve_storage_contents_ctime_timestamp_seconds gauge
+    pve_storage_contents_ctime_timestamp_seconds{id="content/proxmox/local:backup/vzdump-qemu-100-2024_01_01-00_00_00.tar.zst"} 1.7040612e+09
+    # HELP pve_storage_contents_bytes Proxmox storage content size in bytes
+    # TYPE pve_storage_contents_bytes gauge
+    pve_storage_contents_bytes{id="content/proxmox/local:backup/vzdump-qemu-100-2024_01_01-00_00_00.tar.zst"} 1.073741824e+010
+    # HELP pve_storage_contents_verification Proxmox storage content verification present
+    # TYPE pve_storage_contents_verification gauge
+    pve_storage_contents_verification{id="content/proxmox/local:backup/vzdump-qemu-100-2024_01_01-00_00_00.tar.zst"} 1.0
+    # HELP pve_storage_contents_info Proxmox storage content info
+    # TYPE pve_storage_contents_info gauge
+    pve_storage_contents_info{content="backup",guest="qemu/100",id="content/proxmox/local:backup/vzdump-qemu-100-2024_01_01-00_00_00.tar.zst",node="proxmox",storage="local",verification_state="verified",volid="local:backup/vzdump-qemu-100-2024_01_01-00_00_00.tar.zst"} 1.0
+    pve_storage_contents_info{content="iso",guest="",id="content/proxmox/local:iso/ubuntu-22.04.iso",node="proxmox",storage="local",verification_state="",volid="local:iso/ubuntu-22.04.iso"} 1.0
     # HELP pve_node_info Node info
     # TYPE pve_node_info gauge
     pve_node_info{id="node/proxmox",level="",name="proxmox",nodeid="0"} 1.0

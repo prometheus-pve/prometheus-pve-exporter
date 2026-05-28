@@ -2,13 +2,30 @@
 Prometheus collectors for Proxmox VE storage.
 """
 
+import itertools
+import logging
+
 from prometheus_client.core import GaugeMetricFamily
 from proxmoxer.core import ResourceException
-import logging
+
+
+def _content_id(node, volid):
+    return f"content/{node}/{volid}"
+
+
+def _guest_label(item):
+    vmid = item.get('vmid', 0)
+    if not vmid:
+        return ''
+    volid = item.get('volid', '')
+    if 'vzdump-lxc-' in volid or item.get('content') == 'rootdir':
+        return f"lxc/{vmid}"
+    return f"qemu/{vmid}"
+
 
 class StorageCollector:
     """
-    Collects Proxmox VE storage information.
+    Collects Proxmox VE storage content information.
     """
 
     def __init__(self, pve, node, storage):
@@ -16,43 +33,54 @@ class StorageCollector:
         self._node = node
         self._storage = storage
 
-    def collect(self):
+    def collect(self):  # pylint: disable=missing-docstring
+        info_metric = GaugeMetricFamily(
+            'pve_storage_contents_info',
+            'Proxmox storage content info',
+            labels=['id', 'node', 'storage', 'content', 'volid', 'guest', 'verification_state'],
+        )
+
         metrics = {
             'ctime': GaugeMetricFamily(
-                'pve_storage_contents_ctime',
-                'Proxmox storage contents ctime',
-                labels=['node', 'storage', 'vmid', 'content', 'volid']),
+                'pve_storage_contents_ctime_timestamp_seconds',
+                'Proxmox storage content creation time',
+                labels=['id']),
             'size': GaugeMetricFamily(
                 'pve_storage_contents_bytes',
-                'Proxmox storage contents size in bytes',
-                labels=['node', 'storage', 'vmid', 'content', 'volid']),
+                'Proxmox storage content size in bytes',
+                labels=['id']),
             'verification': GaugeMetricFamily(
                 'pve_storage_contents_verification',
-                'Proxmox storage contents verification state',
-                labels=['node', 'storage', 'vmid', 'content', 'volid', 'state']),
+                'Proxmox storage content verification present',
+                labels=['id']),
         }
 
         try:
             contents = self._pve.nodes(self._node).storage(self._storage).content.get()
             for item in contents:
-                metrics['ctime'].add_metric(
-                    [self._node, self._storage, str(item['vmid']), item['content'], item['volid']],
-                    item['ctime']
+                content_id = _content_id(self._node, item['volid'])
+                verification = item.get('verification') or {}
+                verification_state = verification.get('state', '')
+
+                info_metric.add_metric(
+                    [
+                        content_id,
+                        self._node,
+                        self._storage,
+                        item['content'],
+                        item['volid'],
+                        _guest_label(item),
+                        verification_state,
+                    ],
+                    1,
                 )
 
-                metrics['size'].add_metric(
-                    [self._node, self._storage, str(item['vmid']), item['content'], item['volid']],
-                    item['size']
-                )
+                label_values = [content_id]
+                metrics['ctime'].add_metric(label_values, item['ctime'])
+                metrics['size'].add_metric(label_values, item['size'])
+                if verification_state:
+                    metrics['verification'].add_metric(label_values, 1)
+        except ResourceException as error:
+            logging.error("Error fetching storage contents: %s", error)
 
-                if 'verification' in item:
-                    metrics['verification'].add_metric(
-                        [self._node, self._storage, str(item['vmid']), item['content'], item['volid'], item['verification']['state']],
-                        1
-                    )
-        except ResourceException as e:
-            # Log the error and return an empty list of metrics
-            logging.error(f"Error fetching storage contents: {e}")
-            return metrics.values()
-
-        return metrics.values()
+        return itertools.chain(metrics.values(), [info_metric])
