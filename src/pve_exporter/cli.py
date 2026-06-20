@@ -115,6 +115,7 @@ def main():
         'threads': 2,
         'keyfile': params.server_keyfile,
         'certfile': params.server_certfile,
+        'control_socket_disable': True,
     }
 
     if config.valid:
