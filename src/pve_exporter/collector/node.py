@@ -188,3 +188,75 @@ class SubscriptionCollector:
         yield info_metric
         yield status_metric
         yield next_due_metric
+
+class QgaFsCollector:
+    """
+    Collects guest filesystem usage via QEMU Guest Agent get-fsinfo.
+
+    # HELP pve_qga_fs_used_bytes Guest filesystem used bytes (via QEMU guest agent)
+    # TYPE pve_qga_fs_used_bytes gauge
+    # HELP pve_qga_fs_size_bytes Guest filesystem total bytes (via QEMU guest agent)
+    # TYPE pve_qga_fs_size_bytes gauge
+    """
+
+    SKIP_FSTYPES = frozenset(['tmpfs', 'devtmpfs', 'squashfs', 'overlay', 'sysfs', 'proc'])
+
+    def __init__(self, pve):
+        self._pve = pve
+
+    def _collect_vm(self, node, vmdata, used_metric, size_metric):
+        """Collect filesystem metrics for a single VM via QEMU guest agent."""
+        vmid = vmdata['vmid']
+        name = vmdata.get('name', str(vmid))
+
+        if vmdata.get('status') != 'running':
+            return
+
+        try:
+            config = self._pve.nodes(node).qemu(vmid).config.get()
+            if not str(config.get('agent', '0')).startswith('1'):
+                return
+        except Exception:  # pylint: disable=broad-except
+            return
+
+        try:
+            result = self._pve.nodes(node).qemu(vmid).agent('get-fsinfo').get()
+            for fs in result.get('result', []):
+                if fs.get('type', '') in self.SKIP_FSTYPES:
+                    continue
+                labels = [
+                    f'qemu/{vmid}', node, name,
+                    fs.get('mountpoint', ''),
+                    fs.get('type', ''),
+                    (fs.get('disk') or [{}])[0].get('dev', ''),
+                ]
+                used_metric.add_metric(labels, fs.get('used-bytes', 0))
+                size_metric.add_metric(labels, fs.get('total-bytes', 0))
+        except Exception:  # pylint: disable=broad-except
+            pass
+
+    def collect(self):  # pylint: disable=missing-docstring
+        used_metric = GaugeMetricFamily(
+            'pve_qga_fs_used_bytes',
+            'Guest filesystem used bytes (via QEMU guest agent)',
+            labels=['id', 'node', 'name', 'mountpoint', 'fstype', 'disk'])
+
+        size_metric = GaugeMetricFamily(
+            'pve_qga_fs_size_bytes',
+            'Guest filesystem total bytes (via QEMU guest agent)',
+            labels=['id', 'node', 'name', 'mountpoint', 'fstype', 'disk'])
+
+        node = None
+        for entry in self._pve.cluster.status.get():
+            if entry['type'] == 'node' and entry['local']:
+                node = entry['name']
+                break
+
+        if node is None:
+            return
+
+        for vmdata in self._pve.nodes(node).qemu.get():
+            self._collect_vm(node, vmdata, used_metric, size_metric)
+
+        yield used_metric
+        yield size_metric
