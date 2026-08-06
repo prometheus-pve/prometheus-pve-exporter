@@ -60,6 +60,9 @@ def main():
     nodeflags.add_argument('--collector.subscription', dest='collector_subscription',
                               action=BooleanOptionalAction, default=True,
                               help='Exposes PVE subscription info')
+    nodeflags.add_argument('--collector.qga-fs', dest='collector_qga_fs',
+                           action=BooleanOptionalAction, default=False,
+                           help='Exposes VM filesystem usage via QEMU guest agent')
 
     scrapeflags = parser.add_argument_group('scrape collectors', description=(
         'metrics concerning the operation of the Prometheus PVE exporter itself.'
@@ -98,7 +101,8 @@ def main():
         backup_info=params.collector_backup_info,
         config=params.collector_config,
         replication=params.collector_replication,
-        qdevice=params.collector_qdevice
+        qdevice=params.collector_qdevice,
+        qga_fs=params.collector_qga_fs
     )
     scrape_metrics.API_METRICS_ENABLED = params.api_metrics_enabled
     scrape_metrics.TARGET_METRICS_ENABLED = params.target_metrics_enabled
