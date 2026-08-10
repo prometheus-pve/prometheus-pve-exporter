@@ -19,7 +19,8 @@ from pve_exporter.collector.cluster import (
 from pve_exporter.collector.node import (
     NodeConfigCollector,
     NodeReplicationCollector,
-    SubscriptionCollector
+    SubscriptionCollector,
+    QgaFsCollector
 )
 
 CollectorsOptions = collections.namedtuple('CollectorsOptions', [
@@ -32,7 +33,8 @@ CollectorsOptions = collections.namedtuple('CollectorsOptions', [
     'backup_info',
     'config',
     'replication',
-    'qdevice'
+    'qdevice',
+    'qga_fs'
 ])
 
 
@@ -62,5 +64,7 @@ def collect_pve(config, host, cluster, node, options: CollectorsOptions):
         registry.register(NodeConfigCollector(pve))
     if node and options.replication:
         registry.register(NodeReplicationCollector(pve))
+    if node and options.qga_fs:
+        registry.register(QgaFsCollector(pve))
 
     return generate_latest(registry)
