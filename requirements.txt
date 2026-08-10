@@ -570,9 +570,9 @@ paramiko==5.0.0 \
     --hash=sha256:36763b5b95c2a0dcfdf1abc48e48156ee425b21efe2f0e787c2dd5a95c0e5e79 \
     --hash=sha256:b7044611c30140d9a75261653210e2002977b71a0497ff3ba0d98d7edbf62f7c
     # via -r requirements.in
-prometheus-client==0.25.0 \
-    --hash=sha256:5e373b75c31afb3c86f1a52fa1ad470c9aace18082d39ec0d2f918d11cc9ba28 \
-    --hash=sha256:d5aec89e349a6ec230805d0df882f3807f74fd6c1a2fa86864e3c2279059fed1
+prometheus-client==0.26.0 \
+    --hash=sha256:04a91bcf94e2cf74a44a1a874d651a2e853ed354b6e822f3b7487751465d5c2b \
+    --hash=sha256:fa93d06737aa02bacd05794768508bb97d2fbee28cb3bca04eaae92f0ca953d6
     # via -r requirements.in
 proxmoxer==2.3.0 \
     --hash=sha256:0b0b2067187af1fc6d4257a46ac68c8fd79cc25d2813637cdae7a9a98fbfd11f \

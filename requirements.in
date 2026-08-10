@@ -1,4 +1,4 @@
-prometheus_client>=0.0.11
+prometheus_client>=0.26.0
 proxmoxer
 pyyaml
 requests
