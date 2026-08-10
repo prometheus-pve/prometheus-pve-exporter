@@ -10,6 +10,61 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 -------------
 
 
+`3.10.0`_ - 2026-08-10
+----------------------
+
+Added
+~~~~~
+
+- Bump minimum python version to 3.11 (#458)
+
+Changed
+~~~~~~~
+
+- Bump cryptography from 49.0.0 to 50.0.0 (#491)
+- Bump wrapt from 2.2.2 to 2.3.0 (#490)
+- Bump prometheus-client from 0.25.0 to 0.26.0 (#489)
+- Bump certifi from 2026.6.17 to 2026.7.22 (#486)
+- Bump charset-normalizer from 3.4.7 to 3.4.9 (#484)
+- Bump cffi from 2.0.0 to 2.1.0 (#483)
+- Bump docker/login-action from 4.2.0 to 4.4.0 (#482)
+- Bump docker/build-push-action from 7.2.0 to 7.3.0 (#481)
+- Bump docker/metadata-action from 6.1.0 to 6.2.0 (#480)
+- Bump actions/attest from 4.1.0 to 4.1.1 (#478)
+- Bump docker/setup-qemu-action from 4.1.0 to 4.2.0 (#477)
+- Switch from actions/attest-build-provenance to actions/attest (#473)
+- Bump actions/checkout from 6.0.3 to 7.0.0 (#475)
+- Bump wrapt from 2.2.1 to 2.2.2 (#476)
+- Bump actions/setup-python from 6.2.0 to 6.3.0 (#474)
+- Disable gunicorn control socket (#472)
+- Bump cryptography from 48.0.1 to 49.0.0 (#470)
+- Bump certifi from 2026.5.20 to 2026.6.17 (#469)
+- Bump alpine from 3.24.0 to 3.24.1 (#468)
+- Bump alpine from 3.23.4 to 3.24.0 (#465)
+- Bump cryptography from 46.0.7 to 48.0.1 (#466)
+- Bump gunicorn from 23.0.0 to 26.0.0 (#462)
+- Bump requests from 2.33.1 to 2.34.2 (#463)
+- Bump charset-normalizer from 3.3.2 to 3.4.7 (#464)
+- Bump idna from 3.17 to 3.18 (#461)
+- Bump certifi from 2024.7.4 to 2026.5.20 (#460)
+- Bump actions/checkout from 6.0.2 to 6.0.3 (#459)
+- Bump bcrypt from 4.1.2 to 5.0.0 (#457)
+- Bump pycparser from 2.21 to 3.0 (#456)
+- Bump invoke from 2.2.0 to 3.0.3 (#455)
+- Bump markupsafe from 2.1.3 to 3.0.3 (#454)
+- Bump packaging from 23.2 to 26.2 (#453)
+- Bump docker/setup-qemu-action from 4.0.0 to 4.1.0 (#452)
+- Allow dependabot to update all pip dependencies (#451)
+- Bump idna from 3.7 to 3.17 (#450)
+- fixup! Bump wrapt from 2.1.2 to 2.2.1 (#449)
+- Revert "Bump wrapt from 2.1.2 to 2.2.1 (#449)"
+- Bump wrapt from 2.1.2 to 2.2.1 (#449)
+- Bump docker/metadata-action from 6.0.0 to 6.1.0 (#448)
+- Bump docker/setup-buildx-action from 4.0.0 to 4.1.0 (#447)
+- Bump docker/login-action from 4.1.0 to 4.2.0 (#446)
+- Bump docker/build-push-action from 7.1.0 to 7.2.0 (#445)
+
+
 `3.9.0`_ - 2026-05-18
 ---------------------
 
@@ -667,7 +722,8 @@ Added
 
 .. _Keep a Changelog: http://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: http://semver.org/spec/v2.0.0.html
-.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.9.0...HEAD
+.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.10.0...HEAD
+.. _3.10.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.9.0...v3.10.0
 .. _3.9.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.8.3...v3.9.0
 .. _3.8.3: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.8.2...v3.8.3
 .. _3.8.2: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.8.1...v3.8.2
