@@ -9,6 +9,8 @@ import typing
 from prometheus_client.core import GaugeMetricFamily, CounterMetricFamily
 from proxmoxer import ResourceException
 
+from pve_exporter.collector.base import find_cluster_id, find_local_node
+
 
 class StatusCollector:
     """
@@ -178,11 +180,7 @@ class QDeviceCollector:
         self._pve = pve
 
     def collect(self):  # pylint: disable=missing-docstring
-        cluster_id = None
-        for entry in self._pve.cluster.status.get():
-            if entry['type'] == 'cluster':
-                cluster_id = f"cluster/{entry['name']}"
-                break
+        cluster_id = find_cluster_id(self._pve)
 
         if cluster_id is None:
             return
@@ -531,16 +529,17 @@ class BackupInfoCollector:
         )
 
         not_enabled_data = self._pve.cluster("backup-info/not-backed-up").get()
-        cluster_name = self._pve.cluster.status.get()[0]['name']
 
         for entry in not_enabled_data:
             label_values = [f"{entry['type']}/{entry['vmid']}"]
             not_enabled_info.add_metric(label_values, 1)
 
-        not_enabled_total.add_metric(
-            [f"cluster/{cluster_name}"],
-            len(not_enabled_data)
-        )
+        total_id = find_cluster_id(self._pve)
+        if total_id is None:
+            # Not part of a cluster: report the total for the local node.
+            total_id = f"node/{find_local_node(self._pve)}"
+
+        not_enabled_total.add_metric([total_id], len(not_enabled_data))
 
         yield not_enabled_total
         yield not_enabled_info

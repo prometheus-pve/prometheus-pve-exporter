@@ -103,7 +103,7 @@ pve_node_info{id="node/pve0",level="",name="pve0",nodeid="0"} 1.0
 pve_version_info{release="9.0",repoid="1a2b3c4d",version="9.0.3"} 1.0
 # HELP pve_not_backed_up_total Total number of guests not covered by any backup job.
 # TYPE pve_not_backed_up_total gauge
-pve_not_backed_up_total{id="cluster/pve0"} 1.0
+pve_not_backed_up_total{id="node/pve0"} 1.0
 # HELP pve_not_backed_up_info Present if guest is not covered by any backup job.
 # TYPE pve_not_backed_up_info gauge
 pve_not_backed_up_info{id="qemu/200"} 1.0

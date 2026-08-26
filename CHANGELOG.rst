@@ -9,6 +9,16 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 `Unreleased`_
 -------------
 
+Fixed
+~~~~~
+
+- ``pve_not_backed_up_total`` no longer labels a standalone host as if it was
+  a cluster. The cluster id is now derived from the ``/cluster/status`` entry
+  of type ``cluster`` instead of from whichever entry happens to come first.
+  On a host that is not part of a cluster the metric is now reported as
+  ``pve_not_backed_up_total{id="node/<name>"}`` instead of
+  ``pve_not_backed_up_total{id="cluster/<name>"}``.
+
 
 `3.10.0`_ - 2026-08-10
 ----------------------
