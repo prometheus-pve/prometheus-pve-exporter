@@ -2,7 +2,10 @@
 Shared helpers for the Proxmox VE collectors.
 """
 
+from collections.abc import Iterable
 from functools import cached_property
+
+from prometheus_client.core import Metric
 
 
 def find_local_node(cluster_status):
@@ -89,3 +92,20 @@ class PveScrapeSession:
     def cluster_id(self):
         """Prometheus id of the cluster, or None for a standalone node."""
         return find_cluster_id(self.cluster_status)
+
+
+class BaseCollector:
+    """Base class for the collectors of a single Proxmox VE target.
+
+    Subclasses implement collect() and reach the API through ``self._pve``,
+    a PveScrapeSession shared by every collector of the same scrape.
+    """
+
+    # pylint: disable=too-few-public-methods
+
+    def __init__(self, pve: PveScrapeSession):
+        self._pve = pve
+
+    def collect(self) -> Iterable[Metric]:
+        """Return the metrics this collector produces for one scrape."""
+        raise NotImplementedError

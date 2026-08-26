@@ -5,13 +5,15 @@ Prometheus collecters for Proxmox VE cluster.
 
 import itertools
 import typing
+from collections.abc import Iterable
 
-from prometheus_client.core import GaugeMetricFamily, CounterMetricFamily
+from prometheus_client.core import GaugeMetricFamily, CounterMetricFamily, Metric
 from proxmoxer import ResourceException
 
+from pve_exporter.collector.base import BaseCollector
 
 
-class StatusCollector:
+class StatusCollector(BaseCollector):
     """
     Collects Proxmox VE Node/VM/CT-Status
 
@@ -23,10 +25,7 @@ class StatusCollector:
     pve_up{id="qemu/102"} 1.0
     """
 
-    def __init__(self, pve):
-        self._pve = pve
-
-    def collect(self):  # pylint: disable=missing-docstring
+    def collect(self) -> Iterable[Metric]:
         status_metrics = GaugeMetricFamily(
             'pve_up',
             'Node/VM/CT-Status is online/running',
@@ -58,7 +57,7 @@ class StatusCollector:
         yield status_metrics
 
 
-class VersionCollector:
+class VersionCollector(BaseCollector):
     """
     Collects Proxmox VE build information. E.g.:
 
@@ -69,10 +68,7 @@ class VersionCollector:
 
     LABEL_WHITELIST = ['release', 'repoid', 'version']
 
-    def __init__(self, pve):
-        self._pve = pve
-
-    def collect(self):  # pylint: disable=missing-docstring
+    def collect(self) -> Iterable[Metric]:
         version_items = self._pve.version.items()
         version = {key: value for key, value in version_items if key in self.LABEL_WHITELIST}
 
@@ -87,7 +83,7 @@ class VersionCollector:
         yield metric
 
 
-class ClusterNodeCollector:
+class ClusterNodeCollector(BaseCollector):
     """
     Collects Proxmox VE cluster node information. E.g.:
 
@@ -97,10 +93,7 @@ class ClusterNodeCollector:
         nodeid="0"} 1.0
     """
 
-    def __init__(self, pve):
-        self._pve = pve
-
-    def collect(self):  # pylint: disable=missing-docstring
+    def collect(self) -> Iterable[Metric]:
         nodes = [entry for entry in self._pve.cluster_status if entry['type'] == 'node']
         labels = ['id', 'level', 'name', 'nodeid']
 
@@ -117,7 +110,7 @@ class ClusterNodeCollector:
             yield info_metrics
 
 
-class ClusterInfoCollector:
+class ClusterInfoCollector(BaseCollector):
     """
     Collects Proxmox VE cluster information. E.g.:
 
@@ -126,10 +119,7 @@ class ClusterInfoCollector:
     pve_cluster_info{id="cluster/pvec",nodes="2",quorate="1",version="2"} 1.0
     """
 
-    def __init__(self, pve):
-        self._pve = pve
-
-    def collect(self):  # pylint: disable=missing-docstring
+    def collect(self) -> Iterable[Metric]:
         clusters = [entry for entry in self._pve.cluster_status if entry['type'] == 'cluster']
 
         if clusters:
@@ -151,7 +141,7 @@ class ClusterInfoCollector:
             yield info_metrics
 
 
-class QDeviceCollector:
+class QDeviceCollector(BaseCollector):
     """
     Collects Proxmox VE QDevice connection state from the local node's view.
     For manual test: "pvesh get /cluster/config/qdevice"
@@ -175,10 +165,7 @@ class QDeviceCollector:
         'State': 'state',
     }
 
-    def __init__(self, pve):
-        self._pve = pve
-
-    def collect(self):  # pylint: disable=missing-docstring
+    def collect(self) -> Iterable[Metric]:
         cluster_id = self._pve.cluster_id
 
         if cluster_id is None:
@@ -303,16 +290,13 @@ class LockStateMetric(GaugeMetricFamily):
                 self.add_metric([resource['id'], state], value)
 
 
-class ClusterResourcesCollector:
+class ClusterResourcesCollector(BaseCollector):
     """
     Collects Proxmox VE cluster resources information, i.e. memory, storage, cpu
     usage for cluster nodes and guests.
     """
 
-    def __init__(self, pve):
-        self._pve = pve
-
-    def collect(self):  # pylint: disable=missing-docstring
+    def collect(self) -> Iterable[Metric]:
         metrics = {
             'maxdisk': GaugeMetricFamily(
                 'pve_disk_size_bytes',
@@ -504,7 +488,8 @@ class ClusterResourcesCollector:
 
         return label_values + csv_label_values
 
-class BackupInfoCollector:
+
+class BackupInfoCollector(BaseCollector):
     """
     Collects information on guests which are not covered by any backup job. E.g.:
 
@@ -512,10 +497,7 @@ class BackupInfoCollector:
     pve_not_backed_up_info{id="qemu/102"} 1.0
     """
 
-    def __init__(self, pve):
-        self._pve = pve
-
-    def collect(self):  # pylint: disable=missing-docstring
+    def collect(self) -> Iterable[Metric]:
         not_enabled_total = GaugeMetricFamily(
             'pve_not_backed_up_total',
             'Total number of guests not covered by any backup job.',

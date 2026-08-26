@@ -4,12 +4,15 @@ Prometheus collecters for Proxmox VE cluster.
 # pylint: disable=too-few-public-methods
 
 import itertools
+from collections.abc import Iterable
 from datetime import datetime
 
-from prometheus_client.core import GaugeMetricFamily
+from prometheus_client.core import GaugeMetricFamily, Metric
+
+from pve_exporter.collector.base import BaseCollector
 
 
-class NodeConfigCollector:
+class NodeConfigCollector(BaseCollector):
     """
     Collects Proxmox VE VM information directly from config, i.e. boot, name, onboot, etc.
     For manual test: "pvesh get /nodes/<node>/<type>/<vmid>/config"
@@ -19,10 +22,7 @@ class NodeConfigCollector:
     pve_onboot_status{id="qemu/113",node="XXXX",type="qemu"} 1.0
     """
 
-    def __init__(self, pve):
-        self._pve = pve
-
-    def collect(self):  # pylint: disable=missing-docstring
+    def collect(self) -> Iterable[Metric]:
         metrics = {
             'onboot': GaugeMetricFamily(
                 'pve_onboot_status',
@@ -43,17 +43,15 @@ class NodeConfigCollector:
 
         return metrics.values()
 
-class NodeReplicationCollector:
+
+class NodeReplicationCollector(BaseCollector):
     """
     Collects Proxmox VE Replication information directly from status, i.e. replication duration,
     last_sync, last_try, next_sync, fail_count.
     For manual test: "pvesh get /nodes/<node>/replication/<id>/status"
     """
 
-    def __init__(self, pve):
-        self._pve = pve
-
-    def collect(self): # pylint: disable=missing-docstring
+    def collect(self) -> Iterable[Metric]:
 
         info_metrics = {
             'info': GaugeMetricFamily(
@@ -107,15 +105,13 @@ class NodeReplicationCollector:
 
         return itertools.chain(metrics.values(), info_metrics.values())
 
-class SubscriptionCollector:
+
+class SubscriptionCollector(BaseCollector):
     """
     Collects Proxmox VE subscription information (node, subscription level, status, next due date).
     """
 
-    def __init__(self, pve):
-        self._pve = pve
-
-    def collect(self):  # pylint: disable=missing-docstring
+    def collect(self) -> Iterable[Metric]:
         info_metric = GaugeMetricFamily(
             "pve_subscription_info",
             "Proxmox VE subscription info (1 if present)",
