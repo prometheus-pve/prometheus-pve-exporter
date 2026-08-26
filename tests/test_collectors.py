@@ -7,6 +7,8 @@ proven to leave the emitted metrics untouched: any diff against a golden file
 is either a bug or a deliberate, reviewed behaviour change.
 """
 
+import copy
+
 import pytest
 
 from pve_exporter import collector as collector_module
@@ -83,3 +85,37 @@ def test_storage_content_label_is_sorted(render):
 
     assert 'content="backup,iso,vztmpl"' in output
     assert 'content="images,rootdir"' in output
+
+
+def test_cluster_info_does_not_mutate_the_api_response():
+    """Collectors must treat API responses as read-only.
+
+    Responses are shared between collectors within one scrape, so a collector
+    that edits what it got back would corrupt the ones that run after it.
+    """
+    from prometheus_client import CollectorRegistry, generate_latest
+    from pve_exporter.collector.cluster import ClusterInfoCollector
+
+    status = [{'type': 'cluster', 'id': 'cluster', 'name': 'pvec',
+               'nodes': 2, 'quorate': 1, 'version': 2}]
+    before = copy.deepcopy(status)
+
+    class SharedResponseAPI:
+        """Hands out the very same response object on every call."""
+
+        def __init__(self, path=()):
+            self._path = path
+
+        def __getattr__(self, name):
+            return SharedResponseAPI(self._path + (name,))
+
+        def get(self):
+            assert self._path == ('cluster', 'status')
+            return status
+
+    registry = CollectorRegistry()
+    registry.register(ClusterInfoCollector(SharedResponseAPI()))
+
+    first = generate_latest(registry)
+    assert status == before, 'the API response was modified in place'
+    assert generate_latest(registry) == first

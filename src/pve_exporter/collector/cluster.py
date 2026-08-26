@@ -129,25 +129,20 @@ class ClusterInfoCollector:
         clusters = [entry for entry in self._pve.cluster.status.get() if entry['type'] == 'cluster']
 
         if clusters:
-            # Remove superflous keys.
-            for cluster in clusters:
-                del cluster['type']
+            # Expose every key of the status entry except the type (always
+            # "cluster" here) and the name, which is folded into the id.
+            # Keep the key order of the API response, as the id is reported
+            # in the position the API returned it in.
+            labels = [key for key in clusters[0] if key not in ('type', 'name')]
 
-            # Add cluster-prefix to id.
-            for cluster in clusters:
-                cluster['id'] = f"cluster/{cluster['name']}"
-                del cluster['name']
-
-            # Yield remaining data.
-            labels = clusters[0].keys()
             info_metrics = GaugeMetricFamily(
                 'pve_cluster_info',
                 'Cluster info',
                 labels=labels)
 
             for cluster in clusters:
-                label_values = [str(cluster[key]) for key in labels]
-                info_metrics.add_metric(label_values, 1)
+                values = dict(cluster, id=f"cluster/{cluster['name']}")
+                info_metrics.add_metric([str(values[key]) for key in labels], 1)
 
             yield info_metrics
 
