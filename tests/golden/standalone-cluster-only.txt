@@ -1,0 +1,109 @@
+# HELP pve_up Node/VM/CT-Status is online/running
+# TYPE pve_up gauge
+pve_up{id="node/pve0"} 1.0
+pve_up{id="qemu/200"} 1.0
+pve_up{id="storage/pve0/local"} 1.0
+# HELP pve_disk_size_bytes Storage size in bytes (for type 'storage'), root image size for VMs (for types 'qemu' and 'lxc').
+# TYPE pve_disk_size_bytes gauge
+pve_disk_size_bytes{id="node/pve0"} 5.36870912e+10
+pve_disk_size_bytes{id="qemu/200"} 6.8719476736e+10
+pve_disk_size_bytes{id="storage/pve0/local"} 5.36870912e+10
+# HELP pve_disk_usage_bytes Used disk space in bytes (for type 'storage'), used root image space for VMs (for types 'qemu' and 'lxc').
+# TYPE pve_disk_usage_bytes gauge
+pve_disk_usage_bytes{id="node/pve0"} 2.147483648e+09
+pve_disk_usage_bytes{id="qemu/200"} 0.0
+pve_disk_usage_bytes{id="storage/pve0/local"} 2.147483648e+09
+# HELP pve_memory_size_bytes Number of available memory in bytes (for types 'node', 'qemu' and 'lxc').
+# TYPE pve_memory_size_bytes gauge
+pve_memory_size_bytes{id="node/pve0"} 8.589934592e+09
+pve_memory_size_bytes{id="qemu/200"} 4.294967296e+09
+# HELP pve_memory_usage_bytes Used memory in bytes (for types 'node', 'qemu' and 'lxc').
+# TYPE pve_memory_usage_bytes gauge
+pve_memory_usage_bytes{id="node/pve0"} 1.073741824e+09
+pve_memory_usage_bytes{id="qemu/200"} 2.147483648e+09
+# HELP pve_network_transmit_bytes The amount of traffic in bytes that was sent from the guest over the network since it was started. (for types 'qemu' and 'lxc') DEPRECATED: Use pve_network_transmit_bytes_total instead.
+# TYPE pve_network_transmit_bytes gauge
+pve_network_transmit_bytes{id="qemu/200"} 2048.0
+# HELP pve_network_receive_bytes The amount of traffic in bytes that was sent to the guest over the network since it was started. (for types 'qemu' and 'lxc') DEPRECATED: Use pve_network_receive_bytes_total instead.
+# TYPE pve_network_receive_bytes gauge
+pve_network_receive_bytes{id="qemu/200"} 1024.0
+# HELP pve_disk_write_bytes The amount of bytes the guest wrote to its block devices since the guest was started. This info is not available for all storage types. (for types 'qemu' and 'lxc') DEPRECATED: Use pve_disk_written_bytes_total instead.
+# TYPE pve_disk_write_bytes gauge
+pve_disk_write_bytes{id="qemu/200"} 8192.0
+# HELP pve_disk_read_bytes The amount of bytes the guest read from its block devices since the guest was started. This info is not available for all storage types. (for types 'qemu' and 'lxc') DEPRECATED: Use pve_disk_read_bytes_total instead.
+# TYPE pve_disk_read_bytes gauge
+pve_disk_read_bytes{id="qemu/200"} 4096.0
+# HELP pve_cpu_usage_ratio CPU utilization (for types 'node', 'qemu' and 'lxc').
+# TYPE pve_cpu_usage_ratio gauge
+pve_cpu_usage_ratio{id="node/pve0"} 0.0128
+pve_cpu_usage_ratio{id="qemu/200"} 0.5
+# HELP pve_cpu_usage_limit Number of available CPUs (for types 'node', 'qemu' and 'lxc').
+# TYPE pve_cpu_usage_limit gauge
+pve_cpu_usage_limit{id="node/pve0"} 4.0
+pve_cpu_usage_limit{id="qemu/200"} 4.0
+# HELP pve_uptime_seconds Uptime of node or virtual guest in seconds (for types 'node', 'qemu' and 'lxc').
+# TYPE pve_uptime_seconds gauge
+pve_uptime_seconds{id="node/pve0"} 3600.0
+pve_uptime_seconds{id="qemu/200"} 3540.0
+# HELP pve_storage_shared Whether or not the storage is shared among cluster nodes
+# TYPE pve_storage_shared gauge
+pve_storage_shared{id="storage/pve0/local"} 0.0
+# HELP pve_network_transmit_bytes_total The amount of traffic in bytes that was sent from the guest over the network since it was started. (for types 'qemu' and 'lxc')
+# TYPE pve_network_transmit_bytes_total counter
+pve_network_transmit_bytes_total{id="qemu/200"} 2048.0
+# HELP pve_network_receive_bytes_total The amount of traffic in bytes that was sent to the guest over the network since it was started. (for types 'qemu' and 'lxc')
+# TYPE pve_network_receive_bytes_total counter
+pve_network_receive_bytes_total{id="qemu/200"} 1024.0
+# HELP pve_disk_written_bytes_total The amount of bytes the guest wrote to its block devices since the guest was started. This info is not available for all storage types. (for types 'qemu' and 'lxc')
+# TYPE pve_disk_written_bytes_total counter
+pve_disk_written_bytes_total{id="qemu/200"} 8192.0
+# HELP pve_disk_read_bytes_total The amount of bytes the guest read from its block devices since the guest was started. This info is not available for all storage types. (for types 'qemu' and 'lxc')
+# TYPE pve_disk_read_bytes_total counter
+pve_disk_read_bytes_total{id="qemu/200"} 4096.0
+# HELP pve_ha_state HA service status (for HA managed VMs).
+# TYPE pve_ha_state gauge
+pve_ha_state{id="node/pve0",state="online"} 0.0
+pve_ha_state{id="node/pve0",state="maintenance"} 0.0
+pve_ha_state{id="node/pve0",state="unknown"} 0.0
+pve_ha_state{id="node/pve0",state="fence"} 0.0
+pve_ha_state{id="node/pve0",state="gone"} 0.0
+pve_ha_state{id="qemu/200",state="stopped"} 0.0
+pve_ha_state{id="qemu/200",state="request_stop"} 0.0
+pve_ha_state{id="qemu/200",state="request_start"} 0.0
+pve_ha_state{id="qemu/200",state="request_start_balance"} 0.0
+pve_ha_state{id="qemu/200",state="started"} 0.0
+pve_ha_state{id="qemu/200",state="fence"} 0.0
+pve_ha_state{id="qemu/200",state="recovery"} 0.0
+pve_ha_state{id="qemu/200",state="migrate"} 0.0
+pve_ha_state{id="qemu/200",state="relocate"} 0.0
+pve_ha_state{id="qemu/200",state="freeze"} 0.0
+pve_ha_state{id="qemu/200",state="error"} 0.0
+# HELP pve_lock_state The guest's current config lock (for types 'qemu' and 'lxc')
+# TYPE pve_lock_state gauge
+pve_lock_state{id="qemu/200",state="backup"} 0.0
+pve_lock_state{id="qemu/200",state="clone"} 0.0
+pve_lock_state{id="qemu/200",state="create"} 0.0
+pve_lock_state{id="qemu/200",state="migrate"} 0.0
+pve_lock_state{id="qemu/200",state="rollback"} 0.0
+pve_lock_state{id="qemu/200",state="snapshot"} 0.0
+pve_lock_state{id="qemu/200",state="snapshot-delete"} 0.0
+pve_lock_state{id="qemu/200",state="suspended"} 0.0
+pve_lock_state{id="qemu/200",state="suspending"} 0.0
+# HELP pve_guest_info VM/CT info
+# TYPE pve_guest_info gauge
+pve_guest_info{id="qemu/200",name="vm200",node="pve0",tags="",template="0",type="qemu"} 1.0
+# HELP pve_storage_info Storage info
+# TYPE pve_storage_info gauge
+pve_storage_info{content="iso,vztmpl",id="storage/pve0/local",node="pve0",plugintype="dir",storage="local"} 1.0
+# HELP pve_node_info Node info
+# TYPE pve_node_info gauge
+pve_node_info{id="node/pve0",level="",name="pve0",nodeid="0"} 1.0
+# HELP pve_version_info Proxmox VE version info
+# TYPE pve_version_info gauge
+pve_version_info{release="9.0",repoid="1a2b3c4d",version="9.0.3"} 1.0
+# HELP pve_not_backed_up_total Total number of guests not covered by any backup job.
+# TYPE pve_not_backed_up_total gauge
+pve_not_backed_up_total{id="cluster/pve0"} 1.0
+# HELP pve_not_backed_up_info Present if guest is not covered by any backup job.
+# TYPE pve_not_backed_up_info gauge
+pve_not_backed_up_info{id="qemu/200"} 1.0

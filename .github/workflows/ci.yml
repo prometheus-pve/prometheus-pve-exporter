@@ -40,3 +40,6 @@ jobs:
 
       - name: Run pyflakes
         run: pyflakes src/pve_exporter
+
+      - name: Run pytest
+        run: pytest
