@@ -33,10 +33,10 @@ jobs:
         run: pip install -r requirements-test.txt
 
       - name: Install pve_exporter
-        run: pip install .
+        run: pip install --editable .
 
       - name: Run pylint
-        run: pylint pve_exporter
+        run: pylint src/pve_exporter
 
       - name: Run pyflakes
         run: pyflakes src/pve_exporter
