@@ -34,25 +34,14 @@ class NodeConfigCollector:
 
         node = find_local_node(self._pve)
 
-        # Scrape qemu config
-        vmtype = 'qemu'
-        for vmdata in self._pve.nodes(node).qemu.get():
-            config = self._pve.nodes(node).qemu(
-                vmdata['vmid']).config.get().items()
-            for key, metric_value in config:
+        for vmtype in ('qemu', 'lxc'):
+            guests = self._pve.nodes(node)(vmtype)
+            for vmdata in guests.get():
+                config = guests(vmdata['vmid']).config.get()
                 label_values = [f"{vmtype}/{vmdata['vmid']}", node, vmtype]
-                if key in metrics:
-                    metrics[key].add_metric(label_values, metric_value)
-
-        # Scrape LXC config
-        vmtype = 'lxc'
-        for vmdata in self._pve.nodes(node).lxc.get():
-            config = self._pve.nodes(node).lxc(
-                vmdata['vmid']).config.get().items()
-            for key, metric_value in config:
-                label_values = [f"{vmtype}/{vmdata['vmid']}", node, vmtype]
-                if key in metrics:
-                    metrics[key].add_metric(label_values, metric_value)
+                for key, metric_value in config.items():
+                    if key in metrics:
+                        metrics[key].add_metric(label_values, metric_value)
 
         return metrics.values()
 
