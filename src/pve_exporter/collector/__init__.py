@@ -7,6 +7,8 @@ from proxmoxer import ProxmoxAPI
 
 from prometheus_client import CollectorRegistry, generate_latest
 
+from pve_exporter.collector.base import PveScrapeSession
+
 from pve_exporter.collector.cluster import (
     StatusCollector,
     ClusterResourcesCollector,
@@ -39,7 +41,7 @@ CollectorsOptions = collections.namedtuple('CollectorsOptions', [
 def collect_pve(config, host, cluster, node, options: CollectorsOptions):
     """Scrape a host and return prometheus text format for it"""
 
-    pve = ProxmoxAPI(host, **config)
+    pve = PveScrapeSession(ProxmoxAPI(host, **config))
 
     registry = CollectorRegistry()
     if cluster and options.status:

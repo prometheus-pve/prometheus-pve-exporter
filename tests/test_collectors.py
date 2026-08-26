@@ -90,32 +90,45 @@ def test_storage_content_label_is_sorted(render):
 def test_cluster_info_does_not_mutate_the_api_response():
     """Collectors must treat API responses as read-only.
 
-    Responses are shared between collectors within one scrape, so a collector
-    that edits what it got back would corrupt the ones that run after it.
+    /cluster/status is fetched once and shared by every collector in a
+    scrape, so a collector that edits what it got back would corrupt the ones
+    that run after it, and its own output on a later scrape.
     """
     from prometheus_client import CollectorRegistry, generate_latest
+    from pve_exporter.collector.base import PveScrapeSession
     from pve_exporter.collector.cluster import ClusterInfoCollector
 
-    status = [{'type': 'cluster', 'id': 'cluster', 'name': 'pvec',
-               'nodes': 2, 'quorate': 1, 'version': 2}]
-    before = copy.deepcopy(status)
-
-    class SharedResponseAPI:
-        """Hands out the very same response object on every call."""
-
-        def __init__(self, path=()):
-            self._path = path
-
-        def __getattr__(self, name):
-            return SharedResponseAPI(self._path + (name,))
-
-        def get(self):
-            assert self._path == ('cluster', 'status')
-            return status
+    session = PveScrapeSession(load_fixture('cluster')())
+    before = copy.deepcopy(session.cluster_status)
 
     registry = CollectorRegistry()
-    registry.register(ClusterInfoCollector(SharedResponseAPI()))
+    registry.register(ClusterInfoCollector(session))
 
     first = generate_latest(registry)
-    assert status == before, 'the API response was modified in place'
+    assert session.cluster_status == before, 'the API response was modified in place'
     assert generate_latest(registry) == first
+
+
+@pytest.mark.parametrize('fixture', ['cluster', 'standalone'])
+def test_hot_endpoints_are_fetched_once_per_scrape(monkeypatch, fixture):
+    """A full scrape must not ask the same host for the same data twice."""
+    calls = []
+    factory = load_fixture(fixture)
+
+    def counting_factory(*args, **kwargs):
+        api = factory(*args, **kwargs)
+        original = type(api).get
+
+        def get(self, **params):
+            calls.append('/'.join(self._path))  # pylint: disable=protected-access
+            return original(self, **params)
+
+        monkeypatch.setattr(type(api), 'get', get)
+        return api
+
+    monkeypatch.setattr(collector_module, 'ProxmoxAPI', counting_factory)
+    collect_pve({}, 'pve.example.com', True, True, ALL_COLLECTORS)
+
+    assert calls.count('cluster/status') == 1
+    assert calls.count('cluster/resources') == 1
+    assert calls.count('version') == 1

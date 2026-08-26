@@ -9,6 +9,17 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 `Unreleased`_
 -------------
 
+Changed
+~~~~~~~
+
+- A scrape now fetches ``/cluster/status`` and ``/cluster/resources`` once and
+  shares the responses between the collectors, instead of every collector
+  fetching them for itself. On a full scrape this cuts ``/cluster/status``
+  from eight API calls to one and ``/cluster/resources`` from three to one.
+  The exposed metrics are unchanged. If the optional
+  ``--collector.pve-api-metrics`` collector is enabled, the sample counts of
+  ``pve_scrape_api_duration_seconds`` drop accordingly.
+
 Fixed
 ~~~~~
 

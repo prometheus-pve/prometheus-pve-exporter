@@ -9,7 +9,6 @@ import typing
 from prometheus_client.core import GaugeMetricFamily, CounterMetricFamily
 from proxmoxer import ResourceException
 
-from pve_exporter.collector.base import find_cluster_id, find_local_node
 
 
 class StatusCollector:
@@ -33,7 +32,7 @@ class StatusCollector:
             'Node/VM/CT-Status is online/running',
             labels=['id'])
 
-        for entry in self._pve.cluster.status.get():
+        for entry in self._pve.cluster_status:
             if entry['type'] == 'node':
                 label_values = [entry['id']]
                 status_metrics.add_metric(label_values, entry['online'])
@@ -43,13 +42,18 @@ class StatusCollector:
             else:
                 raise ValueError(f"Got unexpected status entry type {entry['type']}")
 
-        for resource in self._pve.cluster.resources.get(type='vm'):
-            label_values = [resource['id']]
-            status_metrics.add_metric(label_values, resource['status'] == 'running')
+        resources = self._pve.cluster_resources
 
-        for resource in self._pve.cluster.resources.get(type='storage'):
-            label_values = [resource['id']]
-            status_metrics.add_metric(label_values, resource['status'] == 'available')
+        # The API calls both qemu and lxc resources "vm" when filtering.
+        for resource in resources:
+            if resource['type'] in ('qemu', 'lxc'):
+                label_values = [resource['id']]
+                status_metrics.add_metric(label_values, resource['status'] == 'running')
+
+        for resource in resources:
+            if resource['type'] == 'storage':
+                label_values = [resource['id']]
+                status_metrics.add_metric(label_values, resource['status'] == 'available')
 
         yield status_metrics
 
@@ -69,7 +73,7 @@ class VersionCollector:
         self._pve = pve
 
     def collect(self):  # pylint: disable=missing-docstring
-        version_items = self._pve.version.get().items()
+        version_items = self._pve.version.items()
         version = {key: value for key, value in version_items if key in self.LABEL_WHITELIST}
 
         labels, label_values = zip(*version.items())
@@ -97,7 +101,7 @@ class ClusterNodeCollector:
         self._pve = pve
 
     def collect(self):  # pylint: disable=missing-docstring
-        nodes = [entry for entry in self._pve.cluster.status.get() if entry['type'] == 'node']
+        nodes = [entry for entry in self._pve.cluster_status if entry['type'] == 'node']
         labels = ['id', 'level', 'name', 'nodeid']
 
         if nodes:
@@ -126,7 +130,7 @@ class ClusterInfoCollector:
         self._pve = pve
 
     def collect(self):  # pylint: disable=missing-docstring
-        clusters = [entry for entry in self._pve.cluster.status.get() if entry['type'] == 'cluster']
+        clusters = [entry for entry in self._pve.cluster_status if entry['type'] == 'cluster']
 
         if clusters:
             # Expose every key of the status entry except the type (always
@@ -175,13 +179,13 @@ class QDeviceCollector:
         self._pve = pve
 
     def collect(self):  # pylint: disable=missing-docstring
-        cluster_id = find_cluster_id(self._pve)
+        cluster_id = self._pve.cluster_id
 
         if cluster_id is None:
             return
 
         try:
-            qdevice = self._pve.cluster.config.qdevice.get()
+            qdevice = self._pve.api.cluster.config.qdevice.get()
         except ResourceException:
             # No QDevice configured on this cluster.
             return
@@ -447,7 +451,7 @@ class ClusterResourcesCollector:
             },
         }
 
-        for resource in self._pve.cluster.resources.get():
+        for resource in self._pve.cluster_resources:
             restype = resource['type']
 
             if restype in info_lookup:
@@ -523,16 +527,16 @@ class BackupInfoCollector:
             labels=['id']
         )
 
-        not_enabled_data = self._pve.cluster("backup-info/not-backed-up").get()
+        not_enabled_data = self._pve.api.cluster("backup-info/not-backed-up").get()
 
         for entry in not_enabled_data:
             label_values = [f"{entry['type']}/{entry['vmid']}"]
             not_enabled_info.add_metric(label_values, 1)
 
-        total_id = find_cluster_id(self._pve)
+        total_id = self._pve.cluster_id
         if total_id is None:
             # Not part of a cluster: report the total for the local node.
-            total_id = f"node/{find_local_node(self._pve)}"
+            total_id = f"node/{self._pve.local_node}"
 
         not_enabled_total.add_metric([total_id], len(not_enabled_data))
 

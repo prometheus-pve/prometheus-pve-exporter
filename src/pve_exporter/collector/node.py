@@ -8,8 +8,6 @@ from datetime import datetime
 
 from prometheus_client.core import GaugeMetricFamily
 
-from pve_exporter.collector.base import find_local_node
-
 
 class NodeConfigCollector:
     """
@@ -32,10 +30,10 @@ class NodeConfigCollector:
                 labels=['id', 'node', 'type']),
         }
 
-        node = find_local_node(self._pve)
+        node = self._pve.local_node
 
         for vmtype in ('qemu', 'lxc'):
-            guests = self._pve.nodes(node)(vmtype)
+            guests = self._pve.api.nodes(node)(vmtype)
             for vmdata in guests.get():
                 config = guests(vmdata['vmid']).config.get()
                 label_values = [f"{vmtype}/{vmdata['vmid']}", node, vmtype]
@@ -87,9 +85,9 @@ class NodeReplicationCollector:
                 labels=['id']),
         }
 
-        node = find_local_node(self._pve)
+        node = self._pve.local_node
 
-        for jobdata in self._pve.nodes(node).replication.get():
+        for jobdata in self._pve.api.nodes(node).replication.get():
             # Add info metric
             label_values = [
                 str(jobdata['id']),
@@ -102,7 +100,7 @@ class NodeReplicationCollector:
 
             # Add metrics
             label_values = [str(jobdata['id'])]
-            status = self._pve.nodes(node).replication(jobdata['id']).status.get()
+            status = self._pve.api.nodes(node).replication(jobdata['id']).status.get()
             for key, metric_value in status.items():
                 if key in metrics:
                     metrics[key].add_metric(label_values, metric_value)
@@ -137,9 +135,9 @@ class SubscriptionCollector:
             labels=["id"],
         )
 
-        node = find_local_node(self._pve)
+        node = self._pve.local_node
 
-        subscription = self._pve.nodes(node).subscription.get()
+        subscription = self._pve.api.nodes(node).subscription.get()
 
         level = subscription.get("level", "unknown")
         status = subscription.get("status", "unknown")
