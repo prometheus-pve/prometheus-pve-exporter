@@ -8,6 +8,8 @@ from datetime import datetime
 
 from prometheus_client.core import GaugeMetricFamily
 
+from pve_exporter.collector.base import find_local_node
+
 
 class NodeConfigCollector:
     """
@@ -30,11 +32,7 @@ class NodeConfigCollector:
                 labels=['id', 'node', 'type']),
         }
 
-        node = None
-        for entry in self._pve.cluster.status.get():
-            if entry['type'] == 'node' and entry['local']:
-                node = entry['name']
-                break
+        node = find_local_node(self._pve)
 
         # Scrape qemu config
         vmtype = 'qemu'
@@ -100,11 +98,7 @@ class NodeReplicationCollector:
                 labels=['id']),
         }
 
-        node = None
-        for entry in self._pve.cluster.status.get():
-            if entry['type'] == 'node' and entry['local']:
-                node = entry['name']
-                break
+        node = find_local_node(self._pve)
 
         for jobdata in self._pve.nodes(node).replication.get():
             # Add info metric
@@ -154,11 +148,7 @@ class SubscriptionCollector:
             labels=["id"],
         )
 
-        node = None
-        for entry in self._pve.cluster.status.get():
-            if entry['type'] == 'node' and entry['local']:
-                node = entry['name']
-                break
+        node = find_local_node(self._pve)
 
         subscription = self._pve.nodes(node).subscription.get()
 
