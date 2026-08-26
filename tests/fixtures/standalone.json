@@ -1,0 +1,37 @@
+{
+  "_description": "A single PVE host that is not part of a cluster: /cluster/status returns no entry of type 'cluster', and no qdevice is configured.",
+
+  "version": {
+    "release": "9.0",
+    "repoid": "1a2b3c4d",
+    "version": "9.0.3",
+    "console": "xtermjs"
+  },
+
+  "cluster/status": [
+    {"type": "node", "id": "node/pve0", "name": "pve0", "nodeid": 0, "ip": "10.0.0.5", "level": "", "local": 1, "online": 1}
+  ],
+
+  "cluster/resources": [
+    {"type": "node", "id": "node/pve0", "node": "pve0", "status": "online", "cpu": 0.0128, "maxcpu": 4, "mem": 1073741824, "maxmem": 8589934592, "disk": 2147483648, "maxdisk": 53687091200, "uptime": 3600},
+    {"type": "qemu", "id": "qemu/200", "node": "pve0", "name": "vm200", "status": "running", "template": 0, "tags": "", "cpu": 0.5, "maxcpu": 4, "mem": 2147483648, "maxmem": 4294967296, "disk": 0, "maxdisk": 68719476736, "netin": 1024, "netout": 2048, "diskread": 4096, "diskwrite": 8192, "uptime": 3540},
+    {"type": "storage", "id": "storage/pve0/local", "node": "pve0", "storage": "local", "plugintype": "dir", "content": "iso,vztmpl", "status": "available", "shared": 0, "disk": 2147483648, "maxdisk": 53687091200}
+  ],
+
+  "cluster/backup-info/not-backed-up": [
+    {"type": "qemu", "vmid": 200}
+  ],
+
+  "nodes/pve0/qemu": [
+    {"vmid": 200, "name": "vm200", "status": "running"}
+  ],
+  "nodes/pve0/qemu/200/config": {"name": "vm200", "onboot": 1, "cores": 4, "memory": 4096},
+
+  "nodes/pve0/lxc": [],
+
+  "nodes/pve0/replication": [],
+
+  "nodes/pve0/subscription": {
+    "status": "notfound"
+  }
+}
