@@ -1,0 +1,13 @@
+Index: prometheus-pve-exporter/pyproject.toml
+===================================================================
+--- prometheus-pve-exporter.orig/pyproject.toml
++++ prometheus-pve-exporter/pyproject.toml
+@@ -24,7 +24,7 @@ dynamic = ["dependencies", "optional-dep
+ Homepage = "https://github.com/prometheus-pve/prometheus-pve-exporter"
+ 
+ [project.scripts]
+-pve_exporter = "pve_exporter.cli:main"
++prometheus-pve-exporter = "pve_exporter.cli:main"
+ 
+ [tool.setuptools.dynamic]
+ dependencies = { file = ["requirements.in"] }

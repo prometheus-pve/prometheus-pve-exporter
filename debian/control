@@ -1,0 +1,22 @@
+Source: prometheus-pve-exporter
+Section: net
+Priority: optional
+Maintainer: Emanuele Rocca <lo@znerol.ch>
+Homepage: https://github.com/prometheus-pve/prometheus-pve-exporter
+Build-Depends: debhelper (>= 12),
+               dh-python,
+               python3-all,
+               python3-setuptools,
+               python3-prometheus-client,
+               python3-requests,
+               python3-proxmoxer,
+               python3-mock,
+               python3-yaml
+Standards-Version: 4.4.0
+
+Package: prometheus-pve-exporter
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}, python3-prometheus-client, python3-requests
+Description: Prometheus exporter for Proxmox VE
+ This is an exporter that exposes information gathered from Proxmox VE node
+ for use by the Prometheus monitoring system.

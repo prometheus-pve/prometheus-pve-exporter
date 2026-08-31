@@ -1,0 +1,16 @@
+#!/bin/sh
+# postrm script for prometheus-pve-exporter
+# Script executed after the package is removed.
+
+set -e
+
+case "$1" in
+  purge)
+        rm -rf /var/log/prometheus/prometheus-pve-exporter.log \
+            /var/log/prometheus/prometheus-pve-exporter.log.* \
+            /var/run/prometheus/prometheus-pve-exporter.pid
+	# We do NOT remove the system user.
+	;;
+esac
+
+#DEBHELPER#

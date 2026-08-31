@@ -1,0 +1,2 @@
+version=4
+opts=filenamemangle=s/.*\/v(\d\S+)\.tar\.gz/prometheus-pve-exporter-$1\.tar\.gz/ https://github.com/prometheus-pve/prometheus-pve-exporter/tags .*\/v(\d\S+)\.tar\.gz 

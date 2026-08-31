@@ -1,0 +1,41 @@
+# Set the command-line arguments to pass to the server.
+# Due to shell scaping, to pass backslashes for regexes, you need to double
+# them (\\d for \d). If running under systemd, you need to double them again
+# (\\\\d to mean \d), and escape newlines too.
+ARGS=""
+
+# prometheus-pve-exporter supports the following options:
+#
+#  --config.file CONFIG_FILE
+#                        Path to config file (/etc/prometheus/pve.yml)
+#  --web.listen-address WEB_LISTEN_ADDRESS
+#                        Address on which to expose metrics and web server.
+#                        ([::]:9221)
+#  --server.keyfile SERVER_KEYFILE
+#                        SSL key for server
+#  --server.certfile SERVER_CERTFILE
+#                        SSL certificate for server
+#
+#cluster collectors:
+#  cluster collectors are run if the url parameter cluster=1 is set and
+#  skipped if the url parameter cluster=0 is set on a scrape url.
+#
+#  --collector.status, --no-collector.status
+#                        Exposes Node/VM/CT-Status
+#  --collector.version, --no-collector.version
+#                        Exposes PVE version info
+#  --collector.node, --no-collector.node
+#                        Exposes PVE node info
+#  --collector.cluster, --no-collector.cluster
+#                        Exposes PVE cluster info
+#  --collector.resources, --no-collector.resources
+#                        Exposes PVE resources info
+#
+#node collectors:
+#  node collectors are run if the url parameter node=1 is set and skipped if
+#  the url parameter node=0 is set on a scrape url.
+#
+#  --collector.config, --no-collector.config
+#                        Exposes PVE onboot status
+#  --collector.replication, --no-collector.replication
+#                        Exposes PVE replication info
