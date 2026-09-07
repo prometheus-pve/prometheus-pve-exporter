@@ -11,20 +11,21 @@ Installation
 
 Requires Python 3.9 or better.
 
-Using pip:
-==========
+**Using pip:**
 
 .. code:: shell
 
     python3 -m pip install prometheus-pve-exporter
     pve_exporter --help
 
-Using docker:
-=============
+**Using docker:**
 
 .. code:: shell
 
    docker pull prompve/prometheus-pve-exporter
+
+Running
+-------
 
 Example: Display usage message:
 
@@ -41,6 +42,18 @@ Example: Run the image with a mounted configuration file and published port:
 
 Prometheus PVE Exporter will now be reachable at http://localhost:9221/.
 
+Security
+--------
+
+Like other prometheus components, the PVE exporter is subject to the security
+threats outlined in the `Prometheus security model`_. Especially:
+
+.. CAUTION::
+
+  The HTTP endpoints provided by Prometheus components should not be exposed to
+  publicly accessible networks like the internet (unless you know what you are
+  doing and have taken appropriate measures).
+
 Usage
 -----
 
@@ -51,9 +64,13 @@ Usage
                         [--collector.node | --no-collector.node]
                         [--collector.cluster | --no-collector.cluster]
                         [--collector.resources | --no-collector.resources]
+                        [--collector.backup-info | --no-collector.backup-info]
+                        [--collector.qdevice | --no-collector.qdevice]
                         [--collector.config | --no-collector.config]
                         [--collector.replication | --no-collector.replication]
                         [--collector.subscription | --no-collector.subscription]
+                        [--collector.pve-api-metrics | --no-collector.pve-api-metrics]
+                        [--collector.target-metrics | --no-collector.target-metrics]
                         [--config.file CONFIG_FILE]
                         [--web.listen-address WEB_LISTEN_ADDRESS]
                         [--server.keyfile SERVER_KEYFILE]
@@ -85,6 +102,11 @@ Usage
                             Exposes PVE cluster info
       --collector.resources, --no-collector.resources
                             Exposes PVE resources info
+      --collector.backup-info, --no-collector.backup-info
+                            Exposes information about guests which are not covered
+                            by any backup job
+      --collector.qdevice, --no-collector.qdevice
+                            Exposes PVE QDevice connection state
 
     node collectors:
       node collectors are run if the url parameter node=1 is set and skipped if
@@ -96,6 +118,14 @@ Usage
                             Exposes PVE replication info
       --collector.subscription, --no-collector.subscription
                             Exposes PVE subscription info
+
+    scrape collectors:
+      metrics concerning the operation of the Prometheus PVE exporter itself.
+
+      --collector.pve-api-metrics, --no-collector.pve-api-metrics
+                            Exposes duration of PVE API calls
+      --collector.target-metrics, --no-collector.target-metrics
+                            Exposes duration of scrapes by target
 
 
 Use `[::]` in the `--web.listen-address` flag in order to bind to both IPv6 and
@@ -115,6 +145,9 @@ collectors.
 Note that that the config collector results in one API call per guest VM/CT.
 It is therefore recommended to disable this collector using the
 `--no-collector.config` flag on big deployments.
+
+Scrape collectors return metrics concerning the operation of the Prometheus PVE
+exporter itself. Those metrics are available from the `/metric`.
 
 See the wiki_  for more examples and docs.
 
@@ -154,18 +187,30 @@ Here's an example of the metrics exported.
     # TYPE pve_memory_usage_bytes gauge
     pve_memory_usage_bytes{id="qemu/100"} 1.6573280275e+010
     pve_memory_usage_bytes{id="node/proxmox"} 5.3907812352e+010
-    # HELP pve_network_transmit_bytes The amount of traffic in bytes that was sent from the guest over the network since it was started. (for types 'qemu' and 'lxc')
+    # HELP pve_network_transmit_bytes The amount of traffic in bytes that was sent from the guest over the network since it was started. (for types 'qemu' and 'lxc') DEPRECATED: use pve_network_transmit_bytes_total instead.
     # TYPE pve_network_transmit_bytes gauge
     pve_network_transmit_bytes{id="qemu/100"} 7.75070828e+09
-    # HELP pve_network_receive_bytes The amount of traffic in bytes that was sent to the guest over the network since it was started. (for types 'qemu' and 'lxc')
+    # HELP pve_network_transmit_bytes_total The amount of traffic in bytes that was sent from the guest over the network since it was started. (for types 'qemu' and 'lxc')
+    # TYPE pve_network_transmit_bytes_total counter
+    pve_network_transmit_bytes_total{id="qemu/100"} 7.75070828e+09
+    # HELP pve_network_receive_bytes The amount of traffic in bytes that was sent to the guest over the network since it was started. (for types 'qemu' and 'lxc') DEPRECATED: use pve_network_receive_bytes_total instead.
     # TYPE pve_network_receive_bytes gauge
     pve_network_receive_bytes{id="qemu/100"} 1.529756162e+09
-    # HELP pve_disk_write_bytes The amount of bytes the guest wrote to its block devices since the guest was started. This info is not available for all storage types. (for types 'qemu' and 'lxc')
+    # HELP pve_network_receive_bytes_total The amount of traffic in bytes that was sent to the guest over the network since it was started. (for types 'qemu' and 'lxc')
+    # TYPE pve_network_receive_bytes_total counter
+    pve_network_receive_bytes_total{id="qemu/100"} 1.529756162e+09
+    # HELP pve_disk_write_bytes The amount of bytes the guest wrote to its block devices since the guest was started. This info is not available for all storage types. (for types 'qemu' and 'lxc') DEPRECATED: use pve_disk_written_bytes_total instead.
     # TYPE pve_disk_write_bytes gauge
     pve_disk_write_bytes{id="qemu/100"} 1.50048127488e+011
-    # HELP pve_disk_read_bytes The amount of bytes the guest read from its block devices since the guest was started. This info is not available for all storage types. (for types 'qemu' and 'lxc')
+    # HELP pve_disk_written_bytes_total The amount of bytes the guest wrote to its block devices since the guest was started. This info is not available for all storage types. (for types 'qemu' and 'lxc')
+    # TYPE pve_disk_written_bytes_total counter
+    pve_disk_written_bytes_total{id="qemu/100"} 1.50048127488e+011
+    # HELP pve_disk_read_bytes The amount of bytes the guest read from its block devices since the guest was started. This info is not available for all storage types. (for types 'qemu' and 'lxc') DEPRECATED: use pve_disk_read_bytes_total instead.
     # TYPE pve_disk_read_bytes gauge
     pve_disk_read_bytes{id="qemu/100"} 7.473739264e+09
+    # HELP pve_disk_read_bytes_total The amount of bytes the guest read from its block devices since the guest was started. This info is not available for all storage types. (for types 'qemu' and 'lxc')
+    # TYPE pve_disk_read_bytes_total counter
+    pve_disk_read_bytes_total{id="qemu/100"} 7.473739264e+09
     # HELP pve_cpu_usage_ratio CPU utilization (for types 'node', 'qemu' and 'lxc').
     # TYPE pve_cpu_usage_ratio gauge
     pve_cpu_usage_ratio{id="qemu/100"} 0.105009724408557
@@ -237,12 +282,25 @@ Here's an example of the metrics exported.
     # HELP pve_subscription_next_due_timestamp_seconds Subscription next due date as Unix timestamp
     # TYPE pve_subscription_next_due_timestamp_seconds gauge
     pve_subscription_next_due_timestamp_seconds{id="node/proxmox"} 1.713382503e+09
+    # HELP pve_qdevice_up Proxmox VE QDevice is connected (1) or not (0)
+    # TYPE pve_qdevice_up gauge
+    pve_qdevice_up{id="cluster/pvc"} 1.0
+    # HELP pve_qdevice_info Proxmox VE QDevice info (1 if configured)
+    # TYPE pve_qdevice_info gauge
+    pve_qdevice_info{id="cluster/pvc",model="Net",algorithm="Fifty-Fifty split",qnetd_host="10.0.0.1:5403",tie_breaker="Node with lowest node ID",state="Connected"} 1.0
     # HELP pve_onboot_status Proxmox vm config onboot value
     # TYPE pve_onboot_status gauge
     pve_onboot_status{id="qemu/201",node="proxmox",type="qemu"} 1.0
     # HELP pve_version_info Proxmox VE version info
     # TYPE pve_version_info gauge
     pve_version_info{release="7.1",repoid="6fe299a0",version="7.1-5"} 1.0
+    # HELP pve_not_backed_up_total Total number of guests not covered by any backup job.
+    # TYPE pve_not_backed_up_total gauge
+    pve_not_backed_up_total{id="cluster/pvc"} 2.0
+    # HELP pve_not_backed_up_info Present if guest is not covered by any backup job.
+    # TYPE pve_not_backed_up_info gauge
+    pve_not_backed_up_info{id="qemu/100"} 1.0
+    pve_not_backed_up_info{id="qemu/101"} 1.0
     # HELP pve_replication_duration_seconds Proxmox vm replication duration
     # TYPE pve_replication_duration_seconds gauge
     pve_replication_duration_seconds{id="1-0"} 7.73584
@@ -406,6 +464,7 @@ Grafana Dashboards
    :target: https://github.com/prometheus-pve/prometheus-pve-exporter/actions/workflows/ci.yml
 .. |Package Version| image:: https://img.shields.io/pypi/v/prometheus-pve-exporter.svg
    :target: https://pypi.python.org/pypi/prometheus-pve-exporter
+.. _`Prometheus security model`: https://prometheus.io/docs/operating/security/
 .. _wiki: https://github.com/prometheus-pve/prometheus-pve-exporter/wiki
 .. _`token authentication`: https://pve.proxmox.com/wiki/User_Management#pveum_tokens
 .. _`proxmoxer.ProxmoxAPI()`: https://pypi.python.org/pypi/proxmoxer

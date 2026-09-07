@@ -1,6 +1,6 @@
 FROM alpine:3.24.1@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b as base
 
-FROM base as build
+FROM base AS build
 RUN apk update && apk add --no-cache \
     build-base \
     ca-certificates \
@@ -11,7 +11,7 @@ RUN apk update && apk add --no-cache \
     python3-dev \
     yaml-dev
 
-ADD . /src/prometheus-pve-exporter
+COPY . /src/prometheus-pve-exporter
 WORKDIR /src/prometheus-pve-exporter
 RUN python3 -m pip wheel -w dist --no-binary "cffi" --no-binary "pyyaml" -r requirements.txt && \
     python3 -m build .

@@ -10,6 +10,161 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 -------------
 
 
+`3.10.0`_ - 2026-08-10
+----------------------
+
+Added
+~~~~~
+
+- Bump minimum python version to 3.11 (#458)
+
+Changed
+~~~~~~~
+
+- Bump cryptography from 49.0.0 to 50.0.0 (#491)
+- Bump wrapt from 2.2.2 to 2.3.0 (#490)
+- Bump prometheus-client from 0.25.0 to 0.26.0 (#489)
+- Bump certifi from 2026.6.17 to 2026.7.22 (#486)
+- Bump charset-normalizer from 3.4.7 to 3.4.9 (#484)
+- Bump cffi from 2.0.0 to 2.1.0 (#483)
+- Bump docker/login-action from 4.2.0 to 4.4.0 (#482)
+- Bump docker/build-push-action from 7.2.0 to 7.3.0 (#481)
+- Bump docker/metadata-action from 6.1.0 to 6.2.0 (#480)
+- Bump actions/attest from 4.1.0 to 4.1.1 (#478)
+- Bump docker/setup-qemu-action from 4.1.0 to 4.2.0 (#477)
+- Switch from actions/attest-build-provenance to actions/attest (#473)
+- Bump actions/checkout from 6.0.3 to 7.0.0 (#475)
+- Bump wrapt from 2.2.1 to 2.2.2 (#476)
+- Bump actions/setup-python from 6.2.0 to 6.3.0 (#474)
+- Disable gunicorn control socket (#472)
+- Bump cryptography from 48.0.1 to 49.0.0 (#470)
+- Bump certifi from 2026.5.20 to 2026.6.17 (#469)
+- Bump alpine from 3.24.0 to 3.24.1 (#468)
+- Bump alpine from 3.23.4 to 3.24.0 (#465)
+- Bump cryptography from 46.0.7 to 48.0.1 (#466)
+- Bump gunicorn from 23.0.0 to 26.0.0 (#462)
+- Bump requests from 2.33.1 to 2.34.2 (#463)
+- Bump charset-normalizer from 3.3.2 to 3.4.7 (#464)
+- Bump idna from 3.17 to 3.18 (#461)
+- Bump certifi from 2024.7.4 to 2026.5.20 (#460)
+- Bump actions/checkout from 6.0.2 to 6.0.3 (#459)
+- Bump bcrypt from 4.1.2 to 5.0.0 (#457)
+- Bump pycparser from 2.21 to 3.0 (#456)
+- Bump invoke from 2.2.0 to 3.0.3 (#455)
+- Bump markupsafe from 2.1.3 to 3.0.3 (#454)
+- Bump packaging from 23.2 to 26.2 (#453)
+- Bump docker/setup-qemu-action from 4.0.0 to 4.1.0 (#452)
+- Allow dependabot to update all pip dependencies (#451)
+- Bump idna from 3.7 to 3.17 (#450)
+- fixup! Bump wrapt from 2.1.2 to 2.2.1 (#449)
+- Revert "Bump wrapt from 2.1.2 to 2.2.1 (#449)"
+- Bump wrapt from 2.1.2 to 2.2.1 (#449)
+- Bump docker/metadata-action from 6.0.0 to 6.1.0 (#448)
+- Bump docker/setup-buildx-action from 4.0.0 to 4.1.0 (#447)
+- Bump docker/login-action from 4.1.0 to 4.2.0 (#446)
+- Bump docker/build-push-action from 7.1.0 to 7.2.0 (#445)
+
+
+`3.9.0`_ - 2026-05-18
+---------------------
+
+Added
+~~~~~
+
+- Add qdevice collector (#442)
+
+Changed
+~~~~~~~
+- Bump paramiko from 4.0.0 to 5.0.0 (#441)
+- Bump urllib2 from 2.6.3 to 2.7.0 (#440)
+
+
+`3.8.3`_ - 2026-04-27
+---------------------
+
+Changed
+~~~~~~~
+
+- Bump requests from 2.32.5 to 2.33.1 (#438)
+- Bump alpine from 3.23.3 to 3.23.4 (#435)
+- Bump prometheus-client from 0.24.1 to 0.25.0 (#434)
+- Bump cryptography from 46.0.5 to 46.0.7 (#432)
+- Bump werkzeug from 3.1.6 to 3.1.8 (#431)
+- Pin actions in CI workflow to commit SHA (#437)
+
+
+`3.8.2`_ - 2026-03-22
+---------------------
+
+Changed
+~~~~~~~
+
+- Add security note to the README file (#423)
+- Bump docker/setup-buildx-action from 3 to 4 (#424)
+- Bump docker/build-push-action from 6 to 7 (#425)
+- Bump docker/login-action from 3 to 4 (#426)
+- Bump wrapt from 2.1.1 to 2.1.2 (#419)
+- Bump proxmoxer from 2.2.0 to 2.3.0 (#418)
+- Bump werkzeug from 3.1.5 to 3.1.6 (#411)
+- Bump docker/metadata-action from 5 to 6 (#417)
+- Bump docker/setup-qemu-action from 3 to 4 (#416)
+- Bump actions/attest-build-provenance from 3 to 4 (#415)
+- Bump actions/download-artifact from 7 to 8 (#414)
+- Bump actions/upload-artifact from 6 to 7 (#413)
+- fix: f-string in module-not-found response and move url_map to __init__ (#421)
+
+
+`3.8.1`_ - 2026-02-11
+---------------------
+
+Changed
+~~~~~~~
+
+- Bump wrapt from 2.1.0 to 2.1.1 (#406)
+- Bump wrapt from 2.0.1 to 2.1.0 (#403)
+- Bump alpine from 3.23.2 to 3.23.3 (#402)
+- Bump cryptography from 44.0.1 to 46.0.5 (#407)
+- Bump prometheus-client from 0.23.1 to 0.24.1 (#400)
+- Bump werkzeug from 3.1.4 to 3.1.5 (#399)
+- Bump urllib3 from 2.6.0 to 2.6.3 (#398)
+- Bump pynacl from 1.5.0 to 1.6.2 (#396)
+
+
+`3.8.0`_ - 2025-12-23
+---------------------
+
+Added
+~~~~~
+
+- Replace running total gauge metrics with counters (#389)
+
+Changed
+~~~~~~~
+
+- Bump alpine from 3.23.0 to 3.23.2 (#393)
+
+
+`3.7.0`_ - 2025-12-16
+---------------------
+
+Added
+~~~~~
+
+- Expose duration and error total of PVE API calls (#385)
+- Expose information about guests which are not covered by any backup job (#377)
+
+Changed
+~~~~~~~
+
+- Bump actions/download-artifact from 6 to 7 (#386)
+- Bump actions/upload-artifact from 5 to 6 (#387)
+- Adhere to dockerfile best practices (#383)
+- Bump alpine from 3.22.2 to 3.23.0 (#378)
+- Send exception to gunicorn.error logger (#375)
+- Initialize http metrics in PveExporterApplication constructor (#376)
+- Bump urllib3 from 2.5.0 to 2.6.0 (#374)
+
+
 `3.6.0`_ - 2025-12-01
 ---------------------
 
@@ -567,7 +722,14 @@ Added
 
 .. _Keep a Changelog: http://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: http://semver.org/spec/v2.0.0.html
-.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.6.0...HEAD
+.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.10.0...HEAD
+.. _3.10.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.9.0...v3.10.0
+.. _3.9.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.8.3...v3.9.0
+.. _3.8.3: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.8.2...v3.8.3
+.. _3.8.2: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.8.1...v3.8.2
+.. _3.8.1: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.8.0...v3.8.1
+.. _3.8.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.7.0...v3.8.0
+.. _3.7.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.6.0...v3.7.0
 .. _3.6.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.5.5...v3.6.0
 .. _3.5.5: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.5.4...v3.5.5
 .. _3.5.4: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.5.3...v3.5.4

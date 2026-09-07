@@ -6,7 +6,8 @@ Prometheus collecters for Proxmox VE cluster.
 import itertools
 import typing
 
-from prometheus_client.core import GaugeMetricFamily
+from prometheus_client.core import GaugeMetricFamily, CounterMetricFamily
+from proxmoxer import ResourceException
 
 
 class StatusCollector:
@@ -149,6 +150,73 @@ class ClusterInfoCollector:
             yield info_metrics
 
 
+class QDeviceCollector:
+    """
+    Collects Proxmox VE QDevice connection state from the local node's view.
+    For manual test: "pvesh get /cluster/config/qdevice"
+
+    # HELP pve_qdevice_up Proxmox VE QDevice is connected (1) or not (0)
+    # TYPE pve_qdevice_up gauge
+    pve_qdevice_up{id="cluster/pvec"} 1.0
+    # HELP pve_qdevice_info Proxmox VE QDevice info (1 if configured)
+    # TYPE pve_qdevice_info gauge
+    pve_qdevice_info{id="cluster/pvec",model="Net",algorithm="Fifty-Fifty split",
+        qnetd_host="10.0.0.1:5403",tie_breaker="Node with lowest node ID",
+        state="Connected"} 1.0
+    """
+
+    # Maps API response keys to Prometheus label names.
+    LABEL_MAP = {
+        'Model': 'model',
+        'Algorithm': 'algorithm',
+        'QNetd host': 'qnetd_host',
+        'Tie-breaker': 'tie_breaker',
+        'State': 'state',
+    }
+
+    def __init__(self, pve):
+        self._pve = pve
+
+    def collect(self):  # pylint: disable=missing-docstring
+        cluster_id = None
+        for entry in self._pve.cluster.status.get():
+            if entry['type'] == 'cluster':
+                cluster_id = f"cluster/{entry['name']}"
+                break
+
+        if cluster_id is None:
+            return
+
+        try:
+            qdevice = self._pve.cluster.config.qdevice.get()
+        except ResourceException:
+            # No QDevice configured on this cluster.
+            return
+
+        if not qdevice:
+            return
+
+        label_names = ['id'] + list(self.LABEL_MAP.values())
+        label_values = [cluster_id] + [
+            str(qdevice.get(api_key, '')) for api_key in self.LABEL_MAP
+        ]
+
+        info_metric = GaugeMetricFamily(
+            'pve_qdevice_info',
+            'Proxmox VE QDevice info (1 if configured)',
+            labels=label_names)
+        info_metric.add_metric(label_values, 1)
+
+        up_metric = GaugeMetricFamily(
+            'pve_qdevice_up',
+            'Proxmox VE QDevice is connected (1) or not (0)',
+            labels=['id'])
+        up_metric.add_metric([cluster_id], qdevice.get('State') == 'Connected')
+
+        yield up_metric
+        yield info_metric
+
+
 class HighAvailabilityStateMetric(GaugeMetricFamily):
     """
     A single gauge representing PVE ha state.
@@ -275,14 +343,16 @@ class ClusterResourcesCollector:
                 'pve_network_transmit_bytes',
                 (
                     "The amount of traffic in bytes that was sent from the guest over the network "
-                    "since it was started. (for types 'qemu' and 'lxc')"
+                    "since it was started. (for types 'qemu' and 'lxc') "
+                    "DEPRECATED: Use pve_network_transmit_bytes_total instead."
                 ),
                 labels=['id']),
             'netin': GaugeMetricFamily(
                 'pve_network_receive_bytes',
                 (
                     "The amount of traffic in bytes that was sent to the guest over the network "
-                    "since it was started. (for types 'qemu' and 'lxc')"
+                    "since it was started. (for types 'qemu' and 'lxc') "
+                    "DEPRECATED: Use pve_network_receive_bytes_total instead."
                 ),
                 labels=['id']),
             'diskwrite': GaugeMetricFamily(
@@ -290,7 +360,8 @@ class ClusterResourcesCollector:
                 (
                     "The amount of bytes the guest wrote to its block devices since the guest was "
                     "started. This info is not available for all storage types. "
-                    "(for types 'qemu' and 'lxc')"
+                    "(for types 'qemu' and 'lxc') "
+                    "DEPRECATED: Use pve_disk_written_bytes_total instead."
                 ),
                 labels=['id']),
             'diskread': GaugeMetricFamily(
@@ -298,7 +369,8 @@ class ClusterResourcesCollector:
                 (
                     "The amount of bytes the guest read from its block devices since the guest was "
                     "started. This info is not available for all storage types. "
-                    "(for types 'qemu' and 'lxc')"
+                    "(for types 'qemu' and 'lxc') "
+                    "DEPRECATED: Use pve_disk_read_bytes_total instead."
                 ),
                 labels=['id']),
             'cpu': GaugeMetricFamily(
@@ -316,6 +388,39 @@ class ClusterResourcesCollector:
             'shared': GaugeMetricFamily(
                 'pve_storage_shared',
                 'Whether or not the storage is shared among cluster nodes',
+                labels=['id']),
+        }
+
+        counter_metrics = {
+            'netout': CounterMetricFamily(
+                'pve_network_transmit_bytes_total',
+                (
+                    "The amount of traffic in bytes that was sent from the guest over the network "
+                    "since it was started. (for types 'qemu' and 'lxc')"
+                ),
+                labels=['id']),
+            'netin': CounterMetricFamily(
+                'pve_network_receive_bytes_total',
+                (
+                    "The amount of traffic in bytes that was sent to the guest over the network "
+                    "since it was started. (for types 'qemu' and 'lxc')"
+                ),
+                labels=['id']),
+            'diskwrite': CounterMetricFamily(
+                'pve_disk_written_bytes_total',
+                (
+                    "The amount of bytes the guest wrote to its block devices since the guest was "
+                    "started. This info is not available for all storage types. "
+                    "(for types 'qemu' and 'lxc')"
+                ),
+                labels=['id']),
+            'diskread': CounterMetricFamily(
+                'pve_disk_read_bytes_total',
+                (
+                    "The amount of bytes the guest read from its block devices since the guest was "
+                    "started. This info is not available for all storage types. "
+                    "(for types 'qemu' and 'lxc')"
+                ),
                 labels=['id']),
         }
 
@@ -363,8 +468,15 @@ class ClusterResourcesCollector:
             for key, metric_value in resource.items():
                 if key in metrics:
                     metrics[key].add_metric(label_values, metric_value)
+                if key in counter_metrics:
+                    counter_metrics[key].add_metric(label_values, metric_value)
 
-        return itertools.chain(metrics.values(), [ha_metric, lock_metric], info_metrics.values())
+        return itertools.chain(
+            metrics.values(),
+            counter_metrics.values(),
+            [ha_metric, lock_metric],
+            info_metrics.values()
+        )
 
     def _extract_resource_labels(self, resource_lookup_info: dict[str, typing.Any],
                                  api_response_resource: dict[str, typing.Any]) -> list[str]:
@@ -394,3 +506,41 @@ class ClusterResourcesCollector:
             csv_label_values.append(sorted_values)
 
         return label_values + csv_label_values
+
+class BackupInfoCollector:
+    """
+    Collects information on guests which are not covered by any backup job. E.g.:
+
+    pve_not_backed_up_total{id="cluster/pvec"} 2.0
+    pve_not_backed_up_info{id="qemu/102"} 1.0
+    """
+
+    def __init__(self, pve):
+        self._pve = pve
+
+    def collect(self):  # pylint: disable=missing-docstring
+        not_enabled_total = GaugeMetricFamily(
+            'pve_not_backed_up_total',
+            'Total number of guests not covered by any backup job.',
+            labels=['id']
+        )
+        not_enabled_info = GaugeMetricFamily(
+            'pve_not_backed_up_info',
+            'Present if guest is not covered by any backup job.',
+            labels=['id']
+        )
+
+        not_enabled_data = self._pve.cluster("backup-info/not-backed-up").get()
+        cluster_name = self._pve.cluster.status.get()[0]['name']
+
+        for entry in not_enabled_data:
+            label_values = [f"{entry['type']}/{entry['vmid']}"]
+            not_enabled_info.add_metric(label_values, 1)
+
+        not_enabled_total.add_metric(
+            [f"cluster/{cluster_name}"],
+            len(not_enabled_data)
+        )
+
+        yield not_enabled_total
+        yield not_enabled_info
