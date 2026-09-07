@@ -1,4 +1,4 @@
-FROM alpine:3.22.2 as base
+FROM alpine:3.24.1@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b as base
 
 FROM base as build
 RUN apk update && apk add --no-cache \
