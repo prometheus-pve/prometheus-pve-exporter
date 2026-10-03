@@ -4,14 +4,88 @@ Prometheus collecters for Proxmox VE cluster.
 # pylint: disable=too-few-public-methods
 
 import itertools
+import re
 from datetime import datetime
 
 from prometheus_client.core import GaugeMetricFamily
 
+# Plain top-level config keys that map directly to a single metric value.
+# To add another one of these: add an entry here, keyed by its config key name.
+SIMPLE_METRICS = {
+    'onboot': ('pve_onboot_status', 'Proxmox vm config onboot value'),
+}
+
+# Metrics embedded inside a device config string, e.g. "scsi0" or "net0":
+# "local-lvm:vm-100-disk-0,mbps_rd=10,mbps_wr=10,size=32G" or "virtio=AA:BB,bridge=vmbr0,rate=10".
+# To add another one of these: add an entry to a group's 'families' list (or a new group, if the
+# metric lives on a device type not covered by an existing 'key_re').
+DEVICE_METRIC_GROUPS = [
+    {
+        # QEMU disk devices support bandwidth/IOPS throttling; LXC mountpoints do not.
+        'key_re': re.compile(r'^(ide|sata|scsi|virtio)\d+$'),
+        'device_label': 'disk',
+        'families': [
+            {
+                'name': 'pve_disk_bandwidth_limit_mbps',
+                'help': (
+                    "Configured disk bandwidth limit in megabytes per second, per disk device "
+                    "and limit type (read, write, read_burst, write_burst). QEMU guests only."
+                ),
+                'limit_label': 'limit',
+                'keys': {
+                    'mbps_rd': 'read',
+                    'mbps_wr': 'write',
+                    'mbps_rd_max': 'read_burst',
+                    'mbps_wr_max': 'write_burst',
+                },
+            },
+            {
+                'name': 'pve_disk_iops_limit',
+                'help': (
+                    "Configured disk IOPS limit in operations per second, per disk device "
+                    "and limit type (read, write, read_burst, write_burst). QEMU guests only."
+                ),
+                'limit_label': 'limit',
+                'keys': {
+                    'iops_rd': 'read',
+                    'iops_wr': 'write',
+                    'iops_rd_max': 'read_burst',
+                    'iops_wr_max': 'write_burst',
+                },
+            },
+        ],
+    },
+    {
+        # Both QEMU and LXC support a 'rate' limit on network devices.
+        'key_re': re.compile(r'^net\d+$'),
+        'device_label': 'iface',
+        'families': [
+            {
+                'name': 'pve_network_rate_limit_mbps',
+                'help': 'Configured network interface rate limit in megabytes per second.',
+                'limit_label': None,
+                'keys': {'rate': None},
+            },
+        ],
+    },
+]
+
+
+def _parse_device_options(value):
+    """Parse a Proxmox device config string (e.g. "local-lvm:vm-100-disk-0,mbps_rd=10,size=32G")
+    into a dict of its key=value options, ignoring the leading volume/storage token."""
+    options = {}
+    for part in value.split(','):
+        if '=' in part:
+            key, val = part.split('=', 1)
+            options[key] = val
+    return options
+
 
 class NodeConfigCollector:
     """
-    Collects Proxmox VE VM information directly from config, i.e. boot, name, onboot, etc.
+    Collects Proxmox VE VM information directly from config, i.e. boot, name, onboot, bandwidth
+    and IOPS limits, network rate limits, etc.
     For manual test: "pvesh get /nodes/<node>/<type>/<vmid>/config"
 
     # HELP pve_onboot_status Proxmox vm config onboot value
@@ -22,13 +96,38 @@ class NodeConfigCollector:
     def __init__(self, pve):
         self._pve = pve
 
-    def collect(self):  # pylint: disable=missing-docstring
-        metrics = {
-            'onboot': GaugeMetricFamily(
-                'pve_onboot_status',
-                'Proxmox vm config onboot value',
-                labels=['id', 'node', 'type']),
+    def _build_metrics(self):
+        simple_metrics = {
+            key: GaugeMetricFamily(name, help_text, labels=['id', 'node', 'type'])
+            for key, (name, help_text) in SIMPLE_METRICS.items()
         }
+
+        device_metrics = {}
+        for group in DEVICE_METRIC_GROUPS:
+            for family in group['families']:
+                labels = ['id', 'node', 'type', group['device_label']]
+                if family['limit_label']:
+                    labels.append(family['limit_label'])
+                device_metrics[family['name']] = GaugeMetricFamily(
+                    family['name'], family['help'], labels=labels)
+
+        return simple_metrics, device_metrics
+
+    def _collect_device_metrics(self, key, value, label_values, device_metrics):
+        for group in DEVICE_METRIC_GROUPS:
+            if not group['key_re'].match(key):
+                continue
+            options = _parse_device_options(value)
+            for family in group['families']:
+                metric = device_metrics[family['name']]
+                for opt_key, limit_value in family['keys'].items():
+                    if opt_key not in options:
+                        continue
+                    extra = [key] if limit_value is None else [key, limit_value]
+                    metric.add_metric(label_values + extra, float(options[opt_key]))
+
+    def collect(self):  # pylint: disable=missing-docstring
+        simple_metrics, device_metrics = self._build_metrics()
 
         node = None
         for entry in self._pve.cluster.status.get():
@@ -36,27 +135,19 @@ class NodeConfigCollector:
                 node = entry['name']
                 break
 
-        # Scrape qemu config
-        vmtype = 'qemu'
-        for vmdata in self._pve.nodes(node).qemu.get():
-            config = self._pve.nodes(node).qemu(
-                vmdata['vmid']).config.get().items()
-            for key, metric_value in config:
-                label_values = [f"{vmtype}/{vmdata['vmid']}", node, vmtype]
-                if key in metrics:
-                    metrics[key].add_metric(label_values, metric_value)
+        for vmtype in ('qemu', 'lxc'):
+            for vmdata in getattr(self._pve.nodes(node), vmtype).get():
+                config = getattr(self._pve.nodes(node), vmtype)(
+                    vmdata['vmid']).config.get().items()
+                for key, metric_value in config:
+                    label_values = [f"{vmtype}/{vmdata['vmid']}", node, vmtype]
+                    if key in simple_metrics:
+                        simple_metrics[key].add_metric(label_values, metric_value)
+                    else:
+                        self._collect_device_metrics(
+                            key, metric_value, label_values, device_metrics)
 
-        # Scrape LXC config
-        vmtype = 'lxc'
-        for vmdata in self._pve.nodes(node).lxc.get():
-            config = self._pve.nodes(node).lxc(
-                vmdata['vmid']).config.get().items()
-            for key, metric_value in config:
-                label_values = [f"{vmtype}/{vmdata['vmid']}", node, vmtype]
-                if key in metrics:
-                    metrics[key].add_metric(label_values, metric_value)
-
-        return metrics.values()
+        return itertools.chain(simple_metrics.values(), device_metrics.values())
 
 class NodeReplicationCollector:
     """
