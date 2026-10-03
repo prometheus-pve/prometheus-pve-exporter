@@ -10,6 +10,34 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 -------------
 
 
+`3.10.1`_ - 2026-10-03
+----------------------
+
+Changed
+~~~~~~~
+
+- Bump idna from 3.19 to 3.20 (#520)
+- Bump urllib3 from 2.7.0 to 2.8.0 (#519)
+- Bump cryptography from 50.0.0 to 50.0.1 (#511)
+- Bump gunicorn from 26.1.0 to 26.2.0 (#509)
+- Bump alpine from 3.24.1 to 3.24.2 (#517)
+- Bump docker/build-push-action from 7.3.0 to 7.4.0 (#518)
+- Bump docker/setup-qemu-action from 4.2.0 to 4.4.0 (#516)
+- Bump docker/setup-buildx-action from 4.3.0 to 4.4.1 (#515)
+- Bump wrapt from 2.3.0 to 2.4.1 (#514)
+- Bump actions/attest from 4.1.1 to 4.2.2 (#506)
+- Bump docker/setup-buildx-action from 4.1.0 to 4.3.0 (#507)
+- Bump idna from 3.18 to 3.19 (#504)
+- Bump gunicorn from 26.0.0 to 26.1.0 (#505)
+- Bump charset-normalizer from 3.4.9 to 3.5.1 (#502)
+- Bump cffi from 2.1.0 to 2.1.1 (#501)
+- Bump docker/login-action from 4.4.0 to 4.6.0 (#500)
+- Bump packaging from 26.2 to 26.3 (#499)
+- Bump actions/setup-python from 6.3.0 to 7.0.0 (#498)
+- Bump actions/checkout from 7.0.0 to 7.0.1 (#497)
+- Bump pypa/gh-action-pypi-publish from 1.14.0 to 1.14.2 (#495)
+
+
 `3.10.0`_ - 2026-08-10
 ----------------------
 
@@ -722,7 +750,8 @@ Added
 
 .. _Keep a Changelog: http://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: http://semver.org/spec/v2.0.0.html
-.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.10.0...HEAD
+.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.10.1...HEAD
+.. _3.10.1: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.10.0...v3.10.1
 .. _3.10.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.9.0...v3.10.0
 .. _3.9.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.8.3...v3.9.0
 .. _3.8.3: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.8.2...v3.8.3
