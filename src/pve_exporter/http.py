@@ -7,6 +7,8 @@ import time
 from functools import partial
 
 import gunicorn.app.base
+import requests.exceptions
+from proxmoxer.core import ResourceException, AuthenticationError
 from prometheus_client import CONTENT_TYPE_LATEST, Summary, Counter, generate_latest
 from werkzeug.routing import Map, Rule
 from werkzeug.wrappers import Request, Response
@@ -121,6 +123,14 @@ class PveExporterApplication:
 
         try:
             return view_registry[endpoint](**params)
+        except requests.exceptions.ConnectionError as error:
+            self._log.warning("Connection failed for '%s': %s", params.get('target', 'localhost'), error)
+            self._errors.labels(args.get('module', 'default')).inc()
+            raise InternalServerError from error
+        except (ResourceException, AuthenticationError) as error:
+            self._log.warning("PVE API error for '%s': %s", params.get('target', 'localhost'), error)
+            self._errors.labels(args.get('module', 'default')).inc()
+            raise InternalServerError from error
         except Exception as error:  # pylint: disable=broad-except
             self._log.exception("Exception thrown while rendering view")
             self._errors.labels(args.get('module', 'default')).inc()
