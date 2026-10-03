@@ -69,6 +69,7 @@ Usage
                         [--collector.config | --no-collector.config]
                         [--collector.replication | --no-collector.replication]
                         [--collector.subscription | --no-collector.subscription]
+                        [--collector.qga-fs | --no-collector.qga-fs]
                         [--collector.pve-api-metrics | --no-collector.pve-api-metrics]
                         [--collector.target-metrics | --no-collector.target-metrics]
                         [--config.file CONFIG_FILE]
@@ -118,6 +119,8 @@ Usage
                             Exposes PVE replication info
       --collector.subscription, --no-collector.subscription
                             Exposes PVE subscription info
+      --collector.qga-fs, --no-collector.qga-fs
+                            Exposes VM filesystem usage via QEMU guest agent
 
     scrape collectors:
       metrics concerning the operation of the Prometheus PVE exporter itself.
@@ -145,6 +148,11 @@ collectors.
 Note that that the config collector results in one API call per guest VM/CT.
 It is therefore recommended to disable this collector using the
 `--no-collector.config` flag on big deployments.
+
+Note that the ``qga-fs`` collector results in one additional API call per
+running QEMU guest. It is therefore recommended to disable this collector
+using the ``--no-collector.qga-fs`` flag on large deployments. Requires
+``qemu-guest-agent`` installed and enabled inside each VM.
 
 Scrape collectors return metrics concerning the operation of the Prometheus PVE
 exporter itself. Those metrics are available from the `/metric`.
@@ -319,7 +327,13 @@ Here's an example of the metrics exported.
     # HELP pve_replication_info Proxmox vm replication info
     # TYPE pve_replication_info gauge
     pve_replication_info{guest="qemu/1",id="1-0",source="node/proxmox1",target="node/proxmox2",type="local"} 1.0
-
+    # HELP pve_qga_fs_used_bytes Guest filesystem used bytes (via QEMU guest agent)
+    # TYPE pve_qga_fs_used_bytes gauge
+    pve_qga_fs_used_bytes{disk="/dev/sda5",fstype="ext4",id="qemu/100",mountpoint="/",name="samplevm1",node="proxmox"} 1.038385152e+010
+    # HELP pve_qga_fs_size_bytes Guest filesystem total bytes (via QEMU guest agent)
+    # TYPE pve_qga_fs_size_bytes gauge
+    pve_qga_fs_size_bytes{disk="/dev/sda5",fstype="ext4",id="qemu/100",mountpoint="/",name="samplevm1",node="proxmox"} 6.8719476736e+010
+    
 Authentication
 --------------
 
