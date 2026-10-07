@@ -9,6 +9,27 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 `Unreleased`_
 -------------
 
+Changed
+~~~~~~~
+
+- A scrape now fetches ``/cluster/status`` and ``/cluster/resources`` once and
+  shares the responses between the collectors, instead of every collector
+  fetching them for itself. On a full scrape this cuts ``/cluster/status``
+  from eight API calls to one and ``/cluster/resources`` from three to one.
+  The exposed metrics are unchanged. If the optional
+  ``--collector.pve-api-metrics`` collector is enabled, the sample counts of
+  ``pve_scrape_api_duration_seconds`` drop accordingly.
+
+Fixed
+~~~~~
+
+- ``pve_not_backed_up_total`` no longer labels a standalone host as if it was
+  a cluster. The cluster id is now derived from the ``/cluster/status`` entry
+  of type ``cluster`` instead of from whichever entry happens to come first.
+  On a host that is not part of a cluster the metric is now reported as
+  ``pve_not_backed_up_total{id="node/<name>"}`` instead of
+  ``pve_not_backed_up_total{id="cluster/<name>"}``.
+
 
 `3.10.1`_ - 2026-10-03
 ----------------------

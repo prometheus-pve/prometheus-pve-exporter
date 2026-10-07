@@ -4,12 +4,15 @@ Prometheus collecters for Proxmox VE cluster.
 # pylint: disable=too-few-public-methods
 
 import itertools
+from collections.abc import Iterable
 from datetime import datetime
 
-from prometheus_client.core import GaugeMetricFamily
+from prometheus_client.core import GaugeMetricFamily, Metric
+
+from pve_exporter.collector.base import BaseCollector
 
 
-class NodeConfigCollector:
+class NodeConfigCollector(BaseCollector):
     """
     Collects Proxmox VE VM information directly from config, i.e. boot, name, onboot, etc.
     For manual test: "pvesh get /nodes/<node>/<type>/<vmid>/config"
@@ -19,10 +22,7 @@ class NodeConfigCollector:
     pve_onboot_status{id="qemu/113",node="XXXX",type="qemu"} 1.0
     """
 
-    def __init__(self, pve):
-        self._pve = pve
-
-    def collect(self):  # pylint: disable=missing-docstring
+    def collect(self) -> Iterable[Metric]:
         metrics = {
             'onboot': GaugeMetricFamily(
                 'pve_onboot_status',
@@ -30,45 +30,28 @@ class NodeConfigCollector:
                 labels=['id', 'node', 'type']),
         }
 
-        node = None
-        for entry in self._pve.cluster.status.get():
-            if entry['type'] == 'node' and entry['local']:
-                node = entry['name']
-                break
+        node = self._pve.local_node
 
-        # Scrape qemu config
-        vmtype = 'qemu'
-        for vmdata in self._pve.nodes(node).qemu.get():
-            config = self._pve.nodes(node).qemu(
-                vmdata['vmid']).config.get().items()
-            for key, metric_value in config:
+        for vmtype in ('qemu', 'lxc'):
+            guests = self._pve.api.nodes(node)(vmtype)
+            for vmdata in guests.get():
+                config = guests(vmdata['vmid']).config.get()
                 label_values = [f"{vmtype}/{vmdata['vmid']}", node, vmtype]
-                if key in metrics:
-                    metrics[key].add_metric(label_values, metric_value)
-
-        # Scrape LXC config
-        vmtype = 'lxc'
-        for vmdata in self._pve.nodes(node).lxc.get():
-            config = self._pve.nodes(node).lxc(
-                vmdata['vmid']).config.get().items()
-            for key, metric_value in config:
-                label_values = [f"{vmtype}/{vmdata['vmid']}", node, vmtype]
-                if key in metrics:
-                    metrics[key].add_metric(label_values, metric_value)
+                for key, metric_value in config.items():
+                    if key in metrics:
+                        metrics[key].add_metric(label_values, metric_value)
 
         return metrics.values()
 
-class NodeReplicationCollector:
+
+class NodeReplicationCollector(BaseCollector):
     """
     Collects Proxmox VE Replication information directly from status, i.e. replication duration,
     last_sync, last_try, next_sync, fail_count.
     For manual test: "pvesh get /nodes/<node>/replication/<id>/status"
     """
 
-    def __init__(self, pve):
-        self._pve = pve
-
-    def collect(self): # pylint: disable=missing-docstring
+    def collect(self) -> Iterable[Metric]:
 
         info_metrics = {
             'info': GaugeMetricFamily(
@@ -100,13 +83,9 @@ class NodeReplicationCollector:
                 labels=['id']),
         }
 
-        node = None
-        for entry in self._pve.cluster.status.get():
-            if entry['type'] == 'node' and entry['local']:
-                node = entry['name']
-                break
+        node = self._pve.local_node
 
-        for jobdata in self._pve.nodes(node).replication.get():
+        for jobdata in self._pve.api.nodes(node).replication.get():
             # Add info metric
             label_values = [
                 str(jobdata['id']),
@@ -119,22 +98,20 @@ class NodeReplicationCollector:
 
             # Add metrics
             label_values = [str(jobdata['id'])]
-            status = self._pve.nodes(node).replication(jobdata['id']).status.get()
+            status = self._pve.api.nodes(node).replication(jobdata['id']).status.get()
             for key, metric_value in status.items():
                 if key in metrics:
                     metrics[key].add_metric(label_values, metric_value)
 
         return itertools.chain(metrics.values(), info_metrics.values())
 
-class SubscriptionCollector:
+
+class SubscriptionCollector(BaseCollector):
     """
     Collects Proxmox VE subscription information (node, subscription level, status, next due date).
     """
 
-    def __init__(self, pve):
-        self._pve = pve
-
-    def collect(self):  # pylint: disable=missing-docstring
+    def collect(self) -> Iterable[Metric]:
         info_metric = GaugeMetricFamily(
             "pve_subscription_info",
             "Proxmox VE subscription info (1 if present)",
@@ -154,13 +131,9 @@ class SubscriptionCollector:
             labels=["id"],
         )
 
-        node = None
-        for entry in self._pve.cluster.status.get():
-            if entry['type'] == 'node' and entry['local']:
-                node = entry['name']
-                break
+        node = self._pve.local_node
 
-        subscription = self._pve.nodes(node).subscription.get()
+        subscription = self._pve.api.nodes(node).subscription.get()
 
         level = subscription.get("level", "unknown")
         status = subscription.get("status", "unknown")

@@ -5,12 +5,15 @@ Prometheus collecters for Proxmox VE cluster.
 
 import itertools
 import typing
+from collections.abc import Iterable
 
-from prometheus_client.core import GaugeMetricFamily, CounterMetricFamily
+from prometheus_client.core import GaugeMetricFamily, CounterMetricFamily, Metric
 from proxmoxer import ResourceException
 
+from pve_exporter.collector.base import BaseCollector
 
-class StatusCollector:
+
+class StatusCollector(BaseCollector):
     """
     Collects Proxmox VE Node/VM/CT-Status
 
@@ -22,16 +25,13 @@ class StatusCollector:
     pve_up{id="qemu/102"} 1.0
     """
 
-    def __init__(self, pve):
-        self._pve = pve
-
-    def collect(self):  # pylint: disable=missing-docstring
+    def collect(self) -> Iterable[Metric]:
         status_metrics = GaugeMetricFamily(
             'pve_up',
             'Node/VM/CT-Status is online/running',
             labels=['id'])
 
-        for entry in self._pve.cluster.status.get():
+        for entry in self._pve.cluster_status:
             if entry['type'] == 'node':
                 label_values = [entry['id']]
                 status_metrics.add_metric(label_values, entry['online'])
@@ -41,18 +41,23 @@ class StatusCollector:
             else:
                 raise ValueError(f"Got unexpected status entry type {entry['type']}")
 
-        for resource in self._pve.cluster.resources.get(type='vm'):
-            label_values = [resource['id']]
-            status_metrics.add_metric(label_values, resource['status'] == 'running')
+        resources = self._pve.cluster_resources
 
-        for resource in self._pve.cluster.resources.get(type='storage'):
-            label_values = [resource['id']]
-            status_metrics.add_metric(label_values, resource['status'] == 'available')
+        # The API calls both qemu and lxc resources "vm" when filtering.
+        for resource in resources:
+            if resource['type'] in ('qemu', 'lxc'):
+                label_values = [resource['id']]
+                status_metrics.add_metric(label_values, resource['status'] == 'running')
+
+        for resource in resources:
+            if resource['type'] == 'storage':
+                label_values = [resource['id']]
+                status_metrics.add_metric(label_values, resource['status'] == 'available')
 
         yield status_metrics
 
 
-class VersionCollector:
+class VersionCollector(BaseCollector):
     """
     Collects Proxmox VE build information. E.g.:
 
@@ -63,11 +68,8 @@ class VersionCollector:
 
     LABEL_WHITELIST = ['release', 'repoid', 'version']
 
-    def __init__(self, pve):
-        self._pve = pve
-
-    def collect(self):  # pylint: disable=missing-docstring
-        version_items = self._pve.version.get().items()
+    def collect(self) -> Iterable[Metric]:
+        version_items = self._pve.version.items()
         version = {key: value for key, value in version_items if key in self.LABEL_WHITELIST}
 
         labels, label_values = zip(*version.items())
@@ -81,7 +83,7 @@ class VersionCollector:
         yield metric
 
 
-class ClusterNodeCollector:
+class ClusterNodeCollector(BaseCollector):
     """
     Collects Proxmox VE cluster node information. E.g.:
 
@@ -91,11 +93,8 @@ class ClusterNodeCollector:
         nodeid="0"} 1.0
     """
 
-    def __init__(self, pve):
-        self._pve = pve
-
-    def collect(self):  # pylint: disable=missing-docstring
-        nodes = [entry for entry in self._pve.cluster.status.get() if entry['type'] == 'node']
+    def collect(self) -> Iterable[Metric]:
+        nodes = [entry for entry in self._pve.cluster_status if entry['type'] == 'node']
         labels = ['id', 'level', 'name', 'nodeid']
 
         if nodes:
@@ -111,7 +110,7 @@ class ClusterNodeCollector:
             yield info_metrics
 
 
-class ClusterInfoCollector:
+class ClusterInfoCollector(BaseCollector):
     """
     Collects Proxmox VE cluster information. E.g.:
 
@@ -120,37 +119,29 @@ class ClusterInfoCollector:
     pve_cluster_info{id="cluster/pvec",nodes="2",quorate="1",version="2"} 1.0
     """
 
-    def __init__(self, pve):
-        self._pve = pve
-
-    def collect(self):  # pylint: disable=missing-docstring
-        clusters = [entry for entry in self._pve.cluster.status.get() if entry['type'] == 'cluster']
+    def collect(self) -> Iterable[Metric]:
+        clusters = [entry for entry in self._pve.cluster_status if entry['type'] == 'cluster']
 
         if clusters:
-            # Remove superflous keys.
-            for cluster in clusters:
-                del cluster['type']
+            # Expose every key of the status entry except the type (always
+            # "cluster" here) and the name, which is folded into the id.
+            # Keep the key order of the API response, as the id is reported
+            # in the position the API returned it in.
+            labels = [key for key in clusters[0] if key not in ('type', 'name')]
 
-            # Add cluster-prefix to id.
-            for cluster in clusters:
-                cluster['id'] = f"cluster/{cluster['name']}"
-                del cluster['name']
-
-            # Yield remaining data.
-            labels = clusters[0].keys()
             info_metrics = GaugeMetricFamily(
                 'pve_cluster_info',
                 'Cluster info',
                 labels=labels)
 
             for cluster in clusters:
-                label_values = [str(cluster[key]) for key in labels]
-                info_metrics.add_metric(label_values, 1)
+                values = dict(cluster, id=f"cluster/{cluster['name']}")
+                info_metrics.add_metric([str(values[key]) for key in labels], 1)
 
             yield info_metrics
 
 
-class QDeviceCollector:
+class QDeviceCollector(BaseCollector):
     """
     Collects Proxmox VE QDevice connection state from the local node's view.
     For manual test: "pvesh get /cluster/config/qdevice"
@@ -174,21 +165,14 @@ class QDeviceCollector:
         'State': 'state',
     }
 
-    def __init__(self, pve):
-        self._pve = pve
-
-    def collect(self):  # pylint: disable=missing-docstring
-        cluster_id = None
-        for entry in self._pve.cluster.status.get():
-            if entry['type'] == 'cluster':
-                cluster_id = f"cluster/{entry['name']}"
-                break
+    def collect(self) -> Iterable[Metric]:
+        cluster_id = self._pve.cluster_id
 
         if cluster_id is None:
             return
 
         try:
-            qdevice = self._pve.cluster.config.qdevice.get()
+            qdevice = self._pve.api.cluster.config.qdevice.get()
         except ResourceException:
             # No QDevice configured on this cluster.
             return
@@ -306,16 +290,13 @@ class LockStateMetric(GaugeMetricFamily):
                 self.add_metric([resource['id'], state], value)
 
 
-class ClusterResourcesCollector:
+class ClusterResourcesCollector(BaseCollector):
     """
     Collects Proxmox VE cluster resources information, i.e. memory, storage, cpu
     usage for cluster nodes and guests.
     """
 
-    def __init__(self, pve):
-        self._pve = pve
-
-    def collect(self):  # pylint: disable=missing-docstring
+    def collect(self) -> Iterable[Metric]:
         metrics = {
             'maxdisk': GaugeMetricFamily(
                 'pve_disk_size_bytes',
@@ -454,7 +435,7 @@ class ClusterResourcesCollector:
             },
         }
 
-        for resource in self._pve.cluster.resources.get():
+        for resource in self._pve.cluster_resources:
             restype = resource['type']
 
             if restype in info_lookup:
@@ -507,7 +488,8 @@ class ClusterResourcesCollector:
 
         return label_values + csv_label_values
 
-class BackupInfoCollector:
+
+class BackupInfoCollector(BaseCollector):
     """
     Collects information on guests which are not covered by any backup job. E.g.:
 
@@ -515,10 +497,7 @@ class BackupInfoCollector:
     pve_not_backed_up_info{id="qemu/102"} 1.0
     """
 
-    def __init__(self, pve):
-        self._pve = pve
-
-    def collect(self):  # pylint: disable=missing-docstring
+    def collect(self) -> Iterable[Metric]:
         not_enabled_total = GaugeMetricFamily(
             'pve_not_backed_up_total',
             'Total number of guests not covered by any backup job.',
@@ -530,17 +509,18 @@ class BackupInfoCollector:
             labels=['id']
         )
 
-        not_enabled_data = self._pve.cluster("backup-info/not-backed-up").get()
-        cluster_name = self._pve.cluster.status.get()[0]['name']
+        not_enabled_data = self._pve.api.cluster("backup-info/not-backed-up").get()
 
         for entry in not_enabled_data:
             label_values = [f"{entry['type']}/{entry['vmid']}"]
             not_enabled_info.add_metric(label_values, 1)
 
-        not_enabled_total.add_metric(
-            [f"cluster/{cluster_name}"],
-            len(not_enabled_data)
-        )
+        total_id = self._pve.cluster_id
+        if total_id is None:
+            # Not part of a cluster: report the total for the local node.
+            total_id = f"node/{self._pve.local_node}"
+
+        not_enabled_total.add_metric([total_id], len(not_enabled_data))
 
         yield not_enabled_total
         yield not_enabled_info
