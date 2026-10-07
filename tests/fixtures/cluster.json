@@ -1,0 +1,68 @@
+{
+  "_description": "A two node PVE cluster with a qemu guest, an lxc guest, storages, a replication job, a qdevice and an active subscription. Keys are API paths as assembled by proxmoxer.",
+
+  "version": {
+    "release": "9.0",
+    "repoid": "1a2b3c4d",
+    "version": "9.0.3",
+    "console": "xtermjs"
+  },
+
+  "cluster/status": [
+    {"type": "cluster", "id": "cluster", "name": "pvec", "nodes": 2, "quorate": 1, "version": 2},
+    {"type": "node", "id": "node/pve1", "name": "pve1", "nodeid": 1, "ip": "10.0.0.1", "level": "c", "local": 1, "online": 1},
+    {"type": "node", "id": "node/pve2", "name": "pve2", "nodeid": 2, "ip": "10.0.0.2", "level": "", "local": 0, "online": 1}
+  ],
+
+  "cluster/resources": [
+    {"type": "node", "id": "node/pve1", "node": "pve1", "status": "online", "cpu": 0.0512, "maxcpu": 8, "mem": 4294967296, "maxmem": 17179869184, "disk": 5368709120, "maxdisk": 107374182400, "uptime": 864000},
+    {"type": "node", "id": "node/pve2", "node": "pve2", "status": "online", "cpu": 0.0231, "maxcpu": 8, "mem": 2147483648, "maxmem": 17179869184, "disk": 4294967296, "maxdisk": 107374182400, "uptime": 432000},
+    {"type": "qemu", "id": "qemu/100", "node": "pve1", "name": "vm100", "status": "running", "template": 0, "tags": "web;prod", "cpu": 0.1234, "maxcpu": 2, "mem": 1073741824, "maxmem": 2147483648, "disk": 0, "maxdisk": 34359738368, "netin": 123456789, "netout": 987654321, "diskread": 5555555, "diskwrite": 4444444, "uptime": 86400, "hastate": "started", "lock": "backup"},
+    {"type": "lxc", "id": "lxc/101", "node": "pve2", "name": "ct101", "status": "stopped", "template": 0, "tags": "", "cpu": 0.0, "maxcpu": 1, "mem": 0, "maxmem": 536870912, "disk": 1073741824, "maxdisk": 8589934592, "netin": 0, "netout": 0, "diskread": 0, "diskwrite": 0, "uptime": 0, "hastate": "stopped"},
+    {"type": "storage", "id": "storage/pve1/local", "node": "pve1", "storage": "local", "plugintype": "dir", "content": "vztmpl,backup,iso", "status": "available", "shared": 0, "disk": 5368709120, "maxdisk": 107374182400},
+    {"type": "storage", "id": "storage/pve1/ceph", "node": "pve1", "storage": "ceph", "plugintype": "rbd", "content": "rootdir,images", "status": "unknown", "shared": 1, "disk": 10737418240, "maxdisk": 1099511627776},
+    {"type": "pool", "id": "pool/testpool", "pool": "testpool"},
+    {"type": "sdn", "id": "sdn/pve1/localnetwork", "node": "pve1", "status": "ok"}
+  ],
+
+  "cluster/config/qdevice": {
+    "Model": "Net",
+    "Algorithm": "Fifty-Fifty split",
+    "QNetd host": "10.0.0.9:5403",
+    "Tie-breaker": "Node with lowest node ID",
+    "State": "Connected"
+  },
+
+  "cluster/backup-info/not-backed-up": [
+    {"type": "qemu", "vmid": 100},
+    {"type": "lxc", "vmid": 101}
+  ],
+
+  "nodes/pve1/qemu": [
+    {"vmid": 100, "name": "vm100", "status": "running"}
+  ],
+  "nodes/pve1/qemu/100/config": {"name": "vm100", "onboot": 1, "cores": 2, "memory": 2048},
+
+  "nodes/pve1/lxc": [
+    {"vmid": 102, "name": "ct102", "status": "running"}
+  ],
+  "nodes/pve1/lxc/102/config": {"hostname": "ct102", "onboot": 0, "cores": 1, "memory": 512},
+
+  "nodes/pve1/replication": [
+    {"id": "100-0", "type": "local", "source": "pve1", "target": "pve2", "vmtype": "qemu", "guest": 100}
+  ],
+  "nodes/pve1/replication/100-0/status": {
+    "duration": 3.5,
+    "last_sync": 1700000000,
+    "last_try": 1700000000,
+    "next_sync": 1700000900,
+    "fail_count": 0
+  },
+
+  "nodes/pve1/subscription": {
+    "level": "c",
+    "status": "active",
+    "nextduedate": "2027-01-01",
+    "productname": "Proxmox VE Community Subscription 1 CPU/year"
+  }
+}
