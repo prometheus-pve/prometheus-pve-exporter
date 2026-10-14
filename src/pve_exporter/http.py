@@ -41,6 +41,11 @@ class PveExporterApplication:
             self._errors.labels(module)
             # pylint: disable=no-member
             self._duration.labels(module)
+            if config[module].allow_list is None:
+                self._log.warning(
+                    "Module '%s' has no 'allow_list'. Its credentials will be "
+                    "sent to any target requested by a scraper.", module
+                )
 
         self._url_map = Map([
             Rule('/', endpoint='index'),
@@ -54,7 +59,14 @@ class PveExporterApplication:
         Request handler for /pve route
         """
 
-        if module in self._config:
+        target = target.strip().lower()
+        if module in self._config and not self._config[module].allows(target):
+            self._log.warning("Rejected target %r not allowed for module %r", target, module)
+            # pylint: disable=no-member
+            self._errors.labels(module).inc()
+            response = Response(f"Target '{target}' not allowed for module '{module}'")
+            response.status_code = 403
+        elif module in self._config:
             start = time.time()
             output = collect_pve(
                 self._config[module],

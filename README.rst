@@ -366,8 +366,36 @@ Optional:
 * ``PVE_VERIFY_SSL``: Either ``true`` or ``false``, whether or not to verify PVE tls
   certificate. Defaults to ``true``.
 * ``PVE_MODULE``: Name of the configuration module. Defaults to ``default``.
+* ``PVE_ALLOW_LIST``: Comma separated list of allowed targets, e.g.
+  ``pve1.example.com,pve2.example.com``. See below.
 
-The configuration is passed directly into `proxmoxer.ProxmoxAPI()`_.
+The configuration is passed directly into `proxmoxer.ProxmoxAPI()`_, except
+for the ``allow_list`` key.
+
+**Restricting targets with allow_list:**
+
+The ``target`` request parameter decides which host the module's credentials
+are sent to. Anyone who can reach the exporter could otherwise point
+``target`` at a host they control and capture the PVE password or API token.
+To prevent this, list the PVE hosts a module may be used with:
+
+.. code:: yaml
+
+   default:
+       user: prometheus@pve
+       token_name: "your-token-id"
+       token_value: "..."
+       allow_list:
+         - pve1.example.com
+         - pve2.example.com
+         - 10.0.0.5:8006
+
+Requests for any other target are rejected with HTTP 403 and no connection is
+made. Entries are compared to the ``target`` parameter exactly (ignoring case
+and surrounding whitespace), so ``host`` and ``host:port`` are different
+entries. Note that ``target`` defaults to ``localhost``, which has to be listed
+too if scrapes omit the parameter. Modules without ``allow_list`` accept any
+target, and a warning is logged on startup.
 
 **Note on verify_ssl and certificate trust store:**
 

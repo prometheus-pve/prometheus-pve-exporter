@@ -58,9 +58,15 @@ def config_from_env(env):
             "Empty dictionary. No pve API parameters specified."
         )
 
+    allow_list = None
+    if 'PVE_ALLOW_LIST' in env:
+        allow_list = [item for item in env['PVE_ALLOW_LIST'].split(',') if item.strip()]
+        if not allow_list:
+            return ConfigInvalid("PVE_ALLOW_LIST is set but contains no host names.")
+
     module = env.get('PVE_MODULE', 'default')
     modules = {}
-    modules[module] = ConfigMapping(confvals)
+    modules[module] = ConfigMapping(confvals, allow_list)
 
     return ConfigMapping(modules)
 
@@ -74,12 +80,19 @@ def config_module_from_yaml(yaml):
             "Not a dictionary. Check the syntax of the YAML config file."
         )
 
-    if not yaml:
+    params = dict(yaml)
+    allow_list = params.pop('allow_list', None)
+    if 'allow_list' in yaml and not (
+            isinstance(allow_list, list) and allow_list and
+            all(isinstance(item, str) and item.strip() for item in allow_list)):
+        return ConfigInvalid("'allow_list' must be a non-empty list of host names.")
+
+    if not params:
         return ConfigInvalid(
             "Empty dictionary. No pve API parameters specified."
         )
 
-    return ConfigMapping(yaml)
+    return ConfigMapping(params, allow_list)
 
 
 class ConfigMapping(Mapping):
@@ -89,9 +102,18 @@ class ConfigMapping(Mapping):
 
     valid = True
 
-    def __init__(self, mapping):
+    def __init__(self, mapping, allow_list=None):
         super().__init__()
         self._mapping = mapping
+        self.allow_list = None if allow_list is None else frozenset(
+            item.strip().lower() for item in allow_list
+        )
+
+    def allows(self, target):
+        """
+        Return True if credentials of this module may be sent to target.
+        """
+        return self.allow_list is None or target.strip().lower() in self.allow_list
 
     def __str__(self):
         num = len(self._mapping)
