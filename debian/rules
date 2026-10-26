@@ -1,0 +1,14 @@
+#!/usr/bin/make -f
+
+export DH_VERBOSE=1
+
+export PYBUILD_NAME=prometheus-pve-exporter
+
+#DEB_INST := $(CURDIR)/debian/prometheus-pve-exporter/
+
+%:
+	dh $@ --with python3 --buildsystem=pybuild
+
+#override_dh_auto_install:
+#	dh_auto_install
+#	mv $(DEB_INST)/usr/bin/pve_exporter $(DEB_INST)/usr/bin/prometheus-pve-exporter
