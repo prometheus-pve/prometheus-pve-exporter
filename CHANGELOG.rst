@@ -10,6 +10,22 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 -------------
 
 
+`3.10.2`_ - 2026-10-26
+----------------------
+
+Changed
+~~~~~~~
+
+- markupsafe from 3.0.3 to 3.0.4 (#525)
+- wrapt from 2.4.1 to 2.5.1 (#524)
+- charset-normalizer from 3.5.1 to 3.5.2 (#526)
+- cryptography from 50.0.1 to 50.0.2 (#523)
+- werkzeug from 3.1.8 to 3.1.9 (#527)
+- actions/download-artifact from 8.0.1 to 8.0.2 (#528)
+- actions/upload-artifact from 7.0.1 to 7.0.2 (#529)
+- certifi from 2026.7.22 to 2026.10.23 (#533)
+
+
 `3.10.1`_ - 2026-10-03
 ----------------------
 
@@ -750,7 +766,8 @@ Added
 
 .. _Keep a Changelog: http://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: http://semver.org/spec/v2.0.0.html
-.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.10.1...HEAD
+.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.10.2...HEAD
+.. _3.10.2: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.10.1...v3.10.2
 .. _3.10.1: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.10.0...v3.10.1
 .. _3.10.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.9.0...v3.10.0
 .. _3.9.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.8.3...v3.9.0
