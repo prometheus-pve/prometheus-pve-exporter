@@ -113,7 +113,8 @@ Usage
       the url parameter node=0 is set on a scrape url.
 
       --collector.config, --no-collector.config
-                            Exposes PVE onboot status
+                            Exposes PVE onboot status, configured disk bandwidth/IOPS
+                            limits, and configured network rate limits
       --collector.replication, --no-collector.replication
                             Exposes PVE replication info
       --collector.subscription, --no-collector.subscription
@@ -291,6 +292,17 @@ Here's an example of the metrics exported.
     # HELP pve_onboot_status Proxmox vm config onboot value
     # TYPE pve_onboot_status gauge
     pve_onboot_status{id="qemu/201",node="proxmox",type="qemu"} 1.0
+    # HELP pve_disk_bandwidth_limit_mbps Configured disk bandwidth limit in megabytes per second, per disk device and limit type (read, write, read_burst, write_burst). QEMU guests only.
+    # TYPE pve_disk_bandwidth_limit_mbps gauge
+    pve_disk_bandwidth_limit_mbps{id="qemu/201",node="proxmox",type="qemu",disk="scsi0",limit="read"} 10.0
+    pve_disk_bandwidth_limit_mbps{id="qemu/201",node="proxmox",type="qemu",disk="scsi0",limit="write"} 10.0
+    # HELP pve_disk_iops_limit Configured disk IOPS limit in operations per second, per disk device and limit type (read, write, read_burst, write_burst). QEMU guests only.
+    # TYPE pve_disk_iops_limit gauge
+    pve_disk_iops_limit{id="qemu/201",node="proxmox",type="qemu",disk="scsi0",limit="read"} 1000.0
+    pve_disk_iops_limit{id="qemu/201",node="proxmox",type="qemu",disk="scsi0",limit="write"} 1000.0
+    # HELP pve_network_rate_limit_mbps Configured network interface rate limit in megabytes per second.
+    # TYPE pve_network_rate_limit_mbps gauge
+    pve_network_rate_limit_mbps{id="qemu/201",node="proxmox",type="qemu",iface="net0"} 10.0
     # HELP pve_version_info Proxmox VE version info
     # TYPE pve_version_info gauge
     pve_version_info{release="7.1",repoid="6fe299a0",version="7.1-5"} 1.0
