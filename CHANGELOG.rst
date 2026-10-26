@@ -9,6 +9,13 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 `Unreleased`_
 -------------
 
+Added
+~~~~~
+
+- Optional per-module ``allow_list`` (``PVE_ALLOW_LIST`` environment variable)
+  restricting which PVE hosts a module's credentials may be sent to. Scrapes
+  of other targets are rejected with HTTP 403.
+
 
 `3.10.2`_ - 2026-10-26
 ----------------------
