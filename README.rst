@@ -346,9 +346,10 @@ Example ``pve.yml`` for `token authentication`_:
 
 **Using environment variables:**
 
-If the ``PVE_USER`` environment variable exists, then configuration is taken from
-the environment instead of from the ``pve.yml`` config file. The following
-environment variables are respected:
+If the ``PVE_USER`` environment variable exists (or a non-empty
+``PVE_USER_FILE`` is set), then configuration is taken from the environment
+instead of from the ``pve.yml`` config file. The following environment
+variables are respected:
 
 * ``PVE_USER``: user name
 
@@ -366,6 +367,21 @@ Optional:
 * ``PVE_VERIFY_SSL``: Either ``true`` or ``false``, whether or not to verify PVE tls
   certificate. Defaults to ``true``.
 * ``PVE_MODULE``: Name of the configuration module. Defaults to ``default``.
+
+``PVE_USER``, ``PVE_PASSWORD``, ``PVE_TOKEN_NAME`` and ``PVE_TOKEN_VALUE`` can
+also be read from a file by setting the same variable with a ``_FILE`` suffix
+to the path of that file, e.g. ``PVE_TOKEN_VALUE_FILE=/run/secrets/pve_token``.
+Trailing newlines are stripped. Setting both a variable and its ``_FILE``
+variant to non-empty values is an error. This works with `docker secrets`_,
+`podman secrets`_ and `systemd credentials`_. For example, in a systemd unit:
+
+.. code:: ini
+
+   [Service]
+   LoadCredential=pve_token:/etc/prometheus/pve_token
+   Environment=PVE_USER=prometheus@pve
+   Environment=PVE_TOKEN_NAME=monitoring
+   Environment=PVE_TOKEN_VALUE_FILE=%d/pve_token
 
 The configuration is passed directly into `proxmoxer.ProxmoxAPI()`_.
 
@@ -467,6 +483,9 @@ Grafana Dashboards
 .. _`Prometheus security model`: https://prometheus.io/docs/operating/security/
 .. _wiki: https://github.com/prometheus-pve/prometheus-pve-exporter/wiki
 .. _`token authentication`: https://pve.proxmox.com/wiki/User_Management#pveum_tokens
+.. _`docker secrets`: https://docs.docker.com/compose/how-tos/use-secrets/
+.. _`podman secrets`: https://docs.podman.io/en/latest/markdown/podman-secret-create.1.html
+.. _`systemd credentials`: https://systemd.io/CREDENTIALS/
 .. _`proxmoxer.ProxmoxAPI()`: https://pypi.python.org/pypi/proxmoxer
 .. _`SE answer`: https://askubuntu.com/a/1007236
 .. _`supports Let's Encrypt`: https://pve.proxmox.com/pve-docs/pve-admin-guide.html#sysadmin_certificate_management
