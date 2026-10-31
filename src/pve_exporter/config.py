@@ -40,6 +40,10 @@ def config_from_yaml(yaml):
 def config_from_env(env):
     """
     Given os.environ dictionary return a config object.
+
+    Each of the credential variables may instead be given as <VAR>_FILE
+    (e.g., PVE_PASSWORD_FILE) pointing to a file holding the value, as used
+    with docker secrets or systemd credentials.
     """
     envmap = {
         'PVE_USER': 'user',
@@ -48,7 +52,27 @@ def config_from_env(env):
         'PVE_TOKEN_VALUE': 'token_value',
     }
 
-    confvals = {confkey: env[envkey] for envkey, confkey in envmap.items() if envkey in env}
+    confvals = {}
+    for envkey, confkey in envmap.items():
+        filekey = f'{envkey}_FILE'
+        if filekey in env and envkey in env:
+            return ConfigInvalid(
+                f"Both {envkey} and {filekey} are set. Use only one of them."
+            )
+        if filekey in env:
+            # Do not include the path in errors, it might be a misplaced secret.
+            try:
+                with open(env[filekey], encoding='utf-8') as handle:
+                    value = handle.readline().rstrip('\n')
+            except OSError as err:
+                return ConfigInvalid(f"Failed to read {filekey}: {err.strerror}")
+            except UnicodeDecodeError:
+                return ConfigInvalid(f"Failed to read {filekey}: Not valid UTF-8")
+            if not value:
+                return ConfigInvalid(f"The file referenced by {filekey} is empty.")
+            confvals[confkey] = value
+        elif envkey in env:
+            confvals[confkey] = env[envkey]
 
     if 'PVE_VERIFY_SSL' in env:
         confvals['verify_ssl'] = env['PVE_VERIFY_SSL'].lower() not in ['false', '0']
