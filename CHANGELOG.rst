@@ -10,20 +10,40 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 -------------
 
 
+`3.11.0`_ - 2026-10-31
+----------------------
+
+Added
+~~~~~
+
+- Support _FILE suffix for credential environment variables (#542)
+
+
+Changed
+~~~~~~~
+
+- Bump paramiko from 5.0.0 to 5.1.0 (#541)
+- Bump pypa/gh-action-pypi-publish from 1.14.2 to 1.14.3 (#540)
+- Bump pycparser from 3.0 to 3.12 (#539)
+- Bump docker/login-action from 4.6.0 to 4.7.0 (#538)
+- Bump actions/setup-python from 7.0.0 to 7.1.0 (#537)
+- Bump alpine from 3.24.2 to 3.24.3 (#536)
+
+
 `3.10.2`_ - 2026-10-26
 ----------------------
 
 Changed
 ~~~~~~~
 
-- markupsafe from 3.0.3 to 3.0.4 (#525)
-- wrapt from 2.4.1 to 2.5.1 (#524)
-- charset-normalizer from 3.5.1 to 3.5.2 (#526)
-- cryptography from 50.0.1 to 50.0.2 (#523)
-- werkzeug from 3.1.8 to 3.1.9 (#527)
-- actions/download-artifact from 8.0.1 to 8.0.2 (#528)
-- actions/upload-artifact from 7.0.1 to 7.0.2 (#529)
-- certifi from 2026.7.22 to 2026.10.23 (#533)
+- Bump markupsafe from 3.0.3 to 3.0.4 (#525)
+- Bump wrapt from 2.4.1 to 2.5.1 (#524)
+- Bump charset-normalizer from 3.5.1 to 3.5.2 (#526)
+- Bump cryptography from 50.0.1 to 50.0.2 (#523)
+- Bump werkzeug from 3.1.8 to 3.1.9 (#527)
+- Bump actions/download-artifact from 8.0.1 to 8.0.2 (#528)
+- Bump actions/upload-artifact from 7.0.1 to 7.0.2 (#529)
+- Bump certifi from 2026.7.22 to 2026.10.23 (#533)
 
 
 `3.10.1`_ - 2026-10-03
@@ -766,7 +786,8 @@ Added
 
 .. _Keep a Changelog: http://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: http://semver.org/spec/v2.0.0.html
-.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.10.2...HEAD
+.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.11.0...HEAD
+.. _3.11.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.10.2...v3.11.0
 .. _3.10.2: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.10.1...v3.10.2
 .. _3.10.1: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.10.0...v3.10.1
 .. _3.10.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.9.0...v3.10.0
