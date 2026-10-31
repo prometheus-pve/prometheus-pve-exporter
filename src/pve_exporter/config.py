@@ -55,15 +55,15 @@ def config_from_env(env):
     confvals = {}
     for envkey, confkey in envmap.items():
         filekey = f'{envkey}_FILE'
-        if env.get(filekey):
-            if env.get(envkey):
-                return ConfigInvalid(
-                    f"Both {envkey} and {filekey} are set. Use only one of them."
-                )
+        if filekey in env and envkey in env:
+            return ConfigInvalid(
+                f"Both {envkey} and {filekey} are set. Use only one of them."
+            )
+        if filekey in env:
             # Do not include the path in errors, it might be a misplaced secret.
             try:
                 with open(env[filekey], encoding='utf-8') as handle:
-                    value = handle.read().rstrip('\r\n')
+                    value = handle.readline().rstrip('\n')
             except OSError as err:
                 return ConfigInvalid(f"Failed to read {filekey}: {err.strerror}")
             except UnicodeDecodeError:

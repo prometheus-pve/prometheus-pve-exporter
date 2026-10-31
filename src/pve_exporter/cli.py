@@ -104,7 +104,7 @@ def main():
     scrape_metrics.TARGET_METRICS_ENABLED = params.target_metrics_enabled
 
     # Load configuration.
-    if 'PVE_USER' in os.environ or os.environ.get('PVE_USER_FILE'):
+    if 'PVE_USER' in os.environ or 'PVE_USER_FILE' in os.environ:
         config = config_from_env(os.environ)
     else:
         with open(params.config_file, encoding='utf-8') as handle:
