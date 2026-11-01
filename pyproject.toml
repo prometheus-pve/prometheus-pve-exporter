@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools", "setuptools-scm"]
+requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -30,3 +30,6 @@ pve_exporter = "pve_exporter.cli:main"
 dependencies = { file = ["requirements.in"] }
 optional-dependencies.test = { file = ["requirements-test.txt"] }
 readme = { file = ["README.rst"] }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

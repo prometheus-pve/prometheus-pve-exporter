@@ -90,8 +90,9 @@ py-version = "3.11"
 # source-roots =
 
 # When enabled, pylint would attempt to guess common misconfiguration and emit
-# user-friendly hints instead of false-positive error messages.
-suggestion-mode = true
+# user-friendly hints instead of false-positive error messages. Removed in
+# pylint 4, which is why it is not set here.
+# suggestion-mode =
 
 # Allow loading of arbitrary C extensions. Extensions are imported into the
 # active Python interpreter and may run arbitrary code.

@@ -1,0 +1,36 @@
+# HELP pve_subscription_info Proxmox VE subscription info (1 if present)
+# TYPE pve_subscription_info gauge
+pve_subscription_info{id="node/pve1",level="c"} 1.0
+# HELP pve_subscription_status Proxmox VE subscription status (1 if matches status)
+# TYPE pve_subscription_status gauge
+pve_subscription_status{id="node/pve1",status="new"} 0.0
+pve_subscription_status{id="node/pve1",status="notfound"} 0.0
+pve_subscription_status{id="node/pve1",status="active"} 1.0
+pve_subscription_status{id="node/pve1",status="invalid"} 0.0
+pve_subscription_status{id="node/pve1",status="expired"} 0.0
+pve_subscription_status{id="node/pve1",status="suspended"} 0.0
+# HELP pve_subscription_next_due_timestamp_seconds Subscription next due date as Unix timestamp
+# TYPE pve_subscription_next_due_timestamp_seconds gauge
+pve_subscription_next_due_timestamp_seconds{id="node/pve1"} 1.7987616e+09
+# HELP pve_onboot_status Proxmox vm config onboot value
+# TYPE pve_onboot_status gauge
+pve_onboot_status{id="qemu/100",node="pve1",type="qemu"} 1.0
+pve_onboot_status{id="lxc/102",node="pve1",type="lxc"} 0.0
+# HELP pve_replication_duration_seconds Proxmox vm replication duration
+# TYPE pve_replication_duration_seconds gauge
+pve_replication_duration_seconds{id="100-0"} 3.5
+# HELP pve_replication_last_sync_timestamp_seconds Proxmox vm replication last_sync
+# TYPE pve_replication_last_sync_timestamp_seconds gauge
+pve_replication_last_sync_timestamp_seconds{id="100-0"} 1.7e+09
+# HELP pve_replication_last_try_timestamp_seconds Proxmox vm replication last_try
+# TYPE pve_replication_last_try_timestamp_seconds gauge
+pve_replication_last_try_timestamp_seconds{id="100-0"} 1.7e+09
+# HELP pve_replication_next_sync_timestamp_seconds Proxmox vm replication next_sync
+# TYPE pve_replication_next_sync_timestamp_seconds gauge
+pve_replication_next_sync_timestamp_seconds{id="100-0"} 1.7000009e+09
+# HELP pve_replication_failed_syncs Proxmox vm replication fail_count
+# TYPE pve_replication_failed_syncs gauge
+pve_replication_failed_syncs{id="100-0"} 0.0
+# HELP pve_replication_info Proxmox vm replication info
+# TYPE pve_replication_info gauge
+pve_replication_info{guest="qemu/100",id="100-0",source="node/pve1",target="node/pve2",type="local"} 1.0
