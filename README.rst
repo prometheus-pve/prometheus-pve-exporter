@@ -337,11 +337,15 @@ Example ``pve.yml`` for password authentication:
 
 Example ``pve.yml`` for `token authentication`_:
 
+A quick note. Use the token NAME not the token ID.
+For example: if the token ID is ``prometheus@pve!pve_exporter`` 
+the token name is ``pve_exporter``
+
 .. code:: yaml
 
    default:
        user: prometheus@pve
-       token_name: "your-token-id"
+       token_name: "your-token-name"
        token_value: "..."
 
 **Using environment variables:**
