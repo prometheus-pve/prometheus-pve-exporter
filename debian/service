@@ -1,0 +1,15 @@
+[Unit]
+Description=Prometheus exporter for Proxmox Virtual Environment
+Documentation=https://github.com/prometheus-pve/prometheus-pve-exporter
+After=network.target
+
+[Service]
+User=prometheus
+EnvironmentFile=/etc/default/prometheus-pve-exporter
+ExecStart=/usr/bin/prometheus-pve-exporter $ARGS
+RuntimeDirectory=prometheus-pve-exporter
+Restart=on-failure
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
