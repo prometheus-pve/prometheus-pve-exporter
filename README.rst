@@ -467,6 +467,7 @@ Grafana Dashboards
 ------------------
 
 * `Proxmox via Prometheus by Pietro Saccardi`_
+* `Proxmox VE Infrastructure (native panels, QEMU and LXC) <examples/grafana/README.md>`_
 
 .. |Build Status| image:: https://github.com/prometheus-pve/prometheus-pve-exporter/actions/workflows/ci.yml/badge.svg
    :target: https://github.com/prometheus-pve/prometheus-pve-exporter/actions/workflows/ci.yml
