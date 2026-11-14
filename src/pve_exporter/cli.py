@@ -85,6 +85,8 @@ def main():
                         help='SSL key for server')
     parser.add_argument('--server.certfile', dest='server_certfile',
                         help='SSL certificate for server')
+    parser.add_argument('--debug', action='store_true',
+                        help='Log the stack trace when a request fails')
 
     params = parser.parse_args()
 
@@ -119,6 +121,6 @@ def main():
     }
 
     if config.valid:
-        start_http_server(config, gunicorn_options, collectors)
+        start_http_server(config, gunicorn_options, collectors, params.debug)
     else:
         parser.error(str(config))

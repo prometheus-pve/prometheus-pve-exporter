@@ -19,10 +19,11 @@ class PveExporterApplication:
     Proxmox VE prometheus collector HTTP handler.
     """
 
-    def __init__(self, config, collectors, logger):
+    def __init__(self, config, collectors, logger, debug=False):
         self._config = config
         self._collectors = collectors
         self._log = logger
+        self._debug = debug
 
         self._duration = Summary(
             'pve_collection_duration_seconds',
@@ -122,7 +123,10 @@ class PveExporterApplication:
         try:
             return view_registry[endpoint](**params)
         except Exception as error:  # pylint: disable=broad-except
-            self._log.exception("Exception thrown while rendering view")
+            if self._debug:
+                self._log.exception("Exception thrown while rendering view")
+            else:
+                self._log.error("%s: %s", type(error).__name__, error)
             self._errors.labels(args.get('module', 'default')).inc()
             raise InternalServerError from error
 
@@ -156,7 +160,7 @@ class StandaloneGunicornApplication(gunicorn.app.base.BaseApplication):
         return self.application
 
 
-def start_http_server(config, gunicorn_options, collectors):
+def start_http_server(config, gunicorn_options, collectors, debug=False):
     """
     Start a HTTP API server for Proxmox VE prometheus collector.
     """
@@ -165,5 +169,5 @@ def start_http_server(config, gunicorn_options, collectors):
     # exporter application.
     # https://trstringer.com/logging-flask-gunicorn-the-manageable-way/
     logger = logging.getLogger('gunicorn.error')
-    app = PveExporterApplication(config, collectors, logger)
+    app = PveExporterApplication(config, collectors, logger, debug)
     StandaloneGunicornApplication(app, gunicorn_options).run()

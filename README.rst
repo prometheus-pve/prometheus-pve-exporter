@@ -74,7 +74,7 @@ Usage
                         [--config.file CONFIG_FILE]
                         [--web.listen-address WEB_LISTEN_ADDRESS]
                         [--server.keyfile SERVER_KEYFILE]
-                        [--server.certfile SERVER_CERTFILE]
+                        [--server.certfile SERVER_CERTFILE] [--debug]
 
     options:
       -h, --help            show this help message and exit
@@ -87,6 +87,7 @@ Usage
                             SSL key for server
       --server.certfile SERVER_CERTFILE
                             SSL certificate for server
+      --debug               Log the stack trace when a request fails
 
     cluster collectors:
       cluster collectors are run if the url parameter cluster=1 is set and
