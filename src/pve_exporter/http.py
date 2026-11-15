@@ -123,7 +123,7 @@ class PveExporterApplication:
         try:
             return view_registry[endpoint](**params)
         except Exception as error:  # pylint: disable=broad-except
-            for line in traceback.format_exception_only(error, show_group=True):
+            for line in traceback.format_exception_only(error):
                 self._log.error(line.rstrip())
             self._log.debug("Exception thrown while rendering view", exc_info=True)
             self._errors.labels(args.get('module', 'default')).inc()
