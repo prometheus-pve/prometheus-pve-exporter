@@ -75,6 +75,7 @@ Usage
                         [--web.listen-address WEB_LISTEN_ADDRESS]
                         [--server.keyfile SERVER_KEYFILE]
                         [--server.certfile SERVER_CERTFILE]
+                        [--log.level {debug,info,warning,error,critical}]
 
     options:
       -h, --help            show this help message and exit
@@ -87,6 +88,10 @@ Usage
                             SSL key for server
       --server.certfile SERVER_CERTFILE
                             SSL certificate for server
+      --log.level {debug,info,warning,error,critical}
+                            Only log messages with the given severity or above.
+                            The traceback of scraping exceptions is only included
+                            at debug level.
 
     cluster collectors:
       cluster collectors are run if the url parameter cluster=1 is set and

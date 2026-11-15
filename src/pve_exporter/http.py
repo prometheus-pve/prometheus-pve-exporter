@@ -4,6 +4,7 @@ HTTP API for Proxmox VE prometheus collector.
 
 import logging
 import time
+import traceback
 from functools import partial
 
 import gunicorn.app.base
@@ -122,7 +123,9 @@ class PveExporterApplication:
         try:
             return view_registry[endpoint](**params)
         except Exception as error:  # pylint: disable=broad-except
-            self._log.exception("Exception thrown while rendering view")
+            for line in traceback.format_exception_only(error):
+                self._log.error(line.rstrip())
+            self._log.debug("Exception thrown while rendering view", exc_info=True)
             self._errors.labels(args.get('module', 'default')).inc()
             raise InternalServerError from error
 
