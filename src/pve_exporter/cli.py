@@ -85,6 +85,13 @@ def main():
                         help='SSL key for server')
     parser.add_argument('--server.certfile', dest='server_certfile',
                         help='SSL certificate for server')
+    parser.add_argument('--log.level', dest='loglevel', default='info',
+                        choices=['debug', 'info', 'warning', 'error', 'critical'],
+                        help=(
+                            'Only log messages with the given severity or above. '
+                            'The traceback of scraping exceptions is only included '
+                            'at debug level.'
+                        ))
 
     params = parser.parse_args()
 
@@ -116,6 +123,7 @@ def main():
         'keyfile': params.server_keyfile,
         'certfile': params.server_certfile,
         'control_socket_disable': True,
+        'loglevel': params.loglevel,
     }
 
     if config.valid:
