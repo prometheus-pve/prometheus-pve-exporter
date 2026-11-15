@@ -10,6 +10,21 @@ The format is based on `Keep a Changelog`_ and this project adheres to
 -------------
 
 
+`3.12.0`_ - 2026-11-15
+----------------------
+
+Added
+~~~~~
+
+- Add a --log.level flag and suppress traceback by default (#548)
+
+Changed
+~~~~~~~
+
+- Bump docker/login-action from 4.7.0 to 4.8.0 (#546)
+- Bump wrapt from 2.5.1 to 2.5.2 (#545)
+
+
 `3.11.0`_ - 2026-10-31
 ----------------------
 
@@ -786,7 +801,8 @@ Added
 
 .. _Keep a Changelog: http://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: http://semver.org/spec/v2.0.0.html
-.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.11.0...HEAD
+.. _Unreleased: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.12.0...HEAD
+.. _3.12.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.11.0...v3.12.0
 .. _3.11.0: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.10.2...v3.11.0
 .. _3.10.2: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.10.1...v3.10.2
 .. _3.10.1: https://github.com/prometheus-pve/prometheus-pve-exporter/compare/v3.10.0...v3.10.1
