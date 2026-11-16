@@ -338,7 +338,7 @@ Here's an example of the metrics exported.
     # HELP pve_qga_fs_size_bytes Guest filesystem total bytes (via QEMU guest agent)
     # TYPE pve_qga_fs_size_bytes gauge
     pve_qga_fs_size_bytes{disk="/dev/sda5",fstype="ext4",id="qemu/100",mountpoint="/",name="samplevm1",node="proxmox"} 6.8719476736e+010
-    
+
 Authentication
 --------------
 
