@@ -7,6 +7,7 @@ import itertools
 from datetime import datetime
 
 from prometheus_client.core import GaugeMetricFamily
+from proxmoxer import ResourceException
 
 
 class NodeConfigCollector:
@@ -237,34 +238,38 @@ class QgaFsCollector:
 
         try:
             config = self._pve.nodes(node).qemu(vmid).config.get()
-            if not _agent_enabled(config.get('agent', '0')):
-                return
-        except Exception:  # pylint: disable=broad-except
+        except ResourceException:
+            # Guest went away between listing it and reading its config.
+            return
+
+        if not _agent_enabled(config.get('agent', '0')):
             return
 
         try:
             result = self._pve.nodes(node).qemu(vmid).agent('get-fsinfo').get()
-            for fs in result.get('result', []):
-                if fs.get('type', '') in self.SKIP_FSTYPES:
-                    continue
-                used = fs.get('used-bytes')
-                total = fs.get('total-bytes')
-                if used is None or total is None:
-                    # Both are optional in the guest agent's schema and are
-                    # omitted when it cannot stat the filesystem. Reporting 0
-                    # would fabricate a reading rather than report none, and
-                    # makes any used/total ratio divide by zero.
-                    continue
-                labels = [
-                    f'qemu/{vmid}', node, name,
-                    fs.get('mountpoint', ''),
-                    fs.get('type', ''),
-                    (fs.get('disk') or [{}])[0].get('dev', ''),
-                ]
-                used_metric.add_metric(labels, used)
-                size_metric.add_metric(labels, total)
-        except Exception:  # pylint: disable=broad-except
-            pass
+        except ResourceException:
+            # Guest agent is not configured, not running, or not answering.
+            return
+
+        for fs in result.get('result', []):
+            if fs.get('type', '') in self.SKIP_FSTYPES:
+                continue
+            used = fs.get('used-bytes')
+            total = fs.get('total-bytes')
+            if used is None or total is None:
+                # Both are optional in the guest agent's schema and are
+                # omitted when it cannot stat the filesystem. Reporting 0
+                # would fabricate a reading rather than report none, and
+                # makes any used/total ratio divide by zero.
+                continue
+            labels = [
+                f'qemu/{vmid}', node, name,
+                fs.get('mountpoint', ''),
+                fs.get('type', ''),
+                (fs.get('disk') or [{}])[0].get('dev', ''),
+            ]
+            used_metric.add_metric(labels, used)
+            size_metric.add_metric(labels, total)
 
     def collect(self):  # pylint: disable=missing-docstring
         used_metric = GaugeMetricFamily(
