@@ -189,6 +189,29 @@ class SubscriptionCollector:
         yield status_metric
         yield next_due_metric
 
+
+def _agent_enabled(value):
+    """
+    Return True if the ``agent`` property string enables the QEMU guest agent.
+
+    ``agent`` is a PVE property string whose ``enabled`` sub-key is the *default
+    key*, so ``1``, ``enabled=1`` and ``type=virtio,enabled=1`` are all valid and
+    all mean enabled. PVE stores and returns whichever form was written rather
+    than normalising, so a prefix match on ``"1"`` silently skips every guest
+    whose config spells the flag out.
+    """
+    for part in str(value).split(','):
+        part = part.strip()
+        if not part:
+            continue
+        key, sep, val = part.partition('=')
+        if not sep:
+            return part == '1'          # bare value: the `enabled` default key
+        if key.strip() == 'enabled':
+            return val.strip() == '1'
+    return False                        # `enabled` itself defaults to 0
+
+
 class QgaFsCollector:
     """
     Collects guest filesystem usage via QEMU Guest Agent get-fsinfo.
@@ -214,7 +237,7 @@ class QgaFsCollector:
 
         try:
             config = self._pve.nodes(node).qemu(vmid).config.get()
-            if not str(config.get('agent', '0')).startswith('1'):
+            if not _agent_enabled(config.get('agent', '0')):
                 return
         except Exception:  # pylint: disable=broad-except
             return
