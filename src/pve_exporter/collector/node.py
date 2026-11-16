@@ -247,14 +247,22 @@ class QgaFsCollector:
             for fs in result.get('result', []):
                 if fs.get('type', '') in self.SKIP_FSTYPES:
                     continue
+                used = fs.get('used-bytes')
+                total = fs.get('total-bytes')
+                if used is None or total is None:
+                    # Both are optional in the guest agent's schema and are
+                    # omitted when it cannot stat the filesystem. Reporting 0
+                    # would fabricate a reading rather than report none, and
+                    # makes any used/total ratio divide by zero.
+                    continue
                 labels = [
                     f'qemu/{vmid}', node, name,
                     fs.get('mountpoint', ''),
                     fs.get('type', ''),
                     (fs.get('disk') or [{}])[0].get('dev', ''),
                 ]
-                used_metric.add_metric(labels, fs.get('used-bytes', 0))
-                size_metric.add_metric(labels, fs.get('total-bytes', 0))
+                used_metric.add_metric(labels, used)
+                size_metric.add_metric(labels, total)
         except Exception:  # pylint: disable=broad-except
             pass
 
