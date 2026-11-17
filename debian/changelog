@@ -1,0 +1,5 @@
+prometheus-pve-exporter (3.8.1-1) unstable; urgency=low
+
+  * Initial release.
+
+ -- Emanuele Rocca <lo@znerol.ch>  Wed, 11 Feb 2026 08:05:50 +0100
