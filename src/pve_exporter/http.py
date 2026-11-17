@@ -12,7 +12,7 @@ from prometheus_client import CONTENT_TYPE_LATEST, Summary, Counter, generate_la
 from werkzeug.routing import Map, Rule
 from werkzeug.wrappers import Request, Response
 from werkzeug.exceptions import InternalServerError
-from pve_exporter.collector import collect_pve
+from pve_exporter.collector import collect_pve, collect_storage
 
 
 class PveExporterApplication:
@@ -47,9 +47,11 @@ class PveExporterApplication:
             Rule('/', endpoint='index'),
             Rule('/metrics', endpoint='metrics'),
             Rule('/pve', endpoint='pve'),
+            Rule('/storage', endpoint='storage'),
         ])
 
 
+    
     def on_pve(self, module='default', target='localhost', cluster='1', node='1'):
         """
         Request handler for /pve route
@@ -63,6 +65,27 @@ class PveExporterApplication:
                 cluster.lower() not in ['false', '0', ''],
                 node.lower() not in ['false', '0', ''],
                 self._collectors
+            )
+            response = Response(output)
+            response.headers['content-type'] = CONTENT_TYPE_LATEST
+            self._duration.labels(module).observe(time.time() - start)
+        else:
+            response = Response(f"Module '{module}' not found in config")
+            response.status_code = 400
+
+        return response
+
+    def on_storage(self, module='default', target='localhost', node='pve', storage='local'):
+        """
+        Request handler for /storage route
+        """
+        if module in self._config:
+            start = time.time()
+            output = collect_storage(
+                self._config[module],
+                target,
+                node,
+                storage
             )
             response = Response(output)
             response.headers['content-type'] = CONTENT_TYPE_LATEST
@@ -107,13 +130,15 @@ class PveExporterApplication:
         """
 
         allowed_args = {
-            'pve': ['module', 'target', 'cluster', 'node']
+            'pve': ['module', 'target', 'cluster', 'node'],
+            'storage': ['module', 'target', 'node', 'storage']
         }
 
         view_registry = {
             'index': self.on_index,
             'metrics': self.on_metrics,
             'pve': self.on_pve,
+            'storage': self.on_storage,
         }
 
         params = dict(values)
