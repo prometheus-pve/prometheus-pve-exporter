@@ -1,0 +1,28 @@
+# HELP pve_subscription_info Proxmox VE subscription info (1 if present)
+# TYPE pve_subscription_info gauge
+pve_subscription_info{id="node/pve0",level="unknown"} 1.0
+# HELP pve_subscription_status Proxmox VE subscription status (1 if matches status)
+# TYPE pve_subscription_status gauge
+pve_subscription_status{id="node/pve0",status="new"} 0.0
+pve_subscription_status{id="node/pve0",status="notfound"} 1.0
+pve_subscription_status{id="node/pve0",status="active"} 0.0
+pve_subscription_status{id="node/pve0",status="invalid"} 0.0
+pve_subscription_status{id="node/pve0",status="expired"} 0.0
+pve_subscription_status{id="node/pve0",status="suspended"} 0.0
+# HELP pve_subscription_next_due_timestamp_seconds Subscription next due date as Unix timestamp
+# TYPE pve_subscription_next_due_timestamp_seconds gauge
+# HELP pve_onboot_status Proxmox vm config onboot value
+# TYPE pve_onboot_status gauge
+pve_onboot_status{id="qemu/200",node="pve0",type="qemu"} 1.0
+# HELP pve_replication_duration_seconds Proxmox vm replication duration
+# TYPE pve_replication_duration_seconds gauge
+# HELP pve_replication_last_sync_timestamp_seconds Proxmox vm replication last_sync
+# TYPE pve_replication_last_sync_timestamp_seconds gauge
+# HELP pve_replication_last_try_timestamp_seconds Proxmox vm replication last_try
+# TYPE pve_replication_last_try_timestamp_seconds gauge
+# HELP pve_replication_next_sync_timestamp_seconds Proxmox vm replication next_sync
+# TYPE pve_replication_next_sync_timestamp_seconds gauge
+# HELP pve_replication_failed_syncs Proxmox vm replication fail_count
+# TYPE pve_replication_failed_syncs gauge
+# HELP pve_replication_info Proxmox vm replication info
+# TYPE pve_replication_info gauge
