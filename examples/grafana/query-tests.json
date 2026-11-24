@@ -1,0 +1,259 @@
+{
+  "rule_files": [],
+  "evaluation_interval": "30s",
+  "tests": [
+    {
+      "name": "mixed QEMU/LXC, template exclusion, multiple nodes and scrape isolation",
+      "interval": "30s",
+      "input_series": [
+        {
+          "series": "up{job=\"example\",instance=\"cluster.example.invalid\"}",
+          "values": "1+0x10"
+        },
+        {
+          "series": "pve_up{job=\"example\",instance=\"cluster.example.invalid\",id=\"qemu/100\"}",
+          "values": "1+0x10"
+        },
+        {
+          "series": "pve_guest_info{job=\"example\",instance=\"cluster.example.invalid\",id=\"qemu/100\",node=\"node-a\",type=\"qemu\",name=\"app\",template=\"0\"}",
+          "values": "1+0x10"
+        },
+        {
+          "series": "pve_up{job=\"example\",instance=\"cluster.example.invalid\",id=\"lxc/103\"}",
+          "values": "0+0x10"
+        },
+        {
+          "series": "pve_guest_info{job=\"example\",instance=\"cluster.example.invalid\",id=\"lxc/103\",node=\"node-b\",type=\"lxc\",name=\"lab\",template=\"0\"}",
+          "values": "1+0x10"
+        },
+        {
+          "series": "pve_up{job=\"example\",instance=\"cluster.example.invalid\",id=\"qemu/900\"}",
+          "values": "1+0x10"
+        },
+        {
+          "series": "pve_guest_info{job=\"example\",instance=\"cluster.example.invalid\",id=\"qemu/900\",node=\"node-a\",type=\"qemu\",name=\"template\",template=\"1\"}",
+          "values": "1+0x10"
+        },
+        {
+          "series": "pve_up{job=\"other\",instance=\"cluster.example.invalid\",id=\"qemu/100\"}",
+          "values": "1+0x10"
+        },
+        {
+          "series": "pve_guest_info{job=\"other\",instance=\"cluster.example.invalid\",id=\"qemu/100\",node=\"node-a\",type=\"qemu\",name=\"other\",template=\"0\"}",
+          "values": "1+0x10"
+        },
+        {
+          "series": "pve_up{job=\"example\",instance=\"other.example.invalid\",id=\"qemu/100\"}",
+          "values": "1+0x10"
+        },
+        {
+          "series": "pve_guest_info{job=\"example\",instance=\"other.example.invalid\",id=\"qemu/100\",node=\"node-a\",type=\"qemu\",name=\"other\",template=\"0\"}",
+          "values": "1+0x10"
+        }
+      ],
+      "promql_expr_test": [
+        {
+          "expr": "(sum by(job,instance) (pve_up{job=\"example\",instance=\"cluster.example.invalid\"} * on(job,instance,id) group_left(name,type,node) pve_guest_info{job=\"example\",instance=\"cluster.example.invalid\",node=~\".*\",template!=\"1\"})) and on(job,instance) ((up{job=\"example\",instance=\"cluster.example.invalid\"} == 1) and on(job,instance) (time() - timestamp(up{job=\"example\",instance=\"cluster.example.invalid\"}) < 90))",
+          "eval_time": "2m",
+          "exp_samples": [
+            {
+              "labels": "{job=\"example\",instance=\"cluster.example.invalid\"}",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "failed scrape",
+      "interval": "30s",
+      "input_series": [
+        {
+          "series": "pve_up{job=\"example\",instance=\"cluster.example.invalid\",id=\"qemu/100\"}",
+          "values": "1+0x10"
+        },
+        {
+          "series": "pve_guest_info{job=\"example\",instance=\"cluster.example.invalid\",id=\"qemu/100\",node=\"node-a\",type=\"qemu\",name=\"app\",template=\"0\"}",
+          "values": "1+0x10"
+        },
+        {
+          "series": "pve_up{job=\"example\",instance=\"cluster.example.invalid\",id=\"lxc/103\"}",
+          "values": "0+0x10"
+        },
+        {
+          "series": "pve_guest_info{job=\"example\",instance=\"cluster.example.invalid\",id=\"lxc/103\",node=\"node-b\",type=\"lxc\",name=\"lab\",template=\"0\"}",
+          "values": "1+0x10"
+        },
+        {
+          "series": "pve_up{job=\"example\",instance=\"cluster.example.invalid\",id=\"qemu/900\"}",
+          "values": "1+0x10"
+        },
+        {
+          "series": "pve_guest_info{job=\"example\",instance=\"cluster.example.invalid\",id=\"qemu/900\",node=\"node-a\",type=\"qemu\",name=\"template\",template=\"1\"}",
+          "values": "1+0x10"
+        },
+        {
+          "series": "pve_up{job=\"other\",instance=\"cluster.example.invalid\",id=\"qemu/100\"}",
+          "values": "1+0x10"
+        },
+        {
+          "series": "pve_guest_info{job=\"other\",instance=\"cluster.example.invalid\",id=\"qemu/100\",node=\"node-a\",type=\"qemu\",name=\"other\",template=\"0\"}",
+          "values": "1+0x10"
+        },
+        {
+          "series": "pve_up{job=\"example\",instance=\"other.example.invalid\",id=\"qemu/100\"}",
+          "values": "1+0x10"
+        },
+        {
+          "series": "pve_guest_info{job=\"example\",instance=\"other.example.invalid\",id=\"qemu/100\",node=\"node-a\",type=\"qemu\",name=\"other\",template=\"0\"}",
+          "values": "1+0x10"
+        },
+        {
+          "series": "up{job=\"example\",instance=\"cluster.example.invalid\"}",
+          "values": "0+0x10"
+        }
+      ],
+      "promql_expr_test": [
+        {
+          "expr": "(sum by(job,instance) (pve_up{job=\"example\",instance=\"cluster.example.invalid\"} * on(job,instance,id) group_left(name,type,node) pve_guest_info{job=\"example\",instance=\"cluster.example.invalid\",node=~\".*\",template!=\"1\"})) and on(job,instance) ((up{job=\"example\",instance=\"cluster.example.invalid\"} == 1) and on(job,instance) (time() - timestamp(up{job=\"example\",instance=\"cluster.example.invalid\"}) < 90))",
+          "eval_time": "2m",
+          "exp_samples": []
+        },
+        {
+          "expr": "up{job=\"example\",instance=\"cluster.example.invalid\"} and on(job,instance) (time() - timestamp(up{job=\"example\",instance=\"cluster.example.invalid\"}) < 90)",
+          "eval_time": "2m",
+          "exp_samples": [
+            {
+              "labels": "up{job=\"example\",instance=\"cluster.example.invalid\"}",
+              "value": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "stale scrape",
+      "interval": "30s",
+      "input_series": [
+        {
+          "series": "pve_up{job=\"example\",instance=\"cluster.example.invalid\",id=\"qemu/100\"}",
+          "values": "1+0x10"
+        },
+        {
+          "series": "pve_guest_info{job=\"example\",instance=\"cluster.example.invalid\",id=\"qemu/100\",node=\"node-a\",type=\"qemu\",name=\"app\",template=\"0\"}",
+          "values": "1+0x10"
+        },
+        {
+          "series": "pve_up{job=\"example\",instance=\"cluster.example.invalid\",id=\"lxc/103\"}",
+          "values": "0+0x10"
+        },
+        {
+          "series": "pve_guest_info{job=\"example\",instance=\"cluster.example.invalid\",id=\"lxc/103\",node=\"node-b\",type=\"lxc\",name=\"lab\",template=\"0\"}",
+          "values": "1+0x10"
+        },
+        {
+          "series": "pve_up{job=\"example\",instance=\"cluster.example.invalid\",id=\"qemu/900\"}",
+          "values": "1+0x10"
+        },
+        {
+          "series": "pve_guest_info{job=\"example\",instance=\"cluster.example.invalid\",id=\"qemu/900\",node=\"node-a\",type=\"qemu\",name=\"template\",template=\"1\"}",
+          "values": "1+0x10"
+        },
+        {
+          "series": "pve_up{job=\"other\",instance=\"cluster.example.invalid\",id=\"qemu/100\"}",
+          "values": "1+0x10"
+        },
+        {
+          "series": "pve_guest_info{job=\"other\",instance=\"cluster.example.invalid\",id=\"qemu/100\",node=\"node-a\",type=\"qemu\",name=\"other\",template=\"0\"}",
+          "values": "1+0x10"
+        },
+        {
+          "series": "pve_up{job=\"example\",instance=\"other.example.invalid\",id=\"qemu/100\"}",
+          "values": "1+0x10"
+        },
+        {
+          "series": "pve_guest_info{job=\"example\",instance=\"other.example.invalid\",id=\"qemu/100\",node=\"node-a\",type=\"qemu\",name=\"other\",template=\"0\"}",
+          "values": "1+0x10"
+        },
+        {
+          "series": "up{job=\"example\",instance=\"cluster.example.invalid\"}",
+          "values": "1 _ _ _ _ _ _"
+        }
+      ],
+      "promql_expr_test": [
+        {
+          "expr": "(sum by(job,instance) (pve_up{job=\"example\",instance=\"cluster.example.invalid\"} * on(job,instance,id) group_left(name,type,node) pve_guest_info{job=\"example\",instance=\"cluster.example.invalid\",node=~\".*\",template!=\"1\"})) and on(job,instance) ((up{job=\"example\",instance=\"cluster.example.invalid\"} == 1) and on(job,instance) (time() - timestamp(up{job=\"example\",instance=\"cluster.example.invalid\"}) < 90))",
+          "eval_time": "3m",
+          "exp_samples": []
+        },
+        {
+          "expr": "up{job=\"example\",instance=\"cluster.example.invalid\"} and on(job,instance) (time() - timestamp(up{job=\"example\",instance=\"cluster.example.invalid\"}) < 90)",
+          "eval_time": "3m",
+          "exp_samples": []
+        }
+      ]
+    },
+    {
+      "name": "stopped LXC remains a zero power state",
+      "interval": "30s",
+      "input_series": [
+        {
+          "series": "up{job=\"example\",instance=\"cluster.example.invalid\"}",
+          "values": "1+0x10"
+        },
+        {
+          "series": "pve_up{job=\"example\",instance=\"cluster.example.invalid\",id=\"qemu/100\"}",
+          "values": "1+0x10"
+        },
+        {
+          "series": "pve_guest_info{job=\"example\",instance=\"cluster.example.invalid\",id=\"qemu/100\",node=\"node-a\",type=\"qemu\",name=\"app\",template=\"0\"}",
+          "values": "1+0x10"
+        },
+        {
+          "series": "pve_up{job=\"example\",instance=\"cluster.example.invalid\",id=\"lxc/103\"}",
+          "values": "0+0x10"
+        },
+        {
+          "series": "pve_guest_info{job=\"example\",instance=\"cluster.example.invalid\",id=\"lxc/103\",node=\"node-b\",type=\"lxc\",name=\"lab\",template=\"0\"}",
+          "values": "1+0x10"
+        },
+        {
+          "series": "pve_up{job=\"example\",instance=\"cluster.example.invalid\",id=\"qemu/900\"}",
+          "values": "1+0x10"
+        },
+        {
+          "series": "pve_guest_info{job=\"example\",instance=\"cluster.example.invalid\",id=\"qemu/900\",node=\"node-a\",type=\"qemu\",name=\"template\",template=\"1\"}",
+          "values": "1+0x10"
+        },
+        {
+          "series": "pve_up{job=\"other\",instance=\"cluster.example.invalid\",id=\"qemu/100\"}",
+          "values": "1+0x10"
+        },
+        {
+          "series": "pve_guest_info{job=\"other\",instance=\"cluster.example.invalid\",id=\"qemu/100\",node=\"node-a\",type=\"qemu\",name=\"other\",template=\"0\"}",
+          "values": "1+0x10"
+        },
+        {
+          "series": "pve_up{job=\"example\",instance=\"other.example.invalid\",id=\"qemu/100\"}",
+          "values": "1+0x10"
+        },
+        {
+          "series": "pve_guest_info{job=\"example\",instance=\"other.example.invalid\",id=\"qemu/100\",node=\"node-a\",type=\"qemu\",name=\"other\",template=\"0\"}",
+          "values": "1+0x10"
+        }
+      ],
+      "promql_expr_test": [
+        {
+          "expr": "((pve_up{job=\"example\",instance=\"cluster.example.invalid\"} * on(job,instance,id) group_left(name,type,node) pve_guest_info{job=\"example\",instance=\"cluster.example.invalid\",node=~\".*\",template!=\"1\"}) and on(job,instance) ((up{job=\"example\",instance=\"cluster.example.invalid\"} == 1) and on(job,instance) (time() - timestamp(up{job=\"example\",instance=\"cluster.example.invalid\"}) < 90))) == 0",
+          "eval_time": "2m",
+          "exp_samples": [
+            {
+              "labels": "{id=\"lxc/103\",instance=\"cluster.example.invalid\",job=\"example\",name=\"lab\",node=\"node-b\",type=\"lxc\"}",
+              "value": 0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
