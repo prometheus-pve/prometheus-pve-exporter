@@ -1,0 +1,212 @@
+# HELP pve_up Node/VM/CT-Status is online/running
+# TYPE pve_up gauge
+pve_up{id="cluster/pvec"} 1.0
+pve_up{id="node/pve1"} 1.0
+pve_up{id="node/pve2"} 1.0
+pve_up{id="qemu/100"} 1.0
+pve_up{id="lxc/101"} 0.0
+pve_up{id="storage/pve1/local"} 1.0
+pve_up{id="storage/pve1/ceph"} 0.0
+# HELP pve_disk_size_bytes Storage size in bytes (for type 'storage'), root image size for VMs (for types 'qemu' and 'lxc').
+# TYPE pve_disk_size_bytes gauge
+pve_disk_size_bytes{id="node/pve1"} 1.073741824e+11
+pve_disk_size_bytes{id="node/pve2"} 1.073741824e+11
+pve_disk_size_bytes{id="qemu/100"} 3.4359738368e+10
+pve_disk_size_bytes{id="lxc/101"} 8.589934592e+09
+pve_disk_size_bytes{id="storage/pve1/local"} 1.073741824e+11
+pve_disk_size_bytes{id="storage/pve1/ceph"} 1.099511627776e+12
+# HELP pve_disk_usage_bytes Used disk space in bytes (for type 'storage'), used root image space for VMs (for types 'qemu' and 'lxc').
+# TYPE pve_disk_usage_bytes gauge
+pve_disk_usage_bytes{id="node/pve1"} 5.36870912e+09
+pve_disk_usage_bytes{id="node/pve2"} 4.294967296e+09
+pve_disk_usage_bytes{id="qemu/100"} 0.0
+pve_disk_usage_bytes{id="lxc/101"} 1.073741824e+09
+pve_disk_usage_bytes{id="storage/pve1/local"} 5.36870912e+09
+pve_disk_usage_bytes{id="storage/pve1/ceph"} 1.073741824e+10
+# HELP pve_memory_size_bytes Number of available memory in bytes (for types 'node', 'qemu' and 'lxc').
+# TYPE pve_memory_size_bytes gauge
+pve_memory_size_bytes{id="node/pve1"} 1.7179869184e+10
+pve_memory_size_bytes{id="node/pve2"} 1.7179869184e+10
+pve_memory_size_bytes{id="qemu/100"} 2.147483648e+09
+pve_memory_size_bytes{id="lxc/101"} 5.36870912e+08
+# HELP pve_memory_usage_bytes Used memory in bytes (for types 'node', 'qemu' and 'lxc').
+# TYPE pve_memory_usage_bytes gauge
+pve_memory_usage_bytes{id="node/pve1"} 4.294967296e+09
+pve_memory_usage_bytes{id="node/pve2"} 2.147483648e+09
+pve_memory_usage_bytes{id="qemu/100"} 1.073741824e+09
+pve_memory_usage_bytes{id="lxc/101"} 0.0
+# HELP pve_network_transmit_bytes The amount of traffic in bytes that was sent from the guest over the network since it was started. (for types 'qemu' and 'lxc') DEPRECATED: Use pve_network_transmit_bytes_total instead.
+# TYPE pve_network_transmit_bytes gauge
+pve_network_transmit_bytes{id="qemu/100"} 9.87654321e+08
+pve_network_transmit_bytes{id="lxc/101"} 0.0
+# HELP pve_network_receive_bytes The amount of traffic in bytes that was sent to the guest over the network since it was started. (for types 'qemu' and 'lxc') DEPRECATED: Use pve_network_receive_bytes_total instead.
+# TYPE pve_network_receive_bytes gauge
+pve_network_receive_bytes{id="qemu/100"} 1.23456789e+08
+pve_network_receive_bytes{id="lxc/101"} 0.0
+# HELP pve_disk_write_bytes The amount of bytes the guest wrote to its block devices since the guest was started. This info is not available for all storage types. (for types 'qemu' and 'lxc') DEPRECATED: Use pve_disk_written_bytes_total instead.
+# TYPE pve_disk_write_bytes gauge
+pve_disk_write_bytes{id="qemu/100"} 4.444444e+06
+pve_disk_write_bytes{id="lxc/101"} 0.0
+# HELP pve_disk_read_bytes The amount of bytes the guest read from its block devices since the guest was started. This info is not available for all storage types. (for types 'qemu' and 'lxc') DEPRECATED: Use pve_disk_read_bytes_total instead.
+# TYPE pve_disk_read_bytes gauge
+pve_disk_read_bytes{id="qemu/100"} 5.555555e+06
+pve_disk_read_bytes{id="lxc/101"} 0.0
+# HELP pve_cpu_usage_ratio CPU utilization (for types 'node', 'qemu' and 'lxc').
+# TYPE pve_cpu_usage_ratio gauge
+pve_cpu_usage_ratio{id="node/pve1"} 0.0512
+pve_cpu_usage_ratio{id="node/pve2"} 0.0231
+pve_cpu_usage_ratio{id="qemu/100"} 0.1234
+pve_cpu_usage_ratio{id="lxc/101"} 0.0
+# HELP pve_cpu_usage_limit Number of available CPUs (for types 'node', 'qemu' and 'lxc').
+# TYPE pve_cpu_usage_limit gauge
+pve_cpu_usage_limit{id="node/pve1"} 8.0
+pve_cpu_usage_limit{id="node/pve2"} 8.0
+pve_cpu_usage_limit{id="qemu/100"} 2.0
+pve_cpu_usage_limit{id="lxc/101"} 1.0
+# HELP pve_uptime_seconds Uptime of node or virtual guest in seconds (for types 'node', 'qemu' and 'lxc').
+# TYPE pve_uptime_seconds gauge
+pve_uptime_seconds{id="node/pve1"} 864000.0
+pve_uptime_seconds{id="node/pve2"} 432000.0
+pve_uptime_seconds{id="qemu/100"} 86400.0
+pve_uptime_seconds{id="lxc/101"} 0.0
+# HELP pve_storage_shared Whether or not the storage is shared among cluster nodes
+# TYPE pve_storage_shared gauge
+pve_storage_shared{id="storage/pve1/local"} 0.0
+pve_storage_shared{id="storage/pve1/ceph"} 1.0
+# HELP pve_network_transmit_bytes_total The amount of traffic in bytes that was sent from the guest over the network since it was started. (for types 'qemu' and 'lxc')
+# TYPE pve_network_transmit_bytes_total counter
+pve_network_transmit_bytes_total{id="qemu/100"} 9.87654321e+08
+pve_network_transmit_bytes_total{id="lxc/101"} 0.0
+# HELP pve_network_receive_bytes_total The amount of traffic in bytes that was sent to the guest over the network since it was started. (for types 'qemu' and 'lxc')
+# TYPE pve_network_receive_bytes_total counter
+pve_network_receive_bytes_total{id="qemu/100"} 1.23456789e+08
+pve_network_receive_bytes_total{id="lxc/101"} 0.0
+# HELP pve_disk_written_bytes_total The amount of bytes the guest wrote to its block devices since the guest was started. This info is not available for all storage types. (for types 'qemu' and 'lxc')
+# TYPE pve_disk_written_bytes_total counter
+pve_disk_written_bytes_total{id="qemu/100"} 4.444444e+06
+pve_disk_written_bytes_total{id="lxc/101"} 0.0
+# HELP pve_disk_read_bytes_total The amount of bytes the guest read from its block devices since the guest was started. This info is not available for all storage types. (for types 'qemu' and 'lxc')
+# TYPE pve_disk_read_bytes_total counter
+pve_disk_read_bytes_total{id="qemu/100"} 5.555555e+06
+pve_disk_read_bytes_total{id="lxc/101"} 0.0
+# HELP pve_ha_state HA service status (for HA managed VMs).
+# TYPE pve_ha_state gauge
+pve_ha_state{id="node/pve1",state="online"} 0.0
+pve_ha_state{id="node/pve1",state="maintenance"} 0.0
+pve_ha_state{id="node/pve1",state="unknown"} 0.0
+pve_ha_state{id="node/pve1",state="fence"} 0.0
+pve_ha_state{id="node/pve1",state="gone"} 0.0
+pve_ha_state{id="node/pve2",state="online"} 0.0
+pve_ha_state{id="node/pve2",state="maintenance"} 0.0
+pve_ha_state{id="node/pve2",state="unknown"} 0.0
+pve_ha_state{id="node/pve2",state="fence"} 0.0
+pve_ha_state{id="node/pve2",state="gone"} 0.0
+pve_ha_state{id="qemu/100",state="stopped"} 0.0
+pve_ha_state{id="qemu/100",state="request_stop"} 0.0
+pve_ha_state{id="qemu/100",state="request_start"} 0.0
+pve_ha_state{id="qemu/100",state="request_start_balance"} 0.0
+pve_ha_state{id="qemu/100",state="started"} 1.0
+pve_ha_state{id="qemu/100",state="fence"} 0.0
+pve_ha_state{id="qemu/100",state="recovery"} 0.0
+pve_ha_state{id="qemu/100",state="migrate"} 0.0
+pve_ha_state{id="qemu/100",state="relocate"} 0.0
+pve_ha_state{id="qemu/100",state="freeze"} 0.0
+pve_ha_state{id="qemu/100",state="error"} 0.0
+pve_ha_state{id="lxc/101",state="stopped"} 1.0
+pve_ha_state{id="lxc/101",state="request_stop"} 0.0
+pve_ha_state{id="lxc/101",state="request_start"} 0.0
+pve_ha_state{id="lxc/101",state="request_start_balance"} 0.0
+pve_ha_state{id="lxc/101",state="started"} 0.0
+pve_ha_state{id="lxc/101",state="fence"} 0.0
+pve_ha_state{id="lxc/101",state="recovery"} 0.0
+pve_ha_state{id="lxc/101",state="migrate"} 0.0
+pve_ha_state{id="lxc/101",state="relocate"} 0.0
+pve_ha_state{id="lxc/101",state="freeze"} 0.0
+pve_ha_state{id="lxc/101",state="error"} 0.0
+# HELP pve_lock_state The guest's current config lock (for types 'qemu' and 'lxc')
+# TYPE pve_lock_state gauge
+pve_lock_state{id="qemu/100",state="backup"} 1.0
+pve_lock_state{id="qemu/100",state="clone"} 0.0
+pve_lock_state{id="qemu/100",state="create"} 0.0
+pve_lock_state{id="qemu/100",state="migrate"} 0.0
+pve_lock_state{id="qemu/100",state="rollback"} 0.0
+pve_lock_state{id="qemu/100",state="snapshot"} 0.0
+pve_lock_state{id="qemu/100",state="snapshot-delete"} 0.0
+pve_lock_state{id="qemu/100",state="suspended"} 0.0
+pve_lock_state{id="qemu/100",state="suspending"} 0.0
+pve_lock_state{id="lxc/101",state="backup"} 0.0
+pve_lock_state{id="lxc/101",state="clone"} 0.0
+pve_lock_state{id="lxc/101",state="create"} 0.0
+pve_lock_state{id="lxc/101",state="migrate"} 0.0
+pve_lock_state{id="lxc/101",state="rollback"} 0.0
+pve_lock_state{id="lxc/101",state="snapshot"} 0.0
+pve_lock_state{id="lxc/101",state="snapshot-delete"} 0.0
+pve_lock_state{id="lxc/101",state="suspended"} 0.0
+pve_lock_state{id="lxc/101",state="suspending"} 0.0
+# HELP pve_guest_info VM/CT info
+# TYPE pve_guest_info gauge
+pve_guest_info{id="qemu/100",name="vm100",node="pve1",tags="web;prod",template="0",type="qemu"} 1.0
+pve_guest_info{id="lxc/101",name="ct101",node="pve2",tags="",template="0",type="lxc"} 1.0
+# HELP pve_storage_info Storage info
+# TYPE pve_storage_info gauge
+pve_storage_info{content="backup,iso,vztmpl",id="storage/pve1/local",node="pve1",plugintype="dir",storage="local"} 1.0
+pve_storage_info{content="images,rootdir",id="storage/pve1/ceph",node="pve1",plugintype="rbd",storage="ceph"} 1.0
+# HELP pve_node_info Node info
+# TYPE pve_node_info gauge
+pve_node_info{id="node/pve1",level="c",name="pve1",nodeid="1"} 1.0
+pve_node_info{id="node/pve2",level="",name="pve2",nodeid="2"} 1.0
+# HELP pve_cluster_info Cluster info
+# TYPE pve_cluster_info gauge
+pve_cluster_info{id="cluster/pvec",nodes="2",quorate="1",version="2"} 1.0
+# HELP pve_version_info Proxmox VE version info
+# TYPE pve_version_info gauge
+pve_version_info{release="9.0",repoid="1a2b3c4d",version="9.0.3"} 1.0
+# HELP pve_not_backed_up_total Total number of guests not covered by any backup job.
+# TYPE pve_not_backed_up_total gauge
+pve_not_backed_up_total{id="cluster/pvec"} 2.0
+# HELP pve_not_backed_up_info Present if guest is not covered by any backup job.
+# TYPE pve_not_backed_up_info gauge
+pve_not_backed_up_info{id="qemu/100"} 1.0
+pve_not_backed_up_info{id="lxc/101"} 1.0
+# HELP pve_qdevice_up Proxmox VE QDevice is connected (1) or not (0)
+# TYPE pve_qdevice_up gauge
+pve_qdevice_up{id="cluster/pvec"} 1.0
+# HELP pve_qdevice_info Proxmox VE QDevice info (1 if configured)
+# TYPE pve_qdevice_info gauge
+pve_qdevice_info{algorithm="Fifty-Fifty split",id="cluster/pvec",model="Net",qnetd_host="10.0.0.9:5403",state="Connected",tie_breaker="Node with lowest node ID"} 1.0
+# HELP pve_subscription_info Proxmox VE subscription info (1 if present)
+# TYPE pve_subscription_info gauge
+pve_subscription_info{id="node/pve1",level="c"} 1.0
+# HELP pve_subscription_status Proxmox VE subscription status (1 if matches status)
+# TYPE pve_subscription_status gauge
+pve_subscription_status{id="node/pve1",status="new"} 0.0
+pve_subscription_status{id="node/pve1",status="notfound"} 0.0
+pve_subscription_status{id="node/pve1",status="active"} 1.0
+pve_subscription_status{id="node/pve1",status="invalid"} 0.0
+pve_subscription_status{id="node/pve1",status="expired"} 0.0
+pve_subscription_status{id="node/pve1",status="suspended"} 0.0
+# HELP pve_subscription_next_due_timestamp_seconds Subscription next due date as Unix timestamp
+# TYPE pve_subscription_next_due_timestamp_seconds gauge
+pve_subscription_next_due_timestamp_seconds{id="node/pve1"} 1.7987616e+09
+# HELP pve_onboot_status Proxmox vm config onboot value
+# TYPE pve_onboot_status gauge
+pve_onboot_status{id="qemu/100",node="pve1",type="qemu"} 1.0
+pve_onboot_status{id="lxc/102",node="pve1",type="lxc"} 0.0
+# HELP pve_replication_duration_seconds Proxmox vm replication duration
+# TYPE pve_replication_duration_seconds gauge
+pve_replication_duration_seconds{id="100-0"} 3.5
+# HELP pve_replication_last_sync_timestamp_seconds Proxmox vm replication last_sync
+# TYPE pve_replication_last_sync_timestamp_seconds gauge
+pve_replication_last_sync_timestamp_seconds{id="100-0"} 1.7e+09
+# HELP pve_replication_last_try_timestamp_seconds Proxmox vm replication last_try
+# TYPE pve_replication_last_try_timestamp_seconds gauge
+pve_replication_last_try_timestamp_seconds{id="100-0"} 1.7e+09
+# HELP pve_replication_next_sync_timestamp_seconds Proxmox vm replication next_sync
+# TYPE pve_replication_next_sync_timestamp_seconds gauge
+pve_replication_next_sync_timestamp_seconds{id="100-0"} 1.7000009e+09
+# HELP pve_replication_failed_syncs Proxmox vm replication fail_count
+# TYPE pve_replication_failed_syncs gauge
+pve_replication_failed_syncs{id="100-0"} 0.0
+# HELP pve_replication_info Proxmox vm replication info
+# TYPE pve_replication_info gauge
+pve_replication_info{guest="qemu/100",id="100-0",source="node/pve1",target="node/pve2",type="local"} 1.0
