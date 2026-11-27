@@ -5,4 +5,4 @@ requests
 Werkzeug
 gunicorn
 paramiko
-wrapt
+wrapt>=1.16.0
